@@ -6,9 +6,7 @@ using TMPro;
 
 public class SettingManager : MonoBehaviour
 {
-    [Header("Audio")]
-    [SerializeField] private AudioMixer audioMixer;       // Kéo AudioMixer vào đây
-    [SerializeField] private Slider volumeSlider;          // Kéo VolumeSlider vào đây
+   
 
     [Header("Resolution")]
     [SerializeField] private TMP_Dropdown resolutionDropdown;  // Kéo ResolutionDropdown vào đây
@@ -52,11 +50,7 @@ public class SettingManager : MonoBehaviour
         qualityDropdown.value = QualitySettings.GetQualityLevel();
         qualityDropdown.RefreshShownValue();
 
-        // ===== SETUP VOLUME SLIDER =====
-        // Lấy volume đã lưu (mặc định = 1.0)
-        float savedVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
-        volumeSlider.value = savedVolume;
-        SetVolume(savedVolume);
+        
     }
 
     // ============ CALLBACK METHODS ============
@@ -64,13 +58,6 @@ public class SettingManager : MonoBehaviour
     /// <summary>
     /// Gọi khi kéo Volume Slider
     /// </summary>
-    public void SetVolume(float volume)
-    {
-        // AudioMixer nhận giá trị dB: dùng Log10 để chuyển đổi
-        // volume = 0.0001 → -80dB (mute), volume = 1 → 0dB (max)
-        audioMixer.SetFloat("MasterVolume", Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20);
-        PlayerPrefs.SetFloat("MasterVolume", volume);
-    }
 
     /// <summary>
     /// Gọi khi chọn Resolution từ Dropdown
