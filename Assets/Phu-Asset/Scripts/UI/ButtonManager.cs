@@ -23,7 +23,7 @@ public class ButtonManager : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Day1");
+        SceneManager.LoadScene(1);
     }
 
     public void Continue()

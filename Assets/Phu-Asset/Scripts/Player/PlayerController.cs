@@ -24,9 +24,8 @@ public class PlayerController : MonoBehaviour
 
 
     [Header("Cấu hình âm thanh bước chân")]
-    [Tooltip("Kéo Component AudioSource của PLayer vào đây")]
-    [SerializeField] private AudioSource audioSource;
-
+  
+   
     [Tooltip("Danh sách tiếng bước chân (càng nhiều càng real)")]
     [SerializeField] private AudioClip[] footStepSounds;
 
@@ -46,7 +45,7 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
 
         //*Nếu quên kéo AudioSource thì sẽ tự tìm và gắn vào 
-        if (audioSource == null) audioSource = GetComponent<AudioSource>();
+       
 
         if (animator == null) animator = GetComponent<Animator>();
     }
@@ -132,7 +131,10 @@ public class PlayerController : MonoBehaviour
         int randomIndex = Random.Range(0, footStepSounds.Length);
         AudioClip clip = footStepSounds[randomIndex];
 
-        audioSource.PlayOneShot(clip);
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX(clip);
+        }
     }
     private void OnDrawGizmosSelected()
     {

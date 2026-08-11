@@ -6,7 +6,7 @@ public class PlayerInteract : MonoBehaviour
     public float interactDistance = 3f;
     public LayerMask  interactableLayer;
     [SerializeField] private TextMeshProUGUI hitText;
-
+    
     [SerializeField] private Animator armAnimator;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -34,7 +34,7 @@ public class PlayerInteract : MonoBehaviour
                 //*Hiện gợi ý lên màn hình
                 if(hitText != null)
                 {
-                    hitText.text = "[E]" + interactable.promptMessage;
+                    hitText.text = "[E] - " + interactable.promptMessage;
                     hitText.gameObject.SetActive(true);
                 }
                 if(Input.GetKeyDown(KeyCode.E))
@@ -45,6 +45,7 @@ public class PlayerInteract : MonoBehaviour
                     }
                     //*Thực hiện tương tác
                     interactable.Interact();
+                  
                 }
                 return;
             } 
