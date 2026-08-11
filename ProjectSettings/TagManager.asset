@@ -2,24 +2,24 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 3
+  serializedVersion: 2
   tags:
-  - Flesh
+  - CinemachineTarget
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Player
+  - 
   - Water
   - UI
-  - Interact
-  - Weapon
-  - Focus
-  - NPC
-  - BodyPart
-  - Ground
-  - Slope
-  - World UI
+  - BulletIgnore
+  - Bullet
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
@@ -42,7 +42,3 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  m_RenderingLayers:
-  - Default
-  - Focus
-  - Ground
