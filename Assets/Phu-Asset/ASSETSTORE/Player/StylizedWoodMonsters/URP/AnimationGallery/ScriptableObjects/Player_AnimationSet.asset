@@ -1,20 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f557648493c0ac34a92991407fed12f8, type: 3}
-  m_Name: Player_AnimationSet
-  m_EditorClassIdentifier: Assembly-CSharp::StylizedCore.StylizedWoodMonsters.AnimationGallery.Core.AnimationSet
-  displayName: 
-  animationNames:
-  - Idle
-  - Walking
-  - Running
-  hasEffects: 0
+version https://git-lfs.github.com/spec/v1
+oid sha256:2bc3fa44d80682dbf9f5ce6b0cd839c9721a81b3ffd02f0c3f5473128a8d2609
+size 576
