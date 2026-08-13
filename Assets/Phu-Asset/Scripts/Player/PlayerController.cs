@@ -57,6 +57,7 @@ public class PlayerController : MonoBehaviour
         PlayerJump();
     }
 
+    
     public void PlayerMove()
     {
         //*Lay du lieu nhap vao tu ban phim
