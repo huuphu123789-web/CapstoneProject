@@ -61,4 +61,16 @@ public class ButtonManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         jumpScareText.text="On";
     }
+    public void BackToMainMenu()
+{
+    // Xóa Player trước khi về menu
+    GameObject player = GameObject.FindWithTag("Player");
+    if (player != null) Destroy(player);
+
+    // Xóa Main Camera persistent
+    Camera cam = Camera.main;
+    if (cam != null) Destroy(cam.gameObject);
+
+    SceneManager.LoadScene("MainMenu");
+}
 }
