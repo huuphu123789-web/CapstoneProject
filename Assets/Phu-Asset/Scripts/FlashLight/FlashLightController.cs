@@ -3,6 +3,7 @@ using UnityEngine;
 public class FlashlightController : MonoBehaviour
 {
     [SerializeField] private Light flashlight;
+    [SerializeField] private AudioClip onClip;
 
     void Start()
     {
@@ -16,7 +17,10 @@ public class FlashlightController : MonoBehaviour
         // Nhấn F để bật/tắt đèn pin
         if (Input.GetKeyDown(KeyCode.F))
         {
+            
             flashlight.enabled = !flashlight.enabled;
+            AudioManager.instance.PlaySFX(onClip);
         }
+    
     }
 }
