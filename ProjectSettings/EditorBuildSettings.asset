@@ -15,4 +15,5 @@ EditorBuildSettings:
     path: Assets/AlterunaFPS/Scenes/Multiplayer.unity
     guid: d467bb58a331a364da0289e764f6c986
   m_configObjects:
-    com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7, type: 2}
+    com.unity.input.settings: {fileID: 11400000, guid: 8e6f90a8927919d45857f64554f89e8b, type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
