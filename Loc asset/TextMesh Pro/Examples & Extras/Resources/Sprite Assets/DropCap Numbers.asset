@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Loc asset/TextMesh Pro/Examples & Extras/Resources/Sprite Assets/DropCap Numbers.asset
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2155154
@@ -404,3 +405,8 @@ MonoBehaviour:
     sprite: {fileID: 21300006, guid: fd09957580ac4326916010f1f260975b, type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:ffc7374228511698dafcee554394849bfb233b25b29089251dad2cfef7683590
+size 10209
+>>>>>>> Stashed changes:Assets/Loc asset/TextMesh Pro/Examples & Extras/Resources/Sprite Assets/DropCap Numbers.asset

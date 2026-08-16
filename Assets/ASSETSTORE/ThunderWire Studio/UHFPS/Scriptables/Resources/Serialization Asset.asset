@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -30,3 +31,8 @@ MonoBehaviour:
   SingleSave: 1
   UseSceneNames: 0
   PreviousScenePersistency: 1
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:e56e7b5aaee579a8a2056dcd413e39974da69820df736ad946cb82cb90e80188
+size 892
+>>>>>>> Stashed changes

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 fileFormatVersion: 2
 guid: 93900c0df6dacec4cb7040d4638730ca
 NativeFormatImporter:
@@ -6,3 +7,20 @@ NativeFormatImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+=======
+fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Readme.asset.meta
+guid: 8105016687592461f977c054a80ce2f2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+========
+guid: 93900c0df6dacec4cb7040d4638730ca
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 23800000
+>>>>>>>> Stashed changes:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/NavMesh-NavMeshSurface.asset.meta
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+>>>>>>> Stashed changes

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &-8727144084089283050
@@ -413,3 +414,8 @@ MonoBehaviour:
   rounded:
     m_OverrideState: 0
     m_Value: 0
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:9057767e53689f99e993cfb9e78a0c130540bdbaf57a6a25c3cc76900f643858
+size 10500
+>>>>>>> Stashed changes

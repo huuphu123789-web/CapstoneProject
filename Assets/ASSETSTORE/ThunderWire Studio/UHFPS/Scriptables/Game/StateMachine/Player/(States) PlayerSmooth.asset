@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &-8521706686895293519
@@ -233,3 +234,8 @@ MonoBehaviour:
       NormalText: Exit
   ToMovableTime: 1
   PushingSpeed: 10
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:6ac1558ebfc7ca2e24be46119b0bd09f8e12173d070d934e3a2c684e63d7fa39
+size 7377
+>>>>>>> Stashed changes

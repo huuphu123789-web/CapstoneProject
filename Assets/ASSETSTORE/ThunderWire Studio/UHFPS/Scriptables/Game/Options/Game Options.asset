@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -452,3 +453,8 @@ MonoBehaviour:
         Languages:
         - GlocText: '*English'
           NormalText: 
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:6fdd8aff97a7ecd6b8e3ecfcc13cd0be41123fef246a5cfc15f516ff9a3a4d0d
+size 15616
+>>>>>>> Stashed changes

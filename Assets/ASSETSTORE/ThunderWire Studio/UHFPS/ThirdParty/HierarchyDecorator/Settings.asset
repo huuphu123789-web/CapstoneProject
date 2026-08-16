@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -31056,3 +31057,8 @@ MonoBehaviour:
     unityVersion: 6000.4.5f1
     isDirty: 0
     UnityCount: 410
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:99e0f40901d2a5c87702078971094d9a569a1398f4b89da328a943e144356117
+size 1094400
+>>>>>>> Stashed changes

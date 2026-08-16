@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -61,3 +62,8 @@ MonoBehaviour:
       type: {class: DialogueAsset/SubtitleBreak, ns: UHFPS.Scriptable, asm: Assembly-CSharp}
       data:
         Time: 3.3450692
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:76988dbbe82f9037d993c5f2daa4c3bda2ec8d784d18cb2f30dfb41b8ae8e104
+size 1923
+>>>>>>> Stashed changes

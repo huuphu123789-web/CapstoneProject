@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!28 &-8669498178643741168
@@ -290,3 +291,8 @@ MonoBehaviour:
   boldSpacing: 7
   italicStyle: 35
   tabSize: 10
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:04aa6b054166faccdb834f83602b5eb0d24d44145f5c71759bc1d5d9e857b4f8
+size 7915
+>>>>>>> Stashed changes

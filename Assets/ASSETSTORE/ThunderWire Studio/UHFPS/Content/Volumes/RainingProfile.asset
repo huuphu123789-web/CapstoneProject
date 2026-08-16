@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &-3260343798773605428
@@ -54,3 +55,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   components:
   - {fileID: -3260343798773605428}
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:7e4c78ae26fefee2fb88e2922fe20df868faf7f50fe823432cb3a8ca76ca255b
+size 1458
+>>>>>>> Stashed changes

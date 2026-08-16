@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -1927,3 +1928,8 @@ MonoBehaviour:
     MappedKeys:
     - /Mouse/scroll
     Scale: {x: 1, y: 1}
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:9a036bde101e29939149d6c7fc9cea4c467ad9b42f3a0e7964d3f42e2ba1c608
+size 50121
+>>>>>>> Stashed changes

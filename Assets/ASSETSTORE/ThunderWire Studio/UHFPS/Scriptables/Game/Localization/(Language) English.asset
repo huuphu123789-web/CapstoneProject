@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -1053,3 +1054,8 @@ MonoBehaviour:
     SectionId: 70584943
     Key: options.separator.pp
     Value: Post Processing
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:b98d5fee8bbefe41ec2c2744e3e45e9539fa9edaafe06a59ad6d57c2b6324efa
+size 30517
+>>>>>>> Stashed changes

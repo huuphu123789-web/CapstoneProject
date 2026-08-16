@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!28 &-6302115563085291385
@@ -2332,3 +2333,8 @@ Material:
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_BuildTextureStacks: []
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:dec7fe6b3ccd8d5778e383fb0a833678fc956830bdd6bb1d80f6e6badf3e96e4
+size 2147363
+>>>>>>> Stashed changes

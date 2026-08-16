@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 fileFormatVersion: 2
 guid: e9f693669af91aa45ad615fc681ed29f
 folderAsset: yes
@@ -6,3 +7,17 @@ DefaultImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+=======
+fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Data/Config.meta
+guid: 753dfec7ba3dc4cf4a8d4a12c2a341fa
+========
+guid: e9f693669af91aa45ad615fc681ed29f
+>>>>>>>> Stashed changes:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/Unity/TextMesh Pro/Shaders.meta
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+>>>>>>> Stashed changes

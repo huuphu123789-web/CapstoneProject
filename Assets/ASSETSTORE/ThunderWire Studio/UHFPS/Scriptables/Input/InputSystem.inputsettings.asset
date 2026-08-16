@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -35,3 +36,8 @@ MonoBehaviour:
     m_MotionUsage:
       m_Enabled: 0
       m_Description: 
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:764dfe06d87c5f3059b854884e5293c43fab1ee244eeb148f96c212bb343cbea
+size 1048
+>>>>>>> Stashed changes

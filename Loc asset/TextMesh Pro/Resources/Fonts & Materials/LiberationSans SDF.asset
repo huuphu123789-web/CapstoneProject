@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Loc asset/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2180264
@@ -7819,3 +7820,8 @@ Texture2D:
     offset: 0
     size: 0
     path: 
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:3e255bf16c9d35f6019c541174813b6f9e2dbfa5b0b458311cac63fea66a0357
+size 2264683
+>>>>>>> Stashed changes:Assets/Loc asset/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset

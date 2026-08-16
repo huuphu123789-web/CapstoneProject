@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!363 &36300000
@@ -210,3 +211,8 @@ OcclusionCullingData:
   - targetObject: 8039133125347889645
     targetPrefab: 0
   m_Portals: []
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:937d9f04f84fddb470a38bfae88f111c5b000e84425e77bd6e7d4953c5051bc0
+size 54856
+>>>>>>> Stashed changes

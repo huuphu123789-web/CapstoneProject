@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -573,3 +574,8 @@ MonoBehaviour:
       Text: General Volume
     - Key: audio.music
       Text: Music Volume
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:3a19cbc391a56325c7fd8ac27296f6cd63e2e108068601d2ef744da1fcfb0b80
+size 17960
+>>>>>>> Stashed changes

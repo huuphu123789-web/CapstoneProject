@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -214,3 +215,8 @@ MonoBehaviour:
         playerStopSpeed: 0.5
         positionAmplitude: {x: 0.003, y: 0.004, z: 0}
         rotationAmplitude: {x: -1, y: 0.1, z: 0.5}
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:1105d36cb80c4e2b15cbef10aa26f017841bfb756b2a47284450142c24199f28
+size 6230
+>>>>>>> Stashed changes

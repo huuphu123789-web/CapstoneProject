@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Loc asset/TextMesh Pro/Examples & Extras/Resources/Color Gradient Presets/Blue to Purple - Vertical.asset
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -15,3 +16,8 @@ MonoBehaviour:
   topRight: {r: 0.1544118, g: 0.5801215, b: 1, a: 1}
   bottomLeft: {r: 0.49168324, g: 0, b: 0.7058823, a: 1}
   bottomRight: {r: 0.4901961, g: 0, b: 0.7019608, a: 1}
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:aeea13303c0702c4096cf0396bfc2b92bd9f49dc874d4effe63bcbacd343e646
+size 605
+>>>>>>> Stashed changes:Assets/Loc asset/TextMesh Pro/Examples & Extras/Resources/Color Gradient Presets/Blue to Purple - Vertical.asset

@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/URPDefaultResources/Default_Forward_Renderer.asset.meta
 guid: ec17f093327664009844d90c407cc949
+========
+guid: f035b04f2a01fff428c24de202641245
+>>>>>>>> Stashed changes:Loc asset/Scenes/BOTCANH.scenetemplate.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 11400000

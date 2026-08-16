@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Loc asset/TextMesh Pro/Examples & Extras/Resources/Sprite Assets/Default Sprite Asset.asset
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2102322
@@ -349,3 +350,8 @@ MonoBehaviour:
     sprite: {fileID: 0}
   spriteInfoList: []
   fallbackSpriteAssets: []
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:30fad27852d8991dd3078bb1d12ebed8bb0c563552525cce57c9726ab77828f4
+size 8213
+>>>>>>> Stashed changes:Assets/Loc asset/TextMesh Pro/Examples & Extras/Resources/Sprite Assets/Default Sprite Asset.asset

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -360,3 +361,8 @@ MonoBehaviour:
       data:
         Weight: 1
         BlendDamping: 3
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:5f2bd72f05923fc10fbbd87e93d96afbf0b34f74b80e8c1cc10e81106b2ca47c
+size 10457
+>>>>>>> Stashed changes

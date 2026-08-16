@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -1555,3 +1556,8 @@ MonoBehaviour:
           GlocText: item.description.scrap
           NormalText: A collection of miscellaneous metal pieces. Useful for crafting
             and repairs.
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:b58419e3a3c1019ed9f97745fb564e0e2b85b4207008f291d6f46620e7f48f0c
+size 49865
+>>>>>>> Stashed changes

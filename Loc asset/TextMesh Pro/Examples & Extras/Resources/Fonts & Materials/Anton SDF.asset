@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Loc asset/TextMesh Pro/Examples & Extras/Resources/Fonts & Materials/Anton SDF.asset
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2140474
@@ -300,3 +301,8 @@ Texture2D:
     offset: 0
     size: 0
     path: 
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:6165ac6d9935ae54b23411b9179e97fc0d3ea78697e51f49ec6bea1533991737
+size 8312
+>>>>>>> Stashed changes:Assets/Loc asset/TextMesh Pro/Examples & Extras/Resources/Fonts & Materials/Anton SDF.asset

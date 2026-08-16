@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &-8511001005541552458
@@ -149,3 +150,8 @@ MonoBehaviour:
   VignetteAspectRatio:
     m_OverrideState: 0
     m_Value: 1
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:3169ec1cfa30932c43a15498b025ed3bfe194f861b5bcd0d42a5de9d98ae6f0c
+size 4032
+>>>>>>> Stashed changes

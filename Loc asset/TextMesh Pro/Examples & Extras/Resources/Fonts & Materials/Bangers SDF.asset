@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Loc asset/TextMesh Pro/Examples & Extras/Resources/Fonts & Materials/Bangers SDF.asset
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
@@ -300,3 +301,8 @@ Texture2D:
     offset: 0
     size: 0
     path: 
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:49172e5ee1e2f2cc7264a090e42e3815c8020d8159d765ff32ce9c2356ea43d7
+size 8294
+>>>>>>> Stashed changes:Assets/Loc asset/TextMesh Pro/Examples & Extras/Resources/Fonts & Materials/Bangers SDF.asset

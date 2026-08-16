@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -1240,3 +1241,8 @@ MonoBehaviour:
       LocalizationSettings:
         titleKey: item.title.fuel
         descriptionKey: item.description.fuel
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:9663fb508bd476f183413ac51e34918c5d53298e97d79f10d54bf3bba884924e
+size 36571
+>>>>>>> Stashed changes

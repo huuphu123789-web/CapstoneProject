@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -32,3 +33,8 @@ MonoBehaviour:
     linkText: Submit a report
     url: https://unity3d.com/unity/qa/bug-reporting
   loadedLayout: 1
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:e448f8ad5ad8b0b8802c1dcf19a49f20cb9cf7eff4d0789670926059285b2f98
+size 1178
+>>>>>>> Stashed changes

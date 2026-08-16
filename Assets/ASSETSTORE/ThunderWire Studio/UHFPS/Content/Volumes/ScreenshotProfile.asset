@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &-8465451786176759273
@@ -205,3 +206,8 @@ MonoBehaviour:
   intensity:
     m_OverrideState: 1
     m_Value: 0.1
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:158ca52620747861610fae2d31de76cf7f5ee83c3e402a0dd1df6e0196ae3c1c
+size 5124
+>>>>>>> Stashed changes

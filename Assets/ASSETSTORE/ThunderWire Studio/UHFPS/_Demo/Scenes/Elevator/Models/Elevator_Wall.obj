@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # ProBuilder 5.2.2
 # https://unity3d.com/unity/features/worldbuilding/probuilder
 # 15.03.2024 21:49:50
@@ -30,3 +31,8 @@ usemtl Grey_1
 f 3/3/1 4/4/1 2/2/1 1/1/1
 f 7/7/1 8/8/1 6/6/1 5/5/1
 
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:3c11738b2bb251124ff9ce027c5040d5bc6430e80263b7cb99bb70437db86bab
+size 639
+>>>>>>> Stashed changes

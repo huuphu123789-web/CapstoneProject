@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -2174,3 +2175,8 @@ Material:
     - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:0d1b141ad1a715c15025c7a5f825fecaf5961f329dfdf13e0a914996ddb0401d
+size 54428
+>>>>>>> Stashed changes

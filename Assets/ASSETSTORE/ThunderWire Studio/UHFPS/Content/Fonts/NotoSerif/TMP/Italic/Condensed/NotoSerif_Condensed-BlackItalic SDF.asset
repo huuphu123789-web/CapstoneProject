@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -486,3 +487,8 @@ Texture2D:
     offset: 0
     size: 0
     path: 
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:034666feee731249941c17a87048d2e1a3da8aa7b8db70d2e6566a83f72ff25a
+size 2109156
+>>>>>>> Stashed changes

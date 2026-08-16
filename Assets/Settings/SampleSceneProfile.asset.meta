@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Settings/SampleSceneProfile.asset.meta
 guid: 10fc4df2da32a41aaa32d77bc913491c
+========
+guid: 8105016687592461f977c054a80ce2f2
+>>>>>>>> Stashed changes:Assets/Readme.asset.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0

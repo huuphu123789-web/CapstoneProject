@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &-7126588196890882439
@@ -235,3 +236,8 @@ MonoBehaviour:
   ZiplineSliding:
     audioClip: {fileID: 8300000, guid: 430e07e8f60b497498c910b53e51f5b8, type: 3}
     volume: 1
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:719123c79d61afd4c6be2b9b81a16cffa226126398449f3a87ecf592445e3eaf
+size 7434
+>>>>>>> Stashed changes

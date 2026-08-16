@@ -1,3 +1,5 @@
+<<<<<<< Updated upstream
+<<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/Unity/TextMesh Pro/Sprites.meta
 fileFormatVersion: 2
 guid: d0603b6d5186471b96c778c3949c7ce2
 folderAsset: yes
@@ -6,3 +8,28 @@ DefaultImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+========
+fileFormatVersion: 2
+guid: 701e577af2ba48b689972d42efb95456
+folderAsset: yes
+timeCreated: 1488176891
+licenseType: Pro
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+>>>>>>>> Stashed changes:Loc asset/TextMesh Pro/Examples & Extras/Sprites.meta
+=======
+fileFormatVersion: 2
+<<<<<<<< Updated upstream:Loc asset/Prefabs/CCCD.meta
+guid: 30e43b330bb010d4d9061e7872d6b1e5
+========
+guid: d0603b6d5186471b96c778c3949c7ce2
+>>>>>>>> Stashed changes:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/Unity/TextMesh Pro/Sprites.meta
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+>>>>>>> Stashed changes

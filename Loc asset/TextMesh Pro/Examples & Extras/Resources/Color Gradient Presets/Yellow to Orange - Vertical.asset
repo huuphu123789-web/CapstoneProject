@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Loc asset/TextMesh Pro/Examples & Extras/Resources/Color Gradient Presets/Yellow to Orange - Vertical.asset
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -15,3 +16,8 @@ MonoBehaviour:
   topRight: {r: 1, g: 1, b: 0.252, a: 1}
   bottomLeft: {r: 1, g: 0, b: 0, a: 1}
   bottomRight: {r: 1, g: 0, b: 0, a: 1}
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:60054985ed078cad3c16ec3c7a2009ced1948d53bc85c10935e98129c9c277b7
+size 561
+>>>>>>> Stashed changes:Assets/Loc asset/TextMesh Pro/Examples & Extras/Resources/Color Gradient Presets/Yellow to Orange - Vertical.asset
