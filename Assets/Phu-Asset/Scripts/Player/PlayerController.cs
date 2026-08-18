@@ -53,6 +53,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Dừng mọi xử lý khi game đang Pause
+        if (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused)
+            return;
+
         PlayerMove();
         PlayerJump();
     }
@@ -79,9 +83,16 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isWalk",false);
             characterController.Move(move * moveSpeed * Time.deltaTime);
         }
-        if(Input.GetKey(KeyCode.LeftShift))
+
+        // Kiểm tra thể lực từ HUD (dùng instance, không FindObject mỗi frame)
+        bool hasStamina = true;
+        if (PlayerHUDManager.instance != null)
         {
-            
+            hasStamina = (PlayerHUDManager.instance.currentStamina > 0);
+        }
+
+        if(Input.GetKey(KeyCode.LeftShift) && hasStamina && move.magnitude > 0.1f)
+        {
             characterController.Move(move * sprintSpeed * Time.deltaTime);
             animator.SetBool("isWalk",false);
             animator.SetBool("isRun",true);
@@ -89,7 +100,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             characterController.Move(move * moveSpeed * Time.deltaTime);
-             animator.SetBool("isRun",false);
+            animator.SetBool("isRun",false);
         }
         //*Điều kiện player đang trên mặt đất và dang di chuyển (move.mangitude >0)
         if (isGrounded && move.magnitude > 0.1f)
