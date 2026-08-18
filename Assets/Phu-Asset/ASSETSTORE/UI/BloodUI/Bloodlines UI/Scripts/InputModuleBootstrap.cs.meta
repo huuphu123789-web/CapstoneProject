@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 518d89b5a48489543aa546e198b69d40
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 394832
+  packageName: Deadbody 3D Lite
+  packageVersion: 1.0
+  assetPath: Assets/DeadBody LITE/Scripts/BathTub.cs
+  uploadId: 958374
