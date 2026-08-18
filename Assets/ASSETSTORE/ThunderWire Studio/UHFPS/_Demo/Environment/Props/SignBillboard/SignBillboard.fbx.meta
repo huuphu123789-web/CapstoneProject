@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
 <<<<<<< Updated upstream
 fileFormatVersion: 2
 guid: a420c2653cbfe914ca394d842f27dae9
@@ -125,11 +126,23 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Sign_Billboard
     second: {fileID: 2100000, guid: 3e7a32b2f16451848950f6c2e373e685, type: 2}
+=======
+fileFormatVersion: 2
+guid: 4f1961477aee12942a8e94ae5b6ad375
+ModelImporter:
+  serializedVersion: 24501
+  internalIDToNameTable: []
+  externalObjects: {}
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
   materials:
     materialImportMode: 2
     materialName: 0
     materialSearch: 1
     materialLocation: 1
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
+=======
+    searchTexturesGlobally: 0
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -137,8 +150,11 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
     rigImportErrors: 
     rigImportWarnings: 
+=======
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -179,6 +195,14 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
+=======
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    importUVs: -1
+    importVertexColors: 1
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -198,6 +222,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
+=======
+    calculateBlendshapeNormalsDeltaFromImportedNormals: 0
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
   referencedClips: []
   importAnimation: 1
   humanDescription:
@@ -228,4 +256,7 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Environment/Props/SignBillboard/SignBillboard.fbx.meta

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
 <<<<<<< Updated upstream
 fileFormatVersion: 2
 guid: 809d6d16fe3b5024f88b1e59a42c5d5a
@@ -113,6 +114,12 @@ fileFormatVersion: 2
 guid: 809d6d16fe3b5024f88b1e59a42c5d5a
 ModelImporter:
   serializedVersion: 22200
+=======
+fileFormatVersion: 2
+guid: 8865e5779af566f45a3a505e1561c1ee
+ModelImporter:
+  serializedVersion: 24501
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
   internalIDToNameTable: []
   externalObjects: {}
   materials:
@@ -120,6 +127,10 @@ ModelImporter:
     materialName: 0
     materialSearch: 1
     materialLocation: 1
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
+=======
+    searchTexturesGlobally: 0
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -127,8 +138,11 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
     rigImportErrors: 
     rigImportWarnings: 
+=======
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -169,6 +183,14 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
+=======
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    importUVs: -1
+    importVertexColors: 1
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -188,6 +210,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
+=======
+    calculateBlendshapeNormalsDeltaFromImportedNormals: 0
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
   referencedClips: []
   importAnimation: 1
   humanDescription:
@@ -218,4 +244,7 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Elevator_Wall.obj.meta

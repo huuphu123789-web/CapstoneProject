@@ -20,7 +20,7 @@ public class ButtonManager : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Day1");
+        SceneManager.LoadScene(1);
     }
 
     public void Continue()
@@ -48,4 +48,29 @@ public class ButtonManager : MonoBehaviour
             Application.Quit(); // Thoát game thực tế trên máy tính
         #endif
     }
+<<<<<<< Updated upstream:Assets/Scripts/UI/ButtonManager.cs
+=======
+    public void JumpScare()
+    {
+        jumpScareText.text="Off";
+        StartCoroutine(ChangeText());
+    }
+    IEnumerator ChangeText()
+    {
+        yield return new WaitForSeconds(0.5f);
+        jumpScareText.text="On";
+    }
+    public void BackToMainMenu()
+{
+    // Xóa Player trước khi về menu
+    GameObject player = GameObject.FindWithTag("Player");
+    if (player != null) Destroy(player);
+
+    // Xóa Main Camera persistent
+    Camera cam = Camera.main;
+    if (cam != null) Destroy(cam.gameObject);
+
+    SceneManager.LoadScene("MainMenu");
+}
+>>>>>>> Stashed changes:Assets/Phu-Asset/Scripts/UI/ButtonManager.cs
 }

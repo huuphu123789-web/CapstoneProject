@@ -1,0 +1,48 @@
+fileFormatVersion: 2
+<<<<<<< HEAD
+guid: 2189d26978f6b8c46a4baa3543729374
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 8
+  defaultSettings:
+    serializedVersion: 2
+=======
+guid: fd25bfc2a3bdc6b45b1c1cc0d78790a6
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 6
+  defaultSettings:
+>>>>>>> 2a94bf06e4349baf765e3c9f6abff5a2014fa951
+    loadType: 0
+    sampleRateSetting: 0
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 1
+    conversionMode: 0
+<<<<<<< HEAD
+    preloadAudioData: 0
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+=======
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  preloadAudioData: 1
+>>>>>>> 2a94bf06e4349baf765e3c9f6abff5a2014fa951
+  loadInBackground: 0
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+<<<<<<< HEAD
+=======
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300582
+  packageName: Small Sound Kit
+  packageVersion: 1.0
+  assetPath: Assets/Small Sound Kit/Clothes/Army_NRM_02.wav
+  uploadId: 703088
+>>>>>>> 2a94bf06e4349baf765e3c9f6abff5a2014fa951

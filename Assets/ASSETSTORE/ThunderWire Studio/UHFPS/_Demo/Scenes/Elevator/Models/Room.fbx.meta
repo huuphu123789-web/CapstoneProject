@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
 <<<<<<< Updated upstream
 fileFormatVersion: 2
 guid: 27d951c919f222d41a579f0c28c538e2
@@ -125,11 +126,23 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Room
     second: {fileID: 2100000, guid: 85cddc73664e22c4b8910f1aa0a99914, type: 2}
+=======
+fileFormatVersion: 2
+guid: b875269a1ab29ab41b06e083f9bd4844
+ModelImporter:
+  serializedVersion: 24501
+  internalIDToNameTable: []
+  externalObjects: {}
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
   materials:
     materialImportMode: 2
     materialName: 0
     materialSearch: 1
     materialLocation: 1
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
+=======
+    searchTexturesGlobally: 0
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -137,8 +150,11 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
     rigImportErrors: 
     rigImportWarnings: 
+=======
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -179,6 +195,14 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
+=======
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    importUVs: -1
+    importVertexColors: 1
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -198,6 +222,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
+=======
+    calculateBlendshapeNormalsDeltaFromImportedNormals: 0
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
   referencedClips: []
   importAnimation: 1
   humanDescription:
@@ -228,4 +256,7 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/Models/Room.fbx.meta

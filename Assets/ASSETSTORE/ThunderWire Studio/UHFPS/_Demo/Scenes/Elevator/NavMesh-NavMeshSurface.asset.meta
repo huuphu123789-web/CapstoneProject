@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Elevator/NavMesh-NavMeshSurface.asset.meta
 <<<<<<< Updated upstream
 fileFormatVersion: 2
 guid: 93900c0df6dacec4cb7040d4638730ca
@@ -24,3 +25,13 @@ NativeFormatImporter:
   assetBundleName: 
   assetBundleVariant: 
 >>>>>>> Stashed changes
+=======
+fileFormatVersion: 2
+guid: d1afecbb72bb0bd4088bcdebc1390fad
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Elevator/NavMesh-NavMeshSurface.asset.meta

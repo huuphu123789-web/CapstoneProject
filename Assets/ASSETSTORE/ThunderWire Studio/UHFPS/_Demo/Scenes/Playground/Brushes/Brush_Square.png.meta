@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
 <<<<<<< Updated upstream
 fileFormatVersion: 2
 guid: 7cdfd80131e67054385e415f68c10960
@@ -133,6 +134,14 @@ TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
   serializedVersion: 12
+=======
+fileFormatVersion: 2
+guid: 2087bcc3424cc654aa67d85f8bd0ddb5
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
   mipmaps:
     mipMapMode: 0
     enableMipMap: 1
@@ -196,7 +205,11 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 0
   platformSettings:
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
   - serializedVersion: 3
+=======
+  - serializedVersion: 4
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -209,7 +222,11 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
   - serializedVersion: 3
+=======
+  - serializedVersion: 4
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -222,6 +239,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
   - serializedVersion: 3
     buildTarget: Server
     maxTextureSize: 2048
@@ -235,10 +253,16 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+=======
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
   spriteSheet:
     serializedVersion: 2
     sprites: []
     outline: []
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
+=======
+    customData: 
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
     physicsShape: []
     bones: []
     spriteID: 
@@ -248,10 +272,18 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
+=======
+    spriteCustomMetadata:
+      entries: []
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
     nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< Updated upstream:Assets/ASSETSTORE/ThunderWire Studio/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes:Assets/Phu-Asset/ASSETSTORE/Horror Kit/UHFPS/_Demo/Scenes/Playground/Brushes/Brush_Square.png.meta

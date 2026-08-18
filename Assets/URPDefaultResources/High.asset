@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
@@ -141,3 +142,8 @@ MonoBehaviour:
   m_Textures:
     blueNoise64LTex: {fileID: 0}
     bayerMatrixTex: {fileID: 0}
+=======
+version https://git-lfs.github.com/spec/v1
+oid sha256:26c5facf4310b568515efbf7d16e7e4ec04ab2620c8134f17dd028320b205a25
+size 4611
+>>>>>>> Stashed changes

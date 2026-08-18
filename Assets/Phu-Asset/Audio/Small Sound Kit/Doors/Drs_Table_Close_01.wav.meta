@@ -1,0 +1,48 @@
+fileFormatVersion: 2
+<<<<<<< HEAD
+guid: ea680db644f5cd64a88b9813c64585ec
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 8
+  defaultSettings:
+    serializedVersion: 2
+=======
+guid: cd30c08db6609c3408cc770df04c8027
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 6
+  defaultSettings:
+>>>>>>> 2a94bf06e4349baf765e3c9f6abff5a2014fa951
+    loadType: 0
+    sampleRateSetting: 0
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 1
+    conversionMode: 0
+<<<<<<< HEAD
+    preloadAudioData: 0
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+=======
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  preloadAudioData: 1
+>>>>>>> 2a94bf06e4349baf765e3c9f6abff5a2014fa951
+  loadInBackground: 0
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+<<<<<<< HEAD
+=======
+AssetOrigin:
+  serializedVersion: 1
+  productId: 300582
+  packageName: Small Sound Kit
+  packageVersion: 1.0
+  assetPath: Assets/Small Sound Kit/Doors/Drs_Table_Close_01.wav
+  uploadId: 703088
+>>>>>>> 2a94bf06e4349baf765e3c9f6abff5a2014fa951
