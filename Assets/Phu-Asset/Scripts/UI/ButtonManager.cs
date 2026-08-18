@@ -12,7 +12,19 @@ public class ButtonManager : MonoBehaviour
    [SerializeField] private TextMeshProUGUI jumpScareText;
     void Start()
     {
-        
+        if (mainmenuPanel == null)
+        {
+            Transform mm = transform.parent != null ? transform.parent.Find("MainMenu") : null;
+            if (mm == null) mm = GameObject.Find("MainMenu")?.transform;
+            if (mm != null) mainmenuPanel = mm.gameObject;
+        }
+
+        if (settingPanel == null)
+        {
+            Transform sp = transform.parent != null ? transform.parent.Find("SettingPanel") : null;
+            if (sp == null) sp = GameObject.Find("SettingPanel")?.transform;
+            if (sp != null) settingPanel = sp.gameObject;
+        }
     }
 
     // Update is called once per frame
@@ -33,14 +45,14 @@ public class ButtonManager : MonoBehaviour
 
      public void OpenSetting()
     {
-        settingPanel.SetActive(true);
-        mainmenuPanel.SetActive(false);
+        if (settingPanel != null) settingPanel.SetActive(true);
+        if (mainmenuPanel != null) mainmenuPanel.SetActive(false);
     }
 
     public void CloseSetting()
     {
-        settingPanel.SetActive(false);
-        mainmenuPanel.SetActive(true);
+        if (settingPanel != null) settingPanel.SetActive(false);
+        if (mainmenuPanel != null) mainmenuPanel.SetActive(true);
     }
     public void ExitGame()
     {

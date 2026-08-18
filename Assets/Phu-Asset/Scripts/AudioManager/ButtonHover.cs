@@ -20,6 +20,9 @@ public class ButtonHover : MonoBehaviour,IPointerEnterHandler, IPointerExitHandl
 }
     public void OnPointerClick(PointerEventData eventData)
     {
-        AudioManager.instance.PlaySFX(AudioManager.instance.buttonclickSFX);
+        if (AudioManager.instance != null && AudioManager.instance.buttonclickSFX != null)
+        {
+            AudioManager.instance.PlaySFX(AudioManager.instance.buttonclickSFX);
+        }
     }
 }

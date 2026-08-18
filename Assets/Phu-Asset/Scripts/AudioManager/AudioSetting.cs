@@ -52,22 +52,21 @@ public class AudioSettings : MonoBehaviour
 
     private void ApplyMasterMuteState(float volumeValue)
     {
-        if (isMasterMuted)
+        if (AudioManager.instance != null)
         {
-            // Tắt tiếng: Gửi giá trị 0f (tương đương -80dB) sang AudioManager
-            // Hãy đảm bảo trong AudioManager.cs của em đặt tên là "MasterVolume" hoặc "MasterVol" khớp với Mixer nhé!
-            AudioManager.instance.SetMasterVolume(0f);
-            
-            if (masterMuteImage != null) masterMuteImage.sprite = masterSoundOffSprite;
-        //     if (masterSlider != null) masterSlider.interactable = false;
+            if (isMasterMuted)
+            {
+                AudioManager.instance.SetMasterVolume(0f);
+            }
+            else
+            {
+                AudioManager.instance.SetMasterVolume(volumeValue);
+            }
         }
-        else
+
+        if (masterMuteImage != null)
         {
-            // Bật tiếng: Khôi phục lại âm lượng của Slider
-            AudioManager.instance.SetMasterVolume(volumeValue);
-            
-            if (masterMuteImage != null) masterMuteImage.sprite = masterSoundOnSprite;
-            // if (masterSlider != null) masterSlider.interactable = true;
+            masterMuteImage.sprite = isMasterMuted ? masterSoundOffSprite : masterSoundOnSprite;
         }
     }
 
@@ -83,28 +82,28 @@ public class AudioSettings : MonoBehaviour
 
     private void ApplySFXMuteState(float volumeValue)
     {
-        if (isSFXMuted)
+        if (AudioManager.instance != null)
         {
-            // Tắt tiếng SFX
-            AudioManager.instance.SetSFXVolume(0f);
-            
-            if (sfxMuteImage != null) sfxMuteImage.sprite = sfxSoundOffSprite;
-            // if (sfxSlider != null) sfxSlider.interactable = false;
+            if (isSFXMuted)
+            {
+                AudioManager.instance.SetSFXVolume(0f);
+            }
+            else
+            {
+                AudioManager.instance.SetSFXVolume(volumeValue);
+            }
         }
-        else
+
+        if (sfxMuteImage != null)
         {
-            // Bật tiếng SFX
-            AudioManager.instance.SetSFXVolume(volumeValue);
-            
-            if (sfxMuteImage != null) sfxMuteImage.sprite = sfxSoundOnSprite;
-            // if (sfxSlider != null) sfxSlider.interactable = true;
+            sfxMuteImage.sprite = isSFXMuted ? sfxSoundOffSprite : sfxSoundOnSprite;
         }
     }
 
     // ================= XỬ LÝ KHI KÉO SLIDER =================
     public void OnMasterSliderChanged(float value)
     {
-        if (!isMasterMuted)
+        if (!isMasterMuted && AudioManager.instance != null)
         {
             AudioManager.instance.SetMasterVolume(value);
         }
@@ -112,7 +111,7 @@ public class AudioSettings : MonoBehaviour
 
     public void OnSFXSliderChanged(float value)
     {
-        if (!isSFXMuted)
+        if (!isSFXMuted && AudioManager.instance != null)
         {
             AudioManager.instance.SetSFXVolume(value);
         }

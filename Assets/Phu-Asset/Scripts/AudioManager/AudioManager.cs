@@ -71,23 +71,32 @@ public class AudioManager : MonoBehaviour
 
     public void SetMasterVolume(float sliderValue)
     {
-        //*Cong thuc doi tu 0->1 sang Decibel: 20 * log10(sliderValue)
-        //*Neu sliderValue =0 (toi thieu), ta dat cung la -80dB (im lang hoan toan)
-        float dbValue = sliderValue > 0 ? Mathf.Log10(sliderValue) *20 : -80f;
-        mainMixer.SetFloat("MusicVol",dbValue); //* "MasterVol" la ten bien da expose o Mixer
-
+        float dbValue = sliderValue > 0 ? Mathf.Log10(sliderValue) * 20 : -80f;
+        if (mainMixer != null)
+        {
+            mainMixer.SetFloat("MasterVol", dbValue);
+            mainMixer.SetFloat("MasterVolume", dbValue); // Fallback nếu expose tên MasterVolume
+        }
     }
 
     public void SetMusicVolume(float sliderValue)
     {
-        float dbValue = sliderValue > 0 ? Mathf.Log10(sliderValue) *20 : -80f;
-        mainMixer.SetFloat("MusicVol",dbValue);
+        float dbValue = sliderValue > 0 ? Mathf.Log10(sliderValue) * 20 : -80f;
+        if (mainMixer != null)
+        {
+            mainMixer.SetFloat("MusicVol", dbValue);
+            mainMixer.SetFloat("MusicVolume", dbValue); // Fallback nếu expose tên MusicVolume
+        }
     }
 
     public void SetSFXVolume(float sliderValue)
     {
-        float dbValue = sliderValue > 0 ? Mathf.Log10(sliderValue)* 20 : -80f;
-        mainMixer.SetFloat("SFXVol",dbValue);
+        float dbValue = sliderValue > 0 ? Mathf.Log10(sliderValue) * 20 : -80f;
+        if (mainMixer != null)
+        {
+            mainMixer.SetFloat("SFXVol", dbValue);
+            mainMixer.SetFloat("SFXVolume", dbValue); // Fallback nếu expose tên SFXVolume
+        }
     }
 
     
