@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 11f90f18aa2e06b4db407fd553e78f3a
+guid: 70dd542454d0846358872dc6d55e6abd
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -121,3 +121,10 @@ TextureImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 326131
+  packageName: npc_casual_set_00
+  packageVersion: 1.0.3
+  assetPath: Assets/npc_casual_set_00/Textures/npc_hmn_body_01f_01_01_o.tif
+  uploadId: 807672

@@ -415,6 +415,7 @@ GameObject:
   m_IsActive: 1
 --- !u!114 &151148668
 MonoBehaviour:
+  m_SerializedVersion: 1
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2502,6 +2503,7 @@ GameObject:
   m_IsActive: 1
 --- !u!114 &1746165347
 MonoBehaviour:
+  m_SerializedVersion: 1
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}

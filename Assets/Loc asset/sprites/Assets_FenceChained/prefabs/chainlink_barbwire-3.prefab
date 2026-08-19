@@ -147,6 +147,7 @@ LODGroup:
     renderers:
     - renderer: {fileID: 23000014099749656}
   m_Enabled: 1
+  m_GlobalIlluminationLOD: 0
 --- !u!1 &1000013352661962
 GameObject:
   m_ObjectHideFlags: 0

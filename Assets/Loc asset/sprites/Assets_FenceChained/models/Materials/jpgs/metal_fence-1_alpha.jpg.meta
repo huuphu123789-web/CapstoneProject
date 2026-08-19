@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: c9e4aa34a2d6a8648a5567971ba0874e
-timeCreated: 1475555964
+guid: 29316616ffaef4fe6bc40b1277796ec9
+timeCreated: 1475555947
 licenseType: Store
 TextureImporter:
   fileIDToRecycleName: {}
@@ -62,5 +62,5 @@ AssetOrigin:
   productId: 73107
   packageName: Chainlink Fences
   packageVersion: 1.0
-  assetPath: Assets/Assets_FenceChained/models/Materials/jpgs/metal_fence-1_alpha.jpg
+  assetPath: Assets/Assets_FenceChained/models/Materials/jpgs/metal_fence-1_NORMAL.jpg
   uploadId: 140482

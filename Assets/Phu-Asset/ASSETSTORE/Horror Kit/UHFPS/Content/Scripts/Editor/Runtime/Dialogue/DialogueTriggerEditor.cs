@@ -5,8 +5,8 @@ using ThunderWire.Editors;
 
 namespace UHFPS.Editors
 {
-    [CustomEditor(typeof(DialogueTrigger))]
-    public class DialogueTriggerEditor : InspectorEditor<DialogueTrigger>
+    [CustomEditor(typeof(UHFPS.Runtime.DialogueTrigger))]
+    public class DialogueTriggerEditor : InspectorEditor<UHFPS.Runtime.DialogueTrigger>
     {
         public override void OnInspectorGUI()
         {
@@ -33,17 +33,17 @@ namespace UHFPS.Editors
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.Space();
 
-                DialogueTrigger.DialogueTypeEnum dialogueType = (DialogueTrigger.DialogueTypeEnum)Properties["DialogueType"].enumValueIndex;
+                UHFPS.Runtime.DialogueTrigger.DialogueTypeEnum dialogueType = (UHFPS.Runtime.DialogueTrigger.DialogueTypeEnum)Properties["DialogueType"].enumValueIndex;
 
                 using (new EditorDrawing.BorderBoxScope(new GUIContent("Dialogue Properties")))
                 {
-                    if (dialogueType == DialogueTrigger.DialogueTypeEnum.Local)
+                    if (dialogueType == UHFPS.Runtime.DialogueTrigger.DialogueTypeEnum.Local)
                         Properties.Draw("DialogueAudio");
 
                     Properties.Draw("BinderName");
                 }
 
-                if (dialogueType == DialogueTrigger.DialogueTypeEnum.Local)
+                if (dialogueType == UHFPS.Runtime.DialogueTrigger.DialogueTypeEnum.Local)
                 {
                     EditorGUILayout.Space();
                     using (new EditorDrawing.ToggleBorderBoxScope(new GUIContent("Ranged Dialogue"), Properties["RangedDialogue"]))

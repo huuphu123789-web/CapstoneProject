@@ -392,7 +392,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4530969090778203643}
-  - {fileID: 4401359524728446850}
   m_Father: {fileID: 3906728918370330634}
   m_LocalEulerAnglesHint: {x: 7.159, y: -104.596, z: -94.435}
 --- !u!1 &908657943004367570
@@ -1153,7 +1152,7 @@ Transform:
   m_GameObject: {fileID: 4187920932450562975}
   serializedVersion: 2
   m_LocalRotation: {x: -0.13578631, y: -0, z: -0, w: 0.99073815}
-  m_LocalPosition: {x: 0, y: 1.7, z: 0.2}
+  m_LocalPosition: {x: 0, y: 1.784, z: 0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1288,11 +1287,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4838459296623718151}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.038884528, y: 0.11609135, z: 0.004548422, w: 0.9924667}
-  m_LocalPosition: {x: 0, y: 1.8790176, z: 0.35764736}
+  m_LocalRotation: {x: -0.09634392, y: -0.4582197, z: -0.050042495, w: 0.88218385}
+  m_LocalPosition: {x: 0, y: 1.9630177, z: 0.35764736}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4401359524728446850}
   m_Father: {fileID: 2986792392290931297}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8805726778319792335
@@ -1372,7 +1372,7 @@ MonoBehaviour:
   ReferenceFrame: 0
   RecenterTarget: 0
   PanAxis:
-    Value: 13.343429
+    Value: -54.896103
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -1382,7 +1382,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   TiltAxis:
-    Value: -4.4873657
+    Value: -12.465223
     Center: 0
     Range: {x: -70, y: 70}
     Wrap: 0
@@ -2063,14 +2063,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7857915277094742732}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.81443334, y: 0.16690208, z: 0.55064654, w: 0.075036936}
-  m_LocalPosition: {x: 0.016586728, y: -0.09381229, z: -0.05972088}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.2, y: -0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8724552605275975551}
   - {fileID: 6313852480478831669}
-  m_Father: {fileID: 3996471644467281379}
+  m_Father: {fileID: 2554355359963098942}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1359073745425920067
 MeshFilter:
@@ -2295,8 +2295,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8353084617405348138}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.00000012665984, y: -0.00000004004686, z: -0.000000022351736, w: 1}
-  m_LocalPosition: {x: -0.087, y: -0.057, z: 0.136}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 0.001, z: 0.036}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2312,20 +2312,20 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 0
-  m_Color: {r: 0.97098684, g: 1, b: 0.2688679, a: 1}
-  m_Intensity: 3
-  m_Range: 10
-  m_SpotAngle: 55
-  m_InnerSpotAngle: 0
+  m_Color: {r: 0.990566, g: 0.96912754, b: 0.3224012, a: 1}
+  m_Intensity: 5
+  m_Range: 15
+  m_SpotAngle: 60
+  m_InnerSpotAngle: 40
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
     m_Bias: 0.05
-    m_NormalBias: 0.4
-    m_NearPlane: 0.2
+    m_NormalBias: 0.5
+    m_NearPlane: 0.1
     m_CullingMatrixOverride:
       e00: 1
       e01: 0
@@ -2379,7 +2379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
-  m_UsePipelineSettings: 1
+  m_UsePipelineSettings: 0
   m_AdditionalLightsShadowResolutionTier: 2
   m_CustomShadowLayers: 0
   m_LightCookieSize: {x: 1, y: 1}
