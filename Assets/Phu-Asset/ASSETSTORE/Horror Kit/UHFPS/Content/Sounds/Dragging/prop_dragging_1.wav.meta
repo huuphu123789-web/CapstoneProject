@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: deb39ca2b0faf0b428b4b57fbf1ae928
+guid: 7f25a64e938264e8e98638e4c49df981
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
@@ -20,3 +20,10 @@ AudioImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244644
+  packageName: Free UI Click Sound Pack
+  packageVersion: 1.0
+  assetPath: Assets/Free UI Click Sound Effects Pack/Sound Effects Review.mp3
+  uploadId: 556812

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a35283543f6c482691dc01b56f23e124
+guid: 518d89b5a48489543aa546e198b69d40
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -11,8 +11,8 @@ MonoImporter:
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 328721
-  packageName: Bloodlines - Dark UI
-  packageVersion: 1.0.1
-  assetPath: Assets/Alebardium/Bloodlines UI/Scripts/InputModuleBootstrap.cs
-  uploadId: 936906
+  productId: 394832
+  packageName: Deadbody 3D Lite
+  packageVersion: 1.0
+  assetPath: Assets/DeadBody LITE/Scripts/BathTub.cs
+  uploadId: 958374

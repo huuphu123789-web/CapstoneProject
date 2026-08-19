@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9503338c3bb82bf4baf25c28e7c44310
+guid: dd8d1cbb45abb4d7fbde21745e6336e6
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: MedicalBottle
-    second: {fileID: 2100000, guid: 7946bb4aafdb5f24b9497b7ad5337215, type: 2}
+      name: M_House
+    second: {fileID: 2100000, guid: 91b7839f93ccd244f912e6366e9d4361, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -46,17 +46,17 @@ ModelImporter:
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
     importPhysicalCameras: 1
-    importVisibility: 1
-    importBlendShapes: 1
-    importCameras: 1
-    importLights: 1
+    importVisibility: 0
+    importBlendShapes: 0
+    importCameras: 0
+    importLights: 0
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
     keepQuads: 0
-    weldVertices: 1
+    weldVertices: 0
     bakeAxisConversion: 0
     preserveHierarchy: 0
     skinWeightsMode: 0
@@ -75,7 +75,7 @@ ModelImporter:
     useFileScale: 1
     strictVertexDataChecks: 0
   tangentSpace:
-    normalSmoothAngle: 60
+    normalSmoothAngle: 5
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
@@ -112,3 +112,10 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270889
+  packageName: Wooden House - Free - Low Poly
+  packageVersion: 1.0.1
+  assetPath: Assets/Scenes/Acronym Studio - Wooden Houses Free/Models/Ground_Plane.fbx
+  uploadId: 649506

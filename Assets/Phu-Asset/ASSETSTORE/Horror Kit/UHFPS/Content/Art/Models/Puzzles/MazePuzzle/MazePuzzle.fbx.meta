@@ -1,34 +1,39 @@
 fileFormatVersion: 2
-guid: 4fd2c5c4b7726224f9920664489b388a
+guid: cd21f0cec09374d4e92db581dd25a16f
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable: []
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: MarbleBall
-    second: {fileID: 2100000, guid: 685a212557246d24fbf8fddc670fd6d8, type: 2}
+      name: Booth Locker
+    second: {fileID: 2100000, guid: 168ea82d28c4c8142b87b7978455972d, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: MazePuzzle
-    second: {fileID: 2100000, guid: 39e6099a9bce4af4ab13db82f6161076, type: 2}
+      name: Booth Table
+    second: {fileID: 2100000, guid: 28db080f63fbfa34cb8b299ae30b5f1e, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: MazePuzzle_Board
-    second: {fileID: 2100000, guid: 1d8b6fd999b9cd34fa4c72f612ea83ca, type: 2}
+      name: Ceiling and Floor
+    second: {fileID: 2100000, guid: 8cc3d040a65602e439aa92292b8ff9fa, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: MazePuzzle_Glass
-    second: {fileID: 2100000, guid: 1841f8110f73b6542b24bac2d18ee2f5, type: 2}
+      name: Door Material
+    second: {fileID: 2100000, guid: 69d2dbb61c1f37c46b98b9cb70477d32, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glass
+    second: {fileID: 2100000, guid: ac829ec90aba64144a3ef4d1a9dbea5c, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
-    materialSearch: 1
-    materialLocation: 1
+    materialSearch: 2
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -36,8 +41,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -78,6 +81,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8

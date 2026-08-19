@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b892fb98354fa3548a7768cc663db67f
+guid: 4188b278762e741ada28c4ce4582da92
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -112,3 +112,10 @@ TextureImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 381800
+  packageName: Essential Nature Pack
+  packageVersion: 1.0
+  assetPath: Assets/Polyeler/EssentialNaturePack/Materials/Textures/Pine_wood_N.png
+  uploadId: 920896

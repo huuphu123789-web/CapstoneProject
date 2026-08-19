@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 982b2c08a2c885b4788eb6b217b69861
+guid: 8914b990ca209432d86590ea36f6ae10
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
@@ -20,3 +20,10 @@ AudioImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244644
+  packageName: Free UI Click Sound Pack
+  packageVersion: 1.0
+  assetPath: Assets/Free UI Click Sound Effects Pack/AUDIO/Pop/SFX_UI_Click_Designed_Pop_Open_1.wav
+  uploadId: 556812
