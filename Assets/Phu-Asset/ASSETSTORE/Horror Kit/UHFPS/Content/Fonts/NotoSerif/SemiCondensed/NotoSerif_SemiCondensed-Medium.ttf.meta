@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 013b23dd2e5b044429180c7e086e533f
+guid: 4b88f59a28dc143b18016c10dcdb547c
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,8 +8,9 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
+  fontName: Electronic Highway Sign
   fontNames:
-  - Noto Serif SemiCondensed
+  - Electronic Highway Sign
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

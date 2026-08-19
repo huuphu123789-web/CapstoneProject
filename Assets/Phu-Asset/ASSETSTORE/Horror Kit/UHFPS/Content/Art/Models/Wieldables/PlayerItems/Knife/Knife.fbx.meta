@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f6f153d2f8950574fbe9c6ba6ea81dad
+guid: def20ee5d26f9425aa04890048ba73d5
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -35,7 +35,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 18
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -88,7 +88,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 0.17999999
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
@@ -104,3 +104,10 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 394832
+  packageName: Deadbody 3D Lite
+  packageVersion: 1.0
+  assetPath: Assets/Nghia Asset/Packages/DeadBody LITE/Meshes/Bathtub With Bodies.fbx
+  uploadId: 958374

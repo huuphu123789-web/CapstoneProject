@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 75374ce12675def42937e1508d2ceb88
+guid: 43d54cac7b17a46428dcc88f210d02a2
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,11 +8,13 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
+  fontName: Asap
   fontNames:
-  - Noto Serif ExtraCondensed
+  - Asap
   fallbackFontReferences:
-  - {fileID: 12800000, guid: 31e7116157dd68f44938e9cf538a3f97, type: 3}
-  - {fileID: 12800000, guid: 10d54a44945cdf24bb560a7d9eed299c, type: 3}
+  - {fileID: 12800000, guid: 79008363f1983ec4088c4588c6f0a7aa, type: 3}
+  - {fileID: 12800000, guid: 0621892518074e748a9e416cbb0de58a, type: 3}
+  - {fileID: 12800000, guid: 9798ebf7f5a64e958b13afa688a22872, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

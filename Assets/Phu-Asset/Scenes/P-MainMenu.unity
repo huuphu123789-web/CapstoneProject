@@ -4418,7 +4418,6 @@ GameObject:
   - component: {fileID: 1144581407}
   - component: {fileID: 1144581406}
   - component: {fileID: 1144581405}
-  - component: {fileID: 1144581409}
   - component: {fileID: 1144581410}
   m_Layer: 5
   m_Name: Exit
@@ -4558,27 +4557,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1144581403}
   m_CullTransparentMesh: 1
---- !u!114 &1144581409
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1144581403}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a82e7b9c8bd2c439a84f69197e4a8dae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AudioSetting
-  masterSlider: {fileID: 0}
-  sfxSlider: {fileID: 0}
-  musicSlider: {fileID: 0}
-  masterMuteImage: {fileID: 0}
-  masterSoundOnSprite: {fileID: 0}
-  masterSoundOffSprite: {fileID: 0}
-  sfxMuteImage: {fileID: 0}
-  sfxSoundOnSprite: {fileID: 0}
-  sfxSoundOffSprite: {fileID: 0}
 --- !u!114 &1144581410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4603,6 +4581,8 @@ GameObject:
   - component: {fileID: 1151398987}
   - component: {fileID: 1151398986}
   - component: {fileID: 1151398985}
+  - component: {fileID: 1151398988}
+  - component: {fileID: 1151398989}
   m_Layer: 5
   m_Name: CloseSetting
   m_TagString: Untagged
@@ -4724,6 +4704,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1151398983}
   m_CullTransparentMesh: 1
+--- !u!114 &1151398988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151398983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e98312f1e4b93149b201693be3e115c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alebardium.BloodlinesUI::BloodlinesUI.ButtonTextColorChanger
+  buttonText: {fileID: 1394389249}
+  defaultColor: {r: 1, g: 1, b: 1, a: 0.5176471}
+  highlightedColor: {r: 1, g: 1, b: 1, a: 1}
+  pressedColor: {r: 0, g: 0, b: 0, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+--- !u!114 &1151398989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151398983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6782132c8d68543749117f4a2d78fbff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHover
 --- !u!1 &1203530018
 GameObject:
   m_ObjectHideFlags: 0
@@ -5143,7 +5152,7 @@ MonoBehaviour:
   mainMixer: {fileID: 24100000, guid: 08f1f059b7f7941ba87d26b79965ef90, type: 2}
   musicSource: {fileID: 1995304532}
   sfxSource: {fileID: 1997349473}
-  backgroundMusic: {fileID: 8300000, guid: 982b2c08a2c885b4788eb6b217b69861, type: 3}
+  backgroundMusic: {fileID: 8300000, guid: 8914b990ca209432d86590ea36f6ae10, type: 3}
   buttonHoverSFX: {fileID: 8300000, guid: 80d3799791748ac42b3ec097c17a2383, type: 3}
   buttonclickSFX: {fileID: 8300000, guid: 4a09040e8e6916c4aae24278581e6b06, type: 3}
 --- !u!4 &1294715357
@@ -5674,7 +5683,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 153.18365, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

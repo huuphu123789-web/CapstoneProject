@@ -228,6 +228,7 @@ RectTransform:
   m_Pivot: {x: 0.00000006123446, y: -9.313226e-10}
 --- !u!114 &1063675291
 MonoBehaviour:
+  m_SerializedVersion: 1
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}

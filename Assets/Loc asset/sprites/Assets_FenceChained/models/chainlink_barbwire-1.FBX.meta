@@ -156,3 +156,10 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 73107
+  packageName: Chainlink Fences
+  packageVersion: 1.0
+  assetPath: Assets/Loc asset/sprites/Assets_FenceChained/models/chainlink_barbwire-1.FBX
+  uploadId: 140482

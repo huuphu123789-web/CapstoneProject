@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 854c49de0dc54ae48844ddadbd3b33bd
+guid: 7a833c575190d4f93a0e199fe1967670
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -35,7 +35,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 18
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -88,7 +88,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 0.17999999
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
@@ -104,3 +104,10 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 394832
+  packageName: Deadbody 3D Lite
+  packageVersion: 1.0
+  assetPath: Assets/Nghia Asset/Packages/DeadBody LITE/Meshes/Deadbody_Hanging2.fbx
+  uploadId: 958374

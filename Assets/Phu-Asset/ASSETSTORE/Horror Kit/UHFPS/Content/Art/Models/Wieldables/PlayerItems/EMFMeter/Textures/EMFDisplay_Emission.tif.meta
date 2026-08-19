@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 32e1c78d4d7dd3e4faa25760c69b93b5
+guid: bc54a799548744943a566f3de1dabeb7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -112,3 +112,10 @@ TextureImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 381800
+  packageName: Essential Nature Pack
+  packageVersion: 1.0
+  assetPath: Assets/Polyeler/EssentialNaturePack/Materials/Textures/Rock.png
+  uploadId: 920896

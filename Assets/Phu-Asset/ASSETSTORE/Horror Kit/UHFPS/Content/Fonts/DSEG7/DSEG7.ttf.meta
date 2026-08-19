@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 324cc5b837186b6428e47c98bc96e168
+guid: 43b0dc8319cd6431c9eee8bc28911632
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,10 +8,11 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
+  fontName: Asap
   fontNames:
-  - Digital-7
+  - Asap
   fallbackFontReferences:
-  - {fileID: 12800000, guid: 5330fee7d4600a34392f8e7e1f1e233c, type: 3}
+  - {fileID: 12800000, guid: 9798ebf7f5a64e958b13afa688a22872, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
