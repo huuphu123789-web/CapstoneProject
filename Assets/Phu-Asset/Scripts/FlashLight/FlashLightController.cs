@@ -24,7 +24,8 @@ public class FlashlightController : MonoBehaviour
             return;
 
         // Không cho bật/tắt đèn khi đang Pause
-        if (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused)
+        if ((PauseMenuController.instance != null && PauseMenuController.instance.isPaused) ||
+            (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused))
             return;
 
         // Nhấn F để bật/tắt đèn pin

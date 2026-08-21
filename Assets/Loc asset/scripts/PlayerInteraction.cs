@@ -32,6 +32,19 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
+        if (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
+        {
+            if (_currentTarget != null) { _currentTarget.OnLookAway(); _currentTarget = null; }
+            if (interactPromptUI != null) interactPromptUI.SetActive(false);
+            return;
+        }
+        if (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused)
+        {
+            if (_currentTarget != null) { _currentTarget.OnLookAway(); _currentTarget = null; }
+            if (interactPromptUI != null) interactPromptUI.SetActive(false);
+            return;
+        }
+
         DetectInteractable();
         HandleInteractInput();
     }

@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
    
     [Tooltip("Danh sách tiếng bước chân (càng nhiều càng real)")]
     [SerializeField] private AudioClip[] footStepSounds;
+    [SerializeField] private AudioSource audioSource;
 
     [Tooltip("Tốc độ bước đi (0.5 phát 1 lần)")]
     [SerializeField] private float stepRate = 0.5f;
@@ -46,7 +47,7 @@ public class PlayerController : MonoBehaviour
 
         //*Nếu quên kéo AudioSource thì sẽ tự tìm và gắn vào 
        
-
+        if(audioSource==null) audioSource = GetComponent<AudioSource>();
         if (animator == null) animator = GetComponent<Animator>();
     }
 

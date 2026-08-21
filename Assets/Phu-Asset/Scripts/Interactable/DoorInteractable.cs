@@ -40,7 +40,7 @@ public class DoorInteractable : Interactable
         // Tính góc mở theo Trục Z
         openRotation = closedRotation * Quaternion.Euler(0f, 0f, openAngleZ);
 
-        promptMessage = "Mở cửa";
+        promptMessage = "Open Door";
     }
 
     void Update()
@@ -57,7 +57,7 @@ public class DoorInteractable : Interactable
         PlayDoorSound();
 
         isOpen = !isOpen;
-        promptMessage = isOpen ? "Đóng cửa" : "Mở cửa";
+        promptMessage = isOpen ? "Close Door" : "Open Door";
 
         Debug.Log($"[Door] Cửa đã {(isOpen ? "MỞ" : "ĐÓNG")} (Góc Z: {(isOpen ? openAngleZ : 0)})");
     }

@@ -31,7 +31,7 @@ public class SlidingDoor : MonoBehaviour, IInteractable
     [SerializeField] private Color highlightColor = new Color(1f, 0.9f, 0.5f, 1f);
 
     // ── IInteractable ──
-    public string InteractPrompt => _isOpen ? "Đóng cửa [Chuột phải]" : "Mở cửa [Chuột phải]";
+    public string InteractPrompt => _isOpen ? "Close Door [Right Click]" : "Open Door [Right Click]";
 
     // ── Internal ──
     private bool _isOpen;

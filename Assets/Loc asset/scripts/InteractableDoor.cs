@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 /// <summary>
 /// Ví dụ vật thể tương tác: Mở/đóng cửa khi chuột phải.
 /// Gắn script này lên GameObject cửa (có Collider).
@@ -12,7 +12,7 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     [Header("=== Highlight ===")]
     [SerializeField] private Color highlightColor = new Color(1f, 0.9f, 0.5f, 1f);
     // ── IInteractable ──
-    public string InteractPrompt => _isOpen ? "Đóng cửa" : "Mở cửa";
+    public string InteractPrompt => _isOpen ? "Close Door" : "Open Door";
     // ── Internal ──
     private bool _isOpen;
     private float _targetAngle;

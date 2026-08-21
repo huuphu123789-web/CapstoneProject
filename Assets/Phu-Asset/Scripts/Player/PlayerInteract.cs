@@ -17,6 +17,17 @@ public class PlayerInteract : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
+        {
+            if (hitText != null) hitText.gameObject.SetActive(false);
+            return;
+        }
+        if (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused)
+        {
+            if (hitText != null) hitText.gameObject.SetActive(false);
+            return;
+        }
+
         PlayerInteraction();
     }
 

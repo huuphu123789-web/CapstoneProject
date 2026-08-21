@@ -97,6 +97,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -128,10 +129,11 @@ Material:
     - _Surface: 0
     - _UVSec: 0
     - _WorkflowMode: 0
+    - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.17924526, g: 0.16753751, b: 0.16318083, a: 0}
-    - _Color: {r: 0.17924523, g: 0.16753748, b: 0.1631808, a: 0}
+    - _Color: {r: 0.17924526, g: 0.16753751, b: 0.16318083, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.254717, g: 0.23082274, b: 0.21747063, a: 1}
   m_BuildTextureStacks: []

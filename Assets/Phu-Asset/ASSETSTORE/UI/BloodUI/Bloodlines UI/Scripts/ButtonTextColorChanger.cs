@@ -30,6 +30,22 @@ namespace BloodlinesUI
                 buttonText.color = defaultColor;
         }
 
+        void OnEnable()
+        {
+            isPressed = false;
+            isHighlighted = false;
+            if (buttonText != null)
+            {
+                buttonText.color = (button != null && !button.interactable) ? disabledColor : defaultColor;
+            }
+        }
+
+        void OnDisable()
+        {
+            isPressed = false;
+            isHighlighted = false;
+        }
+
         void Update()
         {
             if (button != null)

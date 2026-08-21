@@ -398,6 +398,8 @@ GameObject:
   - component: {fileID: 8084211804152997395}
   - component: {fileID: 2285994099326473840}
   - component: {fileID: 9198569430952115312}
+  - component: {fileID: 1306807333830924419}
+  - component: {fileID: 7545927992534528708}
   m_Layer: 5
   m_Name: SaveQuitBtn
   m_TagString: Untagged
@@ -422,8 +424,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 30, y: -940}
-  m_SizeDelta: {x: 500, y: 120}
+  m_AnchoredPosition: {x: 30, y: -965.0132}
+  m_SizeDelta: {x: 193.0226, y: 68.9891}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8084211804152997395
 CanvasRenderer:
@@ -519,6 +521,35 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1306807333830924419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057827243469334407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6782132c8d68543749117f4a2d78fbff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHover
+--- !u!114 &7545927992534528708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057827243469334407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e98312f1e4b93149b201693be3e115c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alebardium.BloodlinesUI::BloodlinesUI.ButtonTextColorChanger
+  buttonText: {fileID: 1030466725602623130}
+  defaultColor: {r: 0.4627451, g: 0.4627451, b: 0.4627451, a: 1}
+  highlightedColor: {r: 1, g: 1, b: 1, a: 1}
+  pressedColor: {r: 1, g: 1, b: 1, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1 &1095805634613718203
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,8 +923,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
-  m_sharedMaterial: {fileID: 5103162990295793225, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
+  m_sharedMaterial: {fileID: 6706398017314143729, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -917,7 +948,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40.85
+  m_fontSize: 49.25
   m_fontSizeBase: 19.2
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1137,8 +1168,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Quit
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
-  m_sharedMaterial: {fileID: 5103162990295793225, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
+  m_sharedMaterial: {fileID: 6706398017314143729, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1582,8 +1613,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Quality '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
-  m_sharedMaterial: {fileID: 5103162990295793225, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
+  m_sharedMaterial: {fileID: 6706398017314143729, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1842,8 +1873,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Pause
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
-  m_sharedMaterial: {fileID: 5103162990295793225, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
+  m_sharedMaterial: {fileID: 6706398017314143729, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2806,8 +2837,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Music
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
-  m_sharedMaterial: {fileID: 5103162990295793225, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
+  m_sharedMaterial: {fileID: 6706398017314143729, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2831,10 +2862,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40.85
+  m_fontSize: 47.5
   m_fontSizeBase: 40.85
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
@@ -3547,8 +3578,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: SFX
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
-  m_sharedMaterial: {fileID: 5103162990295793225, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
+  m_sharedMaterial: {fileID: 6706398017314143729, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3572,10 +3603,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40.85
+  m_fontSize: 40.15
   m_fontSizeBase: 40.85
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
@@ -3914,8 +3945,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
-  m_sharedMaterial: {fileID: 5103162990295793225, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
+  m_sharedMaterial: {fileID: 6706398017314143729, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3939,10 +3970,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40.85
+  m_fontSize: 49.25
   m_fontSizeBase: 40.85
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
@@ -4339,8 +4370,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Back To Game
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
-  m_sharedMaterial: {fileID: 5103162990295793225, guid: 6ac4ce266c4fe6b44b7b7e7b16a11bf4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
+  m_sharedMaterial: {fileID: 6706398017314143729, guid: 70e742df48d0d4510945beab11bf7c42, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4492,6 +4523,8 @@ GameObject:
   - component: {fileID: 2690197642972891623}
   - component: {fileID: 1745129704779322368}
   - component: {fileID: 7314488510147712237}
+  - component: {fileID: 2745028604856273784}
+  - component: {fileID: 6200147851611893245}
   m_Layer: 5
   m_Name: BackToGameBtn
   m_TagString: Untagged
@@ -4517,7 +4550,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 30, y: -850}
-  m_SizeDelta: {x: 500, y: 120}
+  m_SizeDelta: {x: 302.1989, y: 79.9948}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &2690197642972891623
 CanvasRenderer:
@@ -4613,6 +4646,35 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2745028604856273784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9073342852589852426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6782132c8d68543749117f4a2d78fbff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonHover
+--- !u!114 &6200147851611893245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9073342852589852426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e98312f1e4b93149b201693be3e115c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alebardium.BloodlinesUI::BloodlinesUI.ButtonTextColorChanger
+  buttonText: {fileID: 7754292175987414012}
+  defaultColor: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 1}
+  highlightedColor: {r: 1, g: 1, b: 1, a: 1}
+  pressedColor: {r: 1, g: 1, b: 1, a: 1}
+  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1 &9161360326356560372
 GameObject:
   m_ObjectHideFlags: 0

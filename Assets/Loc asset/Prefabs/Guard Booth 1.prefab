@@ -390,7 +390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorInteractable
   promptMessage: Interact
-  interactSound: {fileID: 8300000, guid: debe77de513022b40bef8ae736120b02, type: 3}
+  interactSound: {fileID: 8300000, guid: f42f47b976eee3c419ad7ffd95ee50e6, type: 3}
   doorHinge: {fileID: 6539645993769816592}
   openAngleZ: -90
   openSpeed: 3
