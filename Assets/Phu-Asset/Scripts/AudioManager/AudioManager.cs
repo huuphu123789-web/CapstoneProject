@@ -12,7 +12,7 @@ public class AudioManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<AudioManager>();
+                _instance = FindAnyObjectByType<AudioManager>();
                 if (_instance == null)
                 {
                     GameObject go = new GameObject("AudioManager_AutoCreated");
@@ -108,7 +108,7 @@ public class AudioManager : MonoBehaviour
         if (mainMixer != null)
         {
             mainMixer.SetFloat("MasterVol", dbValue);
-            mainMixer.SetFloat("MasterVolume", dbValue); // Fallback nếu expose tên MasterVolume
+            mainMixer.SetFloat("MasterVolume", dbValue);
         }
     }
 
@@ -118,7 +118,7 @@ public class AudioManager : MonoBehaviour
         if (mainMixer != null)
         {
             mainMixer.SetFloat("MusicVol", dbValue);
-            mainMixer.SetFloat("MusicVolume", dbValue); // Fallback nếu expose tên MusicVolume
+            mainMixer.SetFloat("MusicVolume", dbValue);
         }
     }
 
@@ -128,7 +128,7 @@ public class AudioManager : MonoBehaviour
         if (mainMixer != null)
         {
             mainMixer.SetFloat("SFXVol", dbValue);
-            mainMixer.SetFloat("SFXVolume", dbValue); // Fallback nếu expose tên SFXVolume
+            mainMixer.SetFloat("SFXVolume", dbValue);
         }
     }
 
