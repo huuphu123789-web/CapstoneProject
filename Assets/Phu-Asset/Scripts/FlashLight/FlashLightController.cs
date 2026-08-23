@@ -16,6 +16,22 @@ public class FlashlightController : MonoBehaviour
             localAudioSource = gameObject.AddComponent<AudioSource>();
     }
 
+    void Start()
+    {
+        // Mặc định tắt đèn pin khi vừa sinh ra
+        if (flashlight != null)
+        {
+            flashlight.enabled = false;
+        }
+
+        // Đồng bộ đèn pin với HUD Manager
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.flashlightLight = flashlight;
+            PlayerHUDManager.instance.UpdateFlashlightUI();
+        }
+    }
+
     void Update()
     {
         // Vô hiệu hóa phím F hoàn toàn khi đang ở MainMenu
