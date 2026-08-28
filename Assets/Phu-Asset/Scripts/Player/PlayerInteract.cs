@@ -36,7 +36,7 @@ public class PlayerInteract : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
 
-        if(Physics.Raycast(ray, out hit ,interactDistance,interactableLayer))
+        if (Physics.Raycast(ray, out hit, interactDistance, interactableLayer))
         {
             Interactable interactable = hit.collider.GetComponent<Interactable>();
             if (interactable == null)
@@ -44,30 +44,38 @@ public class PlayerInteract : MonoBehaviour
                 interactable = hit.collider.GetComponentInParent<Interactable>();
             }
 
-            if (interactable != null)
+            if (interactable != null && !string.IsNullOrEmpty(interactable.promptMessage))
             {
-                //*Hiện gợi ý lên màn hình
-                if(hitText != null)
+                if (Input.GetKeyDown(KeyCode.E))
                 {
-                    hitText.text = "[E] - " + interactable.promptMessage;
-                    hitText.gameObject.SetActive(true);
-                }
-                if(Input.GetKeyDown(KeyCode.E))
-                {
-                    if(armAnimator !=null)
+                    if (armAnimator != null)
                     {
                         armAnimator.SetTrigger("Interact");
                     }
-                    //*Thực hiện tương tác
+
+                    // Thực hiện tương tác
                     interactable.Interact();
-                  
+
+                    // Nếu sau khi tương tác promptMessage bị xóa thì ẩn UI ngay lập tức
+                    if (string.IsNullOrEmpty(interactable.promptMessage))
+                    {
+                        if (hitText != null) hitText.gameObject.SetActive(false);
+                        return;
+                    }
+                }
+
+                // Hiện gợi ý lên màn hình
+                if (hitText != null)
+                {
+                    hitText.text = "[E] - " + interactable.promptMessage;
+                    hitText.gameObject.SetActive(true);
                 }
                 return;
             } 
         }
 
-        //*Nếu không thấy vật thể nào hoặc ở quá xa, ẩn đi
-        if(hitText != null)
+        // Nếu không thấy vật thể nào, hoặc promptMessage rỗng, ẩn UI ngay lập tức
+        if (hitText != null)
         {
             hitText.gameObject.SetActive(false);
         }

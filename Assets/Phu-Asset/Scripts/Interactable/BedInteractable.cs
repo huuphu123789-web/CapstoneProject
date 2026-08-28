@@ -79,9 +79,31 @@ public class BedInteractable : Interactable
         }
     }
 
+    void Update()
+    {
+        if (isSleeping) return;
+
+        // Cập nhật câu nhắc nhở tùy theo tiến độ nhiệm vụ
+        if (TaskManager.instance != null && !TaskManager.instance.AreAllTasksCompleted())
+        {
+            promptMessage = "Complete chores first!";
+        }
+        else
+        {
+            promptMessage = "Go to sleep";
+        }
+    }
+
     public override void Interact()
     {
         if (isSleeping) return;
+
+        // Kiểm tra xem đã hoàn thành tất cả nhiệm vụ chưa
+        if (TaskManager.instance != null && !TaskManager.instance.AreAllTasksCompleted())
+        {
+            Debug.Log("[Bed] Chưa thể đi ngủ! Bạn cần hoàn thành các nhiệm vụ ngoài sân trước.");
+            return;
+        }
 
         isSleeping = true;
         promptMessage = ""; // Ẩn gợi ý tương tác
