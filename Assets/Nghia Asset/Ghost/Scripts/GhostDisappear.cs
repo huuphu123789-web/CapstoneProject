@@ -9,9 +9,22 @@ public class GhostDisappear : MonoBehaviour
     private bool disappeared = false;
 
     void Start()
+{
+    if (player == null)
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
+        if (pc != null)
+        {
+            player = pc.transform;
+        }
+        else
+        {
+            // Fallback tìm theo Tag "Player" (nếu có)
+            GameObject playerGO = GameObject.FindWithTag("Player");
+            if (playerGO != null) player = playerGO.transform;
+        }
     }
+}
 
     void Update()
     {
