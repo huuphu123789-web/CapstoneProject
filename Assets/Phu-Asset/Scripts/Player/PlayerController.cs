@@ -136,17 +136,87 @@ public class PlayerController : MonoBehaviour
         //*Ap dung trong luc roi tu do theo thoi gian
         velocity.y += gravity * Time.deltaTime;
         characterController.Move(velocity * Time.deltaTime);
+
+        // Tự động kiểm tra bề mặt dưới chân (hỗ trợ cả MeshCollider cầu thang)
+        CheckFootstepSurface();
     }
+
+    private void CheckFootstepSurface()
+    {
+        if (groundCheck != null)
+        {
+            if (Physics.Raycast(groundCheck.position + Vector3.up * 0.2f, Vector3.down, out RaycastHit hit, groundDistance + 0.5f))
+            {
+                StairFootstepZone stairZone = hit.collider.GetComponent<StairFootstepZone>();
+                if (stairZone == null) stairZone = hit.collider.GetComponentInParent<StairFootstepZone>();
+
+                if (stairZone != null && stairZone.stairFootstepSounds != null && stairZone.stairFootstepSounds.Length > 0)
+                {
+                    currentFootstepOverride = stairZone.stairFootstepSounds;
+                    return;
+                }
+            }
+        }
+    }
+
+    // Tự động nhận diện khi chân bước dẫm lên MeshCollider của cầu thang
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.normal.y > 0.3f) // Đang dẫm lên bề mặt phía dưới
+        {
+            StairFootstepZone stairZone = hit.collider.GetComponent<StairFootstepZone>();
+            if (stairZone == null) stairZone = hit.collider.GetComponentInParent<StairFootstepZone>();
+
+            if (stairZone != null && stairZone.stairFootstepSounds != null && stairZone.stairFootstepSounds.Length > 0)
+            {
+                currentFootstepOverride = stairZone.stairFootstepSounds;
+            }
+            else
+            {
+                currentFootstepOverride = null;
+            }
+        }
+    }
+
+    private AudioClip[] currentFootstepOverride;
+    private float defaultStepRate;
+
+    public void SetCustomFootsteps(AudioClip[] newSounds, float customStepRate = -1f)
+    {
+        currentFootstepOverride = newSounds;
+        if (customStepRate > 0f)
+        {
+            if (defaultStepRate <= 0f) defaultStepRate = stepRate;
+            stepRate = customStepRate;
+        }
+    }
+
+    public void ResetFootsteps()
+    {
+        currentFootstepOverride = null;
+        if (defaultStepRate > 0f)
+        {
+            stepRate = defaultStepRate;
+        }
+    }
+
     public void PlayRandomFootStep()
     {
-        if (footStepSounds == null || footStepSounds.Length == 0) return;
-        //*Lấy ngẫu nhiên 1 index trog mảng
-        int randomIndex = Random.Range(0, footStepSounds.Length);
-        AudioClip clip = footStepSounds[randomIndex];
+        AudioClip[] activeClips = (currentFootstepOverride != null && currentFootstepOverride.Length > 0) ? currentFootstepOverride : footStepSounds;
+
+        if (activeClips == null || activeClips.Length == 0) return;
+
+        //*Lấy ngẫu nhiên 1 index trong mảng
+        int randomIndex = Random.Range(0, activeClips.Length);
+        AudioClip clip = activeClips[randomIndex];
 
         if (AudioManager.instance != null)
         {
             AudioManager.instance.PlaySFX(clip);
+        }
+        else if (audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
     private void OnDrawGizmosSelected()

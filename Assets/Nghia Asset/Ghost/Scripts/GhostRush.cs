@@ -11,11 +11,29 @@ public class GhostRush : MonoBehaviour
 
     private bool rushing = false;
 
+    void Start()
+{
+    if (player == null)
+    {
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
+        if (pc != null)
+        {
+            player = pc.transform;
+        }
+        else
+        {
+            // Fallback tìm theo Tag "Player" (nếu có)
+            GameObject playerGO = GameObject.FindWithTag("Player");
+            if (playerGO != null) player = playerGO.transform;
+        }
+    }
+}
+
     void Update()
     {
         if (!rushing)
             return;
-
+        
         // Ma lao về phía người chơi
         Vector3 direction = player.position - transform.position;
         direction.y = 0;

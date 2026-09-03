@@ -230,7 +230,7 @@ public class PauseMenuController : MonoBehaviour
 
     private void SetPlayerLookEnabled(bool enabled)
     {
-        PlayerBodyRotator bRotator = FindObjectOfType<PlayerBodyRotator>();
+        PlayerBodyRotator bRotator = FindAnyObjectByType<PlayerBodyRotator>();
         if (bRotator != null) bRotator.enabled = enabled;
     }
 }

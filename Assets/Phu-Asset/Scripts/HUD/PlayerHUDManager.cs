@@ -41,7 +41,11 @@ public class PlayerHUDManager : MonoBehaviour
         }
 
         if (flashlightLight == null)
-            flashlightLight = FindObjectOfType<Light>();
+        {
+            FlashlightController fController = FindObjectOfType<FlashlightController>();
+            if (fController != null)
+                flashlightLight = fController.GetComponentInChildren<Light>();
+        }
 
         UpdateFlashlightUI();
     }
