@@ -15,12 +15,12 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
+  m_FogColor: {r: 1, g: 1, b: 1, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 5
   m_LinearFogEnd: 50
-  m_AmbientSkyColor: {r: 1, g: 1, b: 1, a: 1}
+  m_AmbientSkyColor: {r: 0.3509434, g: 0.3509434, b: 0.3509434, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -1327,17 +1327,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5175023466763809439, guid: 16c5705770875449f8729da152f8765c, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5857031248486162529, guid: 16c5705770875449f8729da152f8765c, type: 3}
       propertyPath: m_Name
       value: Directional Light
       objectReference: {fileID: 0}
     - target: {fileID: 6004129425969227590, guid: 16c5705770875449f8729da152f8765c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 45
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6004129425969227590, guid: 16c5705770875449f8729da152f8765c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -30
+      value: 35.29
       objectReference: {fileID: 0}
     - target: {fileID: 6004129425969227590, guid: 16c5705770875449f8729da152f8765c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1345,11 +1349,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6004129425969227590, guid: 16c5705770875449f8729da152f8765c, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9063079
       objectReference: {fileID: 0}
     - target: {fileID: 6004129425969227590, guid: 16c5705770875449f8729da152f8765c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.42261827
       objectReference: {fileID: 0}
     - target: {fileID: 6004129425969227590, guid: 16c5705770875449f8729da152f8765c, type: 3}
       propertyPath: m_LocalRotation.y
@@ -1361,7 +1365,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6004129425969227590, guid: 16c5705770875449f8729da152f8765c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6004129425969227590, guid: 16c5705770875449f8729da152f8765c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
