@@ -191,6 +191,10 @@ public class PauseMenuController : MonoBehaviour
             PlayerHUDManager.instance.isPaused = false;
             PlayerHUDManager.instance.ShowHUD(true);
         }
+        if (TaskManager.instance != null)
+        {
+            TaskManager.instance.SetTaskUIVisible(true);
+        }
     }
 
     /// <summary>Gán vào OnClick() nút "Lưu & Thoát Main Menu"</summary>
@@ -207,6 +211,11 @@ public class PauseMenuController : MonoBehaviour
             PlayerPrefs.SetInt("QualityLevel", legacyQualityDropdown.value);
 
         PlayerPrefs.Save();
+
+        if (TaskManager.instance != null)
+        {
+            TaskManager.instance.SetTaskUIVisible(false);
+        }
 
         Time.timeScale = 1f;
         SceneManager.LoadScene(mainMenuSceneName);
@@ -225,6 +234,10 @@ public class PauseMenuController : MonoBehaviour
         {
             PlayerHUDManager.instance.isPaused = true;
             PlayerHUDManager.instance.ShowHUD(false);
+        }
+        if (TaskManager.instance != null)
+        {
+            TaskManager.instance.SetTaskUIVisible(false);
         }
     }
 
