@@ -47,6 +47,31 @@ public class TaskManager : MonoBehaviour
         UpdateTaskUI();
     }
 
+    void Update()
+    {
+        if (taskTextUI == null) return;
+
+        bool isPaused = (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
+                     || (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused);
+
+        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.ToLower();
+        bool isMenu = currentScene.Contains("menu");
+
+        bool shouldShow = !isPaused && !isMenu;
+        if (taskTextUI.gameObject.activeSelf != shouldShow)
+        {
+            taskTextUI.gameObject.SetActive(shouldShow);
+        }
+    }
+
+    public void SetTaskUIVisible(bool visible)
+    {
+        if (taskTextUI != null)
+        {
+            taskTextUI.gameObject.SetActive(visible);
+        }
+    }
+
     // ================= XỬ LÝ NHIỆM VỤ 1: QUÉT 5 ĐỐNG LÁ =================
     public void CompleteLeafPile(int leafIndex)
     {
