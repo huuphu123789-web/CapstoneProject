@@ -237,4 +237,3 @@ LODGroup:
     renderers:
     - renderer: {fileID: 23000012348044720}
   m_Enabled: 1
-  m_GlobalIlluminationLOD: 0
