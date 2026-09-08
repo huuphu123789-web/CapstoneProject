@@ -312,14 +312,34 @@ public class TaskManager : MonoBehaviour
     // Tự động tìm hoặc tạo Task Text góc trên trái màn hình
     private void EnsureTaskUI()
     {
-        if (taskTextUI != null) return;
+        if (taskTextUI != null)
+        {
+            taskTextUI.gameObject.SetActive(true);
+            if (taskTextUI.transform.parent != null)
+            {
+                taskTextUI.transform.parent.gameObject.SetActive(true);
+            }
+            return;
+        }
 
-        // 1. Tìm xem bên trong Player hoặc các con có sẵn TextMeshProUGUI chưa
-        taskTextUI = GetComponentInChildren<TextMeshProUGUI>();
-        if (taskTextUI != null) return;
+        // 1. Tìm xem bên trong Player hoặc các con có sẵn TextMeshProUGUI tên Task chưa
+        TextMeshProUGUI[] tmps = GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (var t in tmps)
+        {
+            if (t.gameObject.name.ToLower().Contains("task"))
+            {
+                taskTextUI = t;
+                taskTextUI.gameObject.SetActive(true);
+                if (t.transform.parent != null)
+                {
+                    t.transform.parent.gameObject.SetActive(true);
+                }
+                return;
+            }
+        }
 
         // 2. Tìm Canvas con bên trong Player hoặc trong Scene
-        Canvas targetCanvas = GetComponentInChildren<Canvas>();
+        Canvas targetCanvas = GetComponentInChildren<Canvas>(true);
         if (targetCanvas == null)
         {
             targetCanvas = FindObjectOfType<Canvas>();
@@ -337,29 +357,34 @@ public class TaskManager : MonoBehaviour
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080);
         }
+        else
+        {
+            targetCanvas.gameObject.SetActive(true);
+        }
 
         GameObject textGO = new GameObject("TaskTextUI");
         textGO.transform.SetParent(targetCanvas.transform, false);
 
-        TextMeshProUGUI tmp = textGO.AddComponent<TextMeshProUGUI>();
-        tmp.fontSize = 24;
-        tmp.color = Color.white;
-        tmp.alignment = TextAlignmentOptions.TopLeft;
+        TextMeshProUGUI newTmp = textGO.AddComponent<TextMeshProUGUI>();
+        newTmp.fontSize = 24;
+        newTmp.color = Color.white;
+        newTmp.alignment = TextAlignmentOptions.TopLeft;
 
-        // Tự động nạp Font Roboto-Bold SDF
+        // Tự động nạp Font Roboto-Bold SDF hoặc mặc định
         TMP_FontAsset robotoFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Roboto-Bold SDF");
+        if (robotoFont == null) robotoFont = TMP_Settings.defaultFontAsset;
         if (robotoFont != null)
         {
-            tmp.font = robotoFont;
+            newTmp.font = robotoFont;
         }
 
-        RectTransform rt = tmp.rectTransform;
+        RectTransform rt = newTmp.rectTransform;
         rt.anchorMin = new Vector2(0f, 1f);
         rt.anchorMax = new Vector2(0f, 1f);
         rt.pivot = new Vector2(0f, 1f);
         rt.anchoredPosition = new Vector2(30f, -30f);
         rt.sizeDelta = new Vector2(450f, 200f);
 
-        taskTextUI = tmp;
+        taskTextUI = newTmp;
     }
 }
