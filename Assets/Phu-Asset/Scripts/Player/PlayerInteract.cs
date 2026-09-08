@@ -4,17 +4,16 @@ using UnityEngine;
 public class PlayerInteract : MonoBehaviour
 {
     public float interactDistance = 3f;
-    public LayerMask  interactableLayer;
+    public LayerMask interactableLayer;
     [SerializeField] private TextMeshProUGUI hitText;
     
     [SerializeField] private Animator armAnimator;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
@@ -71,7 +70,7 @@ public class PlayerInteract : MonoBehaviour
                     hitText.gameObject.SetActive(true);
                 }
                 return;
-            } 
+            }
         }
 
         // Nếu không thấy vật thể nào, hoặc promptMessage rỗng, ẩn UI ngay lập tức

@@ -1867,6 +1867,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -5870,6 +5871,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
   m_ShowMaskGraphic: 0
+>>>>>>> origin/loc:Assets/Scenes/MainMenu.unity
 --- !u!1 &1456194763
 GameObject:
   m_ObjectHideFlags: 0

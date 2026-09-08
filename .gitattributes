@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *.cubemap filter=lfs diff=lfs merge=lfs -text
 *.hdr filter=lfs diff=lfs merge=lfs -text
 *.blend filter=lfs diff=lfs merge=lfs -text
@@ -28,3 +29,7 @@
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.max filter=lfs diff=lfs merge=lfs -text
 *.avi filter=lfs diff=lfs merge=lfs -text
+=======
+*.glb filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text
+>>>>>>> origin/loc
