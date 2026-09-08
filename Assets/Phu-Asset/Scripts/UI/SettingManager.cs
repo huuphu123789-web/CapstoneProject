@@ -50,6 +50,11 @@ public class SettingManager : MonoBehaviour
         SetupQualityDropdown();
     }
 
+    void OnEnable()
+    {
+        SetupAudioUI();
+    }
+
     // ================= 1. XỬ LÝ ÂM THANH =================
     private void SetupAudioUI()
     {
@@ -62,18 +67,21 @@ public class SettingManager : MonoBehaviour
 
         if (masterSlider != null)
         {
+            masterSlider.onValueChanged.RemoveListener(OnMasterSliderChanged);
             masterSlider.value = savedMaster;
             masterSlider.onValueChanged.AddListener(OnMasterSliderChanged);
         }
 
         if (sfxSlider != null)
         {
+            sfxSlider.onValueChanged.RemoveListener(OnSFXSliderChanged);
             sfxSlider.value = savedSFX;
             sfxSlider.onValueChanged.AddListener(OnSFXSliderChanged);
         }
 
         if (musicSlider != null)
         {
+            musicSlider.onValueChanged.RemoveListener(OnMusicSliderChanged);
             musicSlider.value = savedMusic;
             musicSlider.onValueChanged.AddListener(OnMusicSliderChanged);
         }
