@@ -5871,7 +5871,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
   m_ShowMaskGraphic: 0
->>>>>>> origin/loc:Assets/Scenes/MainMenu.unity
 --- !u!1 &1456194763
 GameObject:
   m_ObjectHideFlags: 0
