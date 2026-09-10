@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7819f2227768e4fc5922729b5bddd4ba
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 326131
+  packageName: npc_casual_set_00
+  packageVersion: 1.0.3
+  assetPath: Assets/npc_casual_set_00/Materials/mtl_npc_hair_02.mat
+  uploadId: 807672

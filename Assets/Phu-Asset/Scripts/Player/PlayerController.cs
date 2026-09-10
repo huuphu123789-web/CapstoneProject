@@ -49,6 +49,16 @@ public class PlayerController : MonoBehaviour
        
         if(audioSource==null) audioSource = GetComponent<AudioSource>();
         if (animator == null) animator = GetComponent<Animator>();
+
+        // Tự động đảm bảo có PlayerHUDManager trên Player để quản lý Thể lực & HUD
+        if (PlayerHUDManager.instance == null)
+        {
+            PlayerHUDManager hud = GetComponent<PlayerHUDManager>();
+            if (hud == null)
+            {
+                hud = gameObject.AddComponent<PlayerHUDManager>();
+            }
+        }
     }
 
     // Update is called once per frame
@@ -73,44 +83,53 @@ public class PlayerController : MonoBehaviour
         Vector3 move = transform.right * x + transform.forward * z;
         //*Ra lenh cho Character Controller  di chuyen nhan vat
         
-        if(move.magnitude >0.1f)
-        { 
+        bool isMoving = (move.magnitude > 0.1f);
 
-            animator.SetBool("isWalk",true);
-            characterController.Move(move * moveSpeed * Time.deltaTime);
-        }
-        else
-        {
-            animator.SetBool("isWalk",false);
-            characterController.Move(move * moveSpeed * Time.deltaTime);
-        }
-
-        // Kiểm tra thể lực từ HUD (dùng instance, không FindObject mỗi frame)
-        bool hasStamina = true;
+        // Kiểm tra khả năng chạy nhanh từ HUD (chống giật loop animation khi hết thể lực)
+        bool canSprint = true;
         if (PlayerHUDManager.instance != null)
         {
-            hasStamina = (PlayerHUDManager.instance.currentStamina > 0);
+            canSprint = PlayerHUDManager.instance.CanSprint();
         }
 
-        if(Input.GetKey(KeyCode.LeftShift) && hasStamina && move.magnitude > 0.1f)
+        bool isSprinting = isMoving && Input.GetKey(KeyCode.LeftShift) && canSprint;
+
+        // Xử lý Di chuyển & Animation chuẩn xác (chỉ gọi Move đúng 1 lần duy nhất)
+        if (isSprinting)
         {
             characterController.Move(move * sprintSpeed * Time.deltaTime);
-            animator.SetBool("isWalk",false);
-            animator.SetBool("isRun",true);
+            if (animator != null)
+            {
+                animator.SetBool("isWalk", false);
+                animator.SetBool("isRun", true);
+            }
+        }
+        else if (isMoving)
+        {
+            characterController.Move(move * moveSpeed * Time.deltaTime);
+            if (animator != null)
+            {
+                animator.SetBool("isWalk", true);
+                animator.SetBool("isRun", false);
+            }
         }
         else
         {
-            characterController.Move(move * moveSpeed * Time.deltaTime);
-            animator.SetBool("isRun",false);
+            if (animator != null)
+            {
+                animator.SetBool("isWalk", false);
+                animator.SetBool("isRun", false);
+            }
         }
-        //*Điều kiện player đang trên mặt đất và dang di chuyển (move.mangitude >0)
-        if (isGrounded && move.magnitude > 0.1f)
+
+        //*Điều kiện player đang trên mặt đất và dang di chuyển (move.magnitude > 0.1f)
+        if (isGrounded && isMoving)
         {
             footStepTimer -= Time.deltaTime; //*Đếm ngược thời gian
             if (footStepTimer <= 0)
             {
                 PlayRandomFootStep();
-                footStepTimer = stepRate; //*Reset lai bo dem
+                footStepTimer = isSprinting ? (stepRate * 0.65f) : stepRate; //*Chạy nhanh thì bước chân nhanh hơn
             }
         }
         else
