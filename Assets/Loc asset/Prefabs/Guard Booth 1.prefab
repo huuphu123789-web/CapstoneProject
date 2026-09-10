@@ -146,8 +146,8 @@ GameObject:
   - component: {fileID: 5886474523524631897}
   - component: {fileID: 8431411731124569068}
   - component: {fileID: 1364597055124028040}
-  - component: {fileID: 5399828352267191127}
-  m_Layer: 0
+  - component: {fileID: 8670769240665745063}
+  m_Layer: 6
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,7 +249,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 2619086233303812490, guid: d181eb3f870c8784f9f9397babbc4d29, type: 3}
---- !u!114 &5399828352267191127
+--- !u!114 &8670769240665745063
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -258,20 +258,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2907649952643595056}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f67d72e6ced600a4691ad2fbe2268a16, type: 3}
+  m_Script: {fileID: 11500000, guid: 788b563b2f23340e4ba229fa3cbda7c2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SwingDoor
-  pivot: {fileID: 8645244440905123568}
-  openAngle: 90
-  doorSpeed: 4
-  handlePivot: {fileID: 0}
-  handleAngle: 35
-  handleAxis: 2
-  handleSpeed: 8
-  openSound: {fileID: 0}
-  closeSound: {fileID: 0}
-  handleSound: {fileID: 0}
-  highlightColor: {r: 1, g: 0.9, b: 0.5, a: 1}
+  m_EditorClassIdentifier: Assembly-CSharp::DoorInteractable
+  promptMessage: Interact
+  interactSound: {fileID: 8300000, guid: 7658e8334a5acb7438540c0453a569f9, type: 3}
+  doorHinge: {fileID: 8922901296662646711}
+  openAngleZ: -90
+  openSpeed: 4
+  localAudioSource: {fileID: 0}
 --- !u!1 &4064307100276572449
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,7 +792,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.02642, y: 1.58, z: 0.99}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4728972537991408976}
