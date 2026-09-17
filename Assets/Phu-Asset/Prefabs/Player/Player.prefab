@@ -2856,6 +2856,7 @@ MonoBehaviour:
   sprintSpeed: 5
   gravity: -20
   jumpHeight: 1.5
+  maxFallSpeed: -20
   groundCheck: {fileID: 7923516877411084921}
   groundDistance: 0.4
   groundMask:
@@ -2874,6 +2875,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: c880c590397a8094fb7ebfe133d07039, type: 3}
   audioSource: {fileID: 3172410906648122122}
   stepRate: 0.5
+  isGrounded: 0
+  isClimbing: 0
 --- !u!143 &6176621194367590189
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2895,7 +2898,7 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.4
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.4
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
