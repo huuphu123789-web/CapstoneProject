@@ -2054,10 +2054,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TaskManager
   totalLeaves: 5
   totalFencePoints: 6
+  totalGenerators: 1
   taskTextUI: {fileID: 4974597140577130724}
   taskCompleteSound: {fileID: 0}
+  hasFlashlight: 0
+  hasGun: 0
   leavesSwept: 0
   fencePointsChecked: 0
+  generatorsChecked: 0
 --- !u!1 &7042114210832510014
 GameObject:
   m_ObjectHideFlags: 0
@@ -2276,7 +2280,7 @@ Transform:
   m_GameObject: {fileID: 7857915277094742732}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.2, y: -0.1, z: 0}
+  m_LocalPosition: {x: -0.172, y: -0.131, z: 0.217}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2610,13 +2614,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8353084617405348138}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.001, z: 0.036}
+  m_LocalRotation: {x: 0.000000014901163, y: 0.27050155, z: 0.03526776, w: 0.9620733}
+  m_LocalPosition: {x: 0.217, y: 0.013, z: -0.054}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4401359524728446850}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -1.093, y: 31.371, z: 3.892}
 --- !u!108 &4512714026935545704
 Light:
   m_ObjectHideFlags: 0
@@ -2926,6 +2930,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08f4a244a91244a5387c9010e0a21625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashlightController
+  hasFlashlight: 0
   flashlight: {fileID: 4512714026935545704}
   onClip: {fileID: 8300000, guid: 087224dd7ec352f42a3b950a07009a88, type: 3}
 --- !u!82 &3172410906648122122

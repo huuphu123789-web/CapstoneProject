@@ -1,10 +1,21 @@
 using UnityEngine;
 
+/// <summary>
+/// Quản lý đèn pin của người chơi.
+/// Chỉ có thể bật/tắt bằng phím F sau khi người chơi đã nhặt được đèn pin (hasFlashlight = true).
+/// </summary>
 public class FlashlightController : MonoBehaviour
 {
+    [Header("=== TRẠNG THÁI ĐÈN PIN ===")]
+    [Tooltip("Người chơi đã sở hữu đèn pin chưa? (Nếu false thì bấm F không có tác dụng)")]
+    public bool hasFlashlight = false;
+
+    [Header("=== CẤU HÌNH PHẦN CỨNG ===")]
     [SerializeField] private Light flashlight;
     [SerializeField] private AudioClip onClip;
     private AudioSource localAudioSource;
+
+    public Light FlashlightLight => flashlight;
 
     void Awake()
     {
@@ -18,7 +29,7 @@ public class FlashlightController : MonoBehaviour
 
     void Start()
     {
-        // Mặc định tắt đèn pin khi vừa sinh ra
+        // Mặc định tắt nguồn sáng khi vừa sinh ra
         if (flashlight != null)
         {
             flashlight.enabled = false;
@@ -44,42 +55,75 @@ public class FlashlightController : MonoBehaviour
             (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused))
             return;
 
+        // Nếu chưa nhặt được đèn pin từ tủ trong cellar thì không cho bật
+        if (!hasFlashlight)
+            return;
+
         // Nhấn F để bật/tắt đèn pin
         if (Input.GetKeyDown(KeyCode.F))
         {
-            if (flashlight != null)
-            {
-                flashlight.enabled = !flashlight.enabled;
-            }
+            ToggleFlashlight();
+        }
+    }
 
-            // Phát âm thanh bật/tắt tuân thủ cài đặt âm thanh SFX
-            if (onClip != null)
-            {
-                bool isSFXMuted = PlayerPrefs.GetInt("SFXMuted", 0) == 1;
-                bool isMasterMuted = PlayerPrefs.GetInt("MasterMuted", 0) == 1;
-                float sfxVol = PlayerPrefs.GetFloat("SFXVolume", 1f);
-                float masterVol = PlayerPrefs.GetFloat("MasterVolume", 1f);
+    /// <summary>
+    /// Mở khóa và trang bị đèn pin khi người chơi nhặt từ tủ
+    /// </summary>
+    public void EquipFlashlight(bool turnOnImmediately = false)
+    {
+        hasFlashlight = true;
+        Debug.Log("[FlashlightController] Người chơi đã nhặt được Đèn Pin!");
 
-                // Chỉ phát nếu không bị Mute và Volume > 0
-                if (!isSFXMuted && !isMasterMuted && sfxVol > 0f && masterVol > 0f)
+        if (flashlight != null)
+        {
+            flashlight.enabled = turnOnImmediately;
+        }
+
+        // Cập nhật giao diện HUD
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.flashlightLight = flashlight;
+            PlayerHUDManager.instance.UpdateFlashlightUI();
+        }
+    }
+
+    /// <summary>
+    /// Bật hoặc tắt đèn pin và phát âm thanh công tắc
+    /// </summary>
+    public void ToggleFlashlight()
+    {
+        if (flashlight != null)
+        {
+            flashlight.enabled = !flashlight.enabled;
+        }
+
+        // Phát âm thanh bật/tắt tuân thủ cài đặt âm thanh SFX
+        if (onClip != null)
+        {
+            bool isSFXMuted = PlayerPrefs.GetInt("SFXMuted", 0) == 1;
+            bool isMasterMuted = PlayerPrefs.GetInt("MasterMuted", 0) == 1;
+            float sfxVol = PlayerPrefs.GetFloat("SFXVolume", 1f);
+            float masterVol = PlayerPrefs.GetFloat("MasterVolume", 1f);
+
+            // Chỉ phát nếu không bị Mute và Volume > 0
+            if (!isSFXMuted && !isMasterMuted && sfxVol > 0f && masterVol > 0f)
+            {
+                if (AudioManager.instance != null)
                 {
-                    if (AudioManager.instance != null)
-                    {
-                        AudioManager.instance.PlaySFX(onClip);
-                    }
-                    else if (localAudioSource != null)
-                    {
-                        localAudioSource.volume = sfxVol * masterVol;
-                        localAudioSource.PlayOneShot(onClip);
-                    }
+                    AudioManager.instance.PlaySFX(onClip);
+                }
+                else if (localAudioSource != null)
+                {
+                    localAudioSource.volume = sfxVol * masterVol;
+                    localAudioSource.PlayOneShot(onClip);
                 }
             }
+        }
 
-            // Cập nhật Icon Đèn Pin trên HUD
-            if (PlayerHUDManager.instance != null)
-            {
-                PlayerHUDManager.instance.UpdateFlashlightUI();
-            }
+        // Cập nhật Icon Đèn Pin trên HUD
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.UpdateFlashlightUI();
         }
     }
 }

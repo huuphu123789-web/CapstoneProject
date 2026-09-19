@@ -267,10 +267,19 @@ public class PlayerHUDManager : MonoBehaviour
         staminaSlider = newSlider;
     }
 
-    // ===== FLASHLIGHT ICON (đổi màu, luôn hiện) =====
+    // ===== FLASHLIGHT ICON (đổi màu, phản ánh trạng thái sở hữu & bật/tắt) =====
     public void UpdateFlashlightUI()
     {
         if (flashlightIcon == null) return;
+
+        FlashlightController fController = FindObjectOfType<FlashlightController>();
+        if (fController != null && !fController.hasFlashlight)
+        {
+            // Chưa có đèn pin: Làm tối mờ biểu tượng
+            flashlightIcon.color = new Color(0.2f, 0.2f, 0.2f, 0.2f);
+            return;
+        }
+
         bool isOn = (flashlightLight != null && flashlightLight.enabled);
         flashlightIcon.color = isOn ? iconOn : iconOff;
     }

@@ -65,6 +65,11 @@ public class FencePatrolZone : Interactable
         // Tự động chuẩn hóa fenceIndex nếu nhập 0
         if (fenceIndex <= 0) fenceIndex = 1;
 
+        if (string.IsNullOrEmpty(promptMessage) || promptMessage == "Interact")
+        {
+            promptMessage = (triggerMode == TriggerMode.PressEToInspect) ? $"Inspect Fence #{fenceIndex}" : "";
+        }
+
         if (localAudioSource == null)
         {
             localAudioSource = GetComponent<AudioSource>();
@@ -77,7 +82,11 @@ public class FencePatrolZone : Interactable
 
     void Start()
     {
-        promptMessage = (triggerMode == TriggerMode.PressEToInspect) ? $"Inspect Fence #{fenceIndex}" : "";
+        if (triggerMode == TriggerMode.PressEToInspect && string.IsNullOrEmpty(promptMessage))
+        {
+            promptMessage = $"Inspect Fence #{fenceIndex}";
+        }
+
         if (spookyVisualObject != null) spookyVisualObject.SetActive(false);
 
         FindPlayerCamera();
@@ -276,7 +285,20 @@ public class FencePatrolZone : Interactable
         }
     }
 
-    // Kích hoạt khi bấm E
+    private void OnTriggerStay(Collider other)
+    {
+        if (isTriggered || triggerMode != TriggerMode.PressEToInspect) return;
+
+        if (other.CompareTag("Player") || other.GetComponent<PlayerController>() != null || other.GetComponentInParent<PlayerController>() != null)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                TriggerPatrolPoint();
+            }
+        }
+    }
+
+    // Kích hoạt khi bấm E qua Raycast
     public override void Interact()
     {
         if (isTriggered || triggerMode != TriggerMode.PressEToInspect) return;
