@@ -65,17 +65,45 @@ public class PlayerInteract : MonoBehaviour
                     continue;
                 }
 
-                // Chỉ tìm Interactable trên chính collider đó hoặc cha trực tiếp (1 cấp)
-                // (TUYỆT ĐỐI KHÔNG dùng GetComponentInParent xuyên suốt vì sẽ quét nhầm lên tận root Scene/Căn phòng/Cầu thang)
+                // Tìm Interactable: kiểm tra collider hiện tại, cha trực tiếp, hoặc Component con/cha của vật phẩm trang bị
                 Interactable interactable = hit.collider.GetComponent<Interactable>();
                 if (interactable == null && hit.collider.transform.parent != null)
                 {
                     interactable = hit.collider.transform.parent.GetComponent<Interactable>();
                 }
+                if (interactable == null)
+                {
+                    interactable = hit.collider.GetComponentInParent<EquipmentPickup>();
+                }
 
-                // 1. Nếu đúng là vật thể tương tác (Cửa, Máy phát điện, Điểm kiểm tra rào...)
+                // 1. Nếu đúng là vật thể tương tác (Cửa, Máy phát điện, Điểm kiểm tra rào, Đèn pin, Súng, Đạn...)
                 if (interactable != null && !string.IsNullOrEmpty(interactable.promptMessage))
                 {
+                    // Nếu là ngăn kéo (Drawer) và ngăn kéo đang mở, kiểm tra xem phía sau có vật phẩm bên trong (như Đạn, Súng, Chìa khóa) không
+                    if (interactable is DrawerInteractable drawer && drawer.IsOpen)
+                    {
+                        // Quét các hit tiếp theo xem có vật phẩm đặt bên trong ngăn kéo không
+                        Interactable innerItem = null;
+                        foreach (var nextHit in hits)
+                        {
+                            if (nextHit.distance <= hit.distance) continue;
+                            if (nextHit.collider.transform.IsChildOf(drawer.transform))
+                            {
+                                var candidate = nextHit.collider.GetComponent<Interactable>() ?? nextHit.collider.GetComponentInParent<EquipmentPickup>();
+                                if (candidate != null && candidate != drawer && !string.IsNullOrEmpty(candidate.promptMessage))
+                                {
+                                    innerItem = candidate;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (innerItem != null)
+                        {
+                            interactable = innerItem;
+                        }
+                    }
+
                     if (Input.GetKeyDown(KeyCode.E))
                     {
                         if (armAnimator != null)
@@ -86,8 +114,8 @@ public class PlayerInteract : MonoBehaviour
                         // Thực hiện tương tác
                         interactable.Interact();
 
-                        // Nếu sau khi tương tác promptMessage bị xóa thì ẩn UI ngay lập tức
-                        if (string.IsNullOrEmpty(interactable.promptMessage))
+                        // Nếu sau khi tương tác promptMessage bị xóa hoặc object bị tắt thì ẩn UI ngay lập tức
+                        if (string.IsNullOrEmpty(interactable.promptMessage) || !interactable.gameObject.activeInHierarchy)
                         {
                             if (hitText != null) hitText.gameObject.SetActive(false);
                             return;

@@ -33,6 +33,10 @@ public class PlayerHUDManager : MonoBehaviour
     private Color iconOn  = Color.yellow;
     private Color iconOff = new Color(0.4f, 0.4f, 0.4f, 0.5f);
 
+    [Header("=== ĐẠN SÚNG (AMMO UI) ===")]
+    [Tooltip("Text hiển thị số đạn (nếu để trống script tự động tạo ở góc dưới phải)")]
+    public TextMeshProUGUI ammoText;
+
     // isPaused được PauseMenuController set để PlayerHUDManager biết ẩn HUD
     [HideInInspector] public bool isPaused = false;
 
@@ -302,6 +306,67 @@ public class PlayerHUDManager : MonoBehaviour
         if (flashlightIcon != null)
             flashlightIcon.gameObject.SetActive(visible);
 
+        if (ammoText != null)
+            ammoText.gameObject.SetActive(visible);
+
         if (visible) UpdateFlashlightUI();
+    }
+
+    // ===== AMMO UI (Hiển thị số đạn 7 / 7 ở góc dưới phải) =====
+    public void UpdateAmmoUI(int current, int max)
+    {
+        EnsureAmmoUI();
+        if (ammoText == null) return;
+
+        ammoText.text = $"AMMO: {current} / {max}";
+        ammoText.color = (current > 0) ? new Color(1f, 0.85f, 0.3f, 0.95f) : new Color(0.9f, 0.25f, 0.25f, 0.95f);
+        ammoText.gameObject.SetActive(true);
+    }
+
+    private void EnsureAmmoUI()
+    {
+        if (ammoText != null) return;
+
+        // Tìm trong Scene nếu đã có
+        TextMeshProUGUI[] allTexts = FindObjectsOfType<TextMeshProUGUI>(true);
+        foreach (var t in allTexts)
+        {
+            if (t.gameObject.name.ToLower().Contains("ammo"))
+            {
+                ammoText = t;
+                return;
+            }
+        }
+
+        // Tự động tạo AmmoText trên Canvas góc dưới bên phải
+        Canvas targetCanvas = GetComponentInChildren<Canvas>(true);
+        if (targetCanvas == null)
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null) targetCanvas = player.GetComponentInChildren<Canvas>(true);
+        }
+        if (targetCanvas == null) targetCanvas = FindObjectOfType<Canvas>();
+        if (targetCanvas == null) return;
+
+        GameObject ammoGO = new GameObject("AmmoText");
+        ammoGO.transform.SetParent(targetCanvas.transform, false);
+
+        RectTransform rt = ammoGO.AddComponent<RectTransform>();
+        rt.anchorMin = new Vector2(1f, 0f);
+        rt.anchorMax = new Vector2(1f, 0f);
+        rt.pivot = new Vector2(1f, 0f);
+        rt.anchoredPosition = new Vector2(-40f, 35f);
+        rt.sizeDelta = new Vector2(200f, 40f);
+
+        ammoText = ammoGO.AddComponent<TextMeshProUGUI>();
+        ammoText.text = "AMMO: 0 / 6";
+        ammoText.fontSize = 24f;
+        ammoText.fontStyle = FontStyles.Bold;
+        ammoText.alignment = TextAlignmentOptions.BottomRight;
+        ammoText.color = new Color(0.9f, 0.25f, 0.25f, 0.95f);
+
+        TMP_FontAsset robotoFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Roboto-Bold SDF");
+        if (robotoFont == null) robotoFont = TMP_Settings.defaultFontAsset;
+        if (robotoFont != null) ammoText.font = robotoFont;
     }
 }

@@ -1206,7 +1206,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4187920932450562975}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.13578631, y: -0, z: -0, w: 0.99073815}
+  m_LocalRotation: {x: -0.13578483, y: 0, z: 0, w: 0.9907384}
   m_LocalPosition: {x: 0, y: 1.784, z: 0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1343,13 +1343,13 @@ Transform:
   m_GameObject: {fileID: 4838459296623718151}
   serializedVersion: 2
   m_LocalRotation: {x: -0.06307944, y: -0.22705404, z: -0.0147391865, w: 0.97172534}
-  m_LocalPosition: {x: 0, y: 1.9630177, z: 0.35764736}
+  m_LocalPosition: {x: 0, y: 1.9630172, z: 0.3576479}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4401359524728446850}
   m_Father: {fileID: 2986792392290931297}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -26.304, z: 0}
 --- !u!114 &8805726778319792335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2280,7 +2280,7 @@ Transform:
   m_GameObject: {fileID: 7857915277094742732}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.172, y: -0.131, z: 0.217}
+  m_LocalPosition: {x: -0.172, y: -0.275, z: 0.198}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2614,13 +2614,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8353084617405348138}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.000000014901163, y: 0.27050155, z: 0.03526776, w: 0.9620733}
-  m_LocalPosition: {x: 0.217, y: 0.013, z: -0.054}
+  m_LocalRotation: {x: 0.000000029802326, y: 0.21269765, z: 0.02773134, w: 0.9767245}
+  m_LocalPosition: {x: 0.22000001, y: -0.099999994, z: -0.07000019}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4401359524728446850}
-  m_LocalEulerAnglesHint: {x: -1.093, y: 31.371, z: 3.892}
+  m_LocalEulerAnglesHint: {x: -0.676, y: 24.552, z: 3.106}
 --- !u!108 &4512714026935545704
 Light:
   m_ObjectHideFlags: 0

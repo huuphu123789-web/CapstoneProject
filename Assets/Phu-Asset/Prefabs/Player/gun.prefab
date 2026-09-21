@@ -283,6 +283,7 @@ GameObject:
   - component: {fileID: 1571873486410228196}
   - component: {fileID: 1571873486410228200}
   - component: {fileID: 1571873486410228202}
+  - component: {fileID: 2973075543015388798}
   m_Layer: 0
   m_Name: gun
   m_TagString: Untagged
@@ -433,12 +434,42 @@ MonoBehaviour:
   requireAimingAtNPC: 0
   holsterAfterShoot: 0
   holsterDelay: 0.4
-  gunAnimator: {fileID: 0}
+  gunAnimator: {fileID: 2973075543015388798}
+  shootAnimTrigger: Shoot
   holsterAnimTrigger: Holster
   gunModelObject: {fileID: 0}
+  useProceduralRecoil: 1
+  recoilKickBack: 0.025
+  recoilKickUp: 0.1
+  recoilDuration: 0.12
+  maxAmmo: 6
+  currentAmmo: 0
+  emptyGunClip: {fileID: 8300000, guid: 8fb482048073a47fd9fb41b133e009b4, type: 3}
   npcTag: NPC
   debugAiming: 0
   startHolstered: 1
+--- !u!95 &2973075543015388798
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571873486409940420}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: efc2c5f836aa845478db726c7380944b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1571873486409940422
 GameObject:
   m_ObjectHideFlags: 0

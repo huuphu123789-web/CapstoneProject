@@ -39,11 +39,11 @@ public class BedInteractable : Interactable
     public AudioSource localAudioSource;
 
     [Header("=== XUẤT PHÁT TẠI GIƯỜNG (GAME START) ===")]
-    [Tooltip("Tự động đặt Player xuất phát tại cạnh giường khi vào game")]
-    public bool spawnPlayerAtBedOnStart = true;
+    [Tooltip("Tự động đặt Player xuất phát tại cạnh giường khi vào game (tắt nếu muốn tự đặt vị trí Player trong Scene)")]
+    public bool spawnPlayerAtBedOnStart = false;
 
     [Tooltip("Hiệu ứng mở mắt / mờ sáng dần khi thức dậy")]
-    public bool fadeInOnStart = true;
+    public bool fadeInOnStart = false;
     public float fadeInDuration = 1.2f;
 
     [Tooltip("Điểm thức dậy cạnh giường (nếu có, để trống thì tự động tính bên hông giường nhìn vào phòng)")]
@@ -233,18 +233,11 @@ public class BedInteractable : Interactable
         // Chờ 1 frame để tất cả GameObject và Player khởi tạo hoàn tất
         yield return null;
 
-        GameObject player = GameObject.FindWithTag("Player");
-        if (player == null)
-        {
-            PlayerController pc = FindObjectOfType<PlayerController>();
-            if (pc != null) player = pc.gameObject;
-        }
+        PlayerController pc = FindObjectOfType<PlayerController>();
+        GameObject player = (pc != null) ? pc.gameObject : GameObject.FindWithTag("Player");
 
         if (player != null)
         {
-            CharacterController cc = player.GetComponent<CharacterController>();
-            if (cc != null) cc.enabled = false;
-
             Transform bedParent = (transform.parent != null && transform.parent.name == "Bed") ? transform.parent : transform;
 
             Vector3 spawnPos;
@@ -278,32 +271,18 @@ public class BedInteractable : Interactable
                 }
             }
 
-            player.transform.position = spawnPos;
-            player.transform.rotation = spawnRot;
-
-            // Đồng bộ Cinemachine Camera nếu có
-            var panTilt = player.GetComponentInChildren<Unity.Cinemachine.CinemachinePanTilt>();
-            if (panTilt != null)
+            if (pc != null)
             {
-                panTilt.PanAxis.Value = spawnRot.eulerAngles.y;
-                panTilt.TiltAxis.Value = 0f;
+                pc.TeleportTo(spawnPos, spawnRot);
             }
-
-            var vcam = player.GetComponentInChildren<Unity.Cinemachine.CinemachineCamera>();
-            if (vcam != null)
+            else
             {
-                vcam.PreviousStateIsValid = false;
+                CharacterController cc = player.GetComponentInChildren<CharacterController>();
+                if (cc != null) cc.enabled = false;
+                player.transform.position = spawnPos;
+                player.transform.rotation = spawnRot;
+                if (cc != null) cc.enabled = true;
             }
-
-            Camera cam = Camera.main;
-            if (cam != null)
-            {
-                cam.transform.position = spawnPos + Vector3.up * 1.6f;
-                cam.transform.rotation = spawnRot;
-            }
-
-            yield return null;
-            if (cc != null) cc.enabled = true;
 
             Debug.Log($"[Bed] Đã đặt Player xuất phát tại giường ngủ: {spawnPos}");
         }
@@ -473,6 +452,13 @@ public class BedInteractable : Interactable
 
         // 9. Tắt đèn pin sau khi màn hình đã đen hoàn toàn
         TurnOffFlashlight();
+
+        // Nạp đầy đạn (7 viên) khi sang màn mới
+        PlayerGun playerGun = FindObjectOfType<PlayerGun>();
+        if (playerGun != null)
+        {
+            playerGun.ReplenishAmmo();
+        }
 
         // 10. Chờ trong bóng tối
         yield return new WaitForSeconds(waitBeforeLoad);

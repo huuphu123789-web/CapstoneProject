@@ -7,7 +7,8 @@ using UnityEngine;
 public enum EquipmentPickupType
 {
     Flashlight,
-    Gun
+    Gun,
+    Ammo
 }
 
 /// <summary>
@@ -19,8 +20,11 @@ public enum EquipmentPickupType
 public class EquipmentPickup : Interactable
 {
     [Header("=== LOẠI TRANG BỊ ===")]
-    [Tooltip("Chọn loại trang bị: Flashlight (Đèn pin) hoặc Gun (Súng)")]
+    [Tooltip("Chọn loại trang bị: Flashlight (Đèn pin), Gun (Súng), hoặc Ammo (Hộp đạn)")]
     public EquipmentPickupType equipmentType = EquipmentPickupType.Flashlight;
+
+    [Tooltip("(Dành cho Ammo) Số viên đạn nhận được khi nhặt")]
+    public int ammoCount = 3;
 
     [Header("=== ÂM THANH & HIỆU ỨNG ===")]
     [Tooltip("Âm thanh khi nhặt món đồ")]
@@ -80,7 +84,7 @@ public class EquipmentPickup : Interactable
 
     void Reset()
     {
-        promptMessage = (equipmentType == EquipmentPickupType.Flashlight) ? "Take Flashlight" : "Take Gun";
+        promptMessage = (equipmentType == EquipmentPickupType.Flashlight) ? "Take Flashlight" : (equipmentType == EquipmentPickupType.Gun ? "Take Gun" : "Take Ammo");
         BoxCollider box = GetComponent<BoxCollider>();
         if (box != null) FitBoxColliderToMesh(box);
     }
@@ -110,7 +114,7 @@ public class EquipmentPickup : Interactable
         // Thiết lập câu nhắc nhở tương tác theo loại đồ
         if (string.IsNullOrEmpty(promptMessage) || promptMessage == "Interact")
         {
-            promptMessage = (equipmentType == EquipmentPickupType.Flashlight) ? "Take Flashlight" : "Take Gun";
+            promptMessage = (equipmentType == EquipmentPickupType.Flashlight) ? "Take Flashlight" : (equipmentType == EquipmentPickupType.Gun ? "Take Gun" : "Take Ammo");
         }
     }
 
@@ -243,8 +247,9 @@ public class EquipmentPickup : Interactable
             if (gun != null)
             {
                 gun.gameObject.SetActive(true);
+                gun.SetAmmo(0); // Khi mới nhặt súng, số đạn luôn bắt đầu từ 0 cho đến khi nhặt hộp đạn
                 gun.DrawGun();
-                Debug.Log("[EquipmentPickup] Đã nhặt và trang bị SÚNG PISTOL 92 lên tay!");
+                Debug.Log("[EquipmentPickup] Đã nhặt và trang bị SÚNG PISTOL 92 lên tay! (Số đạn ban đầu: 0/6)");
             }
             else
             {
@@ -255,6 +260,26 @@ public class EquipmentPickup : Interactable
             if (TaskManager.instance != null)
             {
                 TaskManager.instance.CollectGun();
+            }
+        }
+        else if (equipmentType == EquipmentPickupType.Ammo)
+        {
+            // Nhặt đạn cho súng
+            PlayerGun gun = FindObjectOfType<PlayerGun>();
+            if (gun == null)
+            {
+                Camera cam = Camera.main;
+                if (cam != null) gun = cam.GetComponentInChildren<PlayerGun>(true);
+            }
+
+            if (gun != null)
+            {
+                gun.AddAmmo(ammoCount);
+                Debug.Log($"[EquipmentPickup] Đã nhặt thêm {ammoCount} viên đạn!");
+            }
+            else
+            {
+                Debug.LogWarning("[EquipmentPickup] Chưa có PlayerGun trên người, đạn đã được lưu giữ!");
             }
         }
 

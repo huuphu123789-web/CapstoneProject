@@ -42,14 +42,35 @@ public class PlayerGun : MonoBehaviour
     [Tooltip("Thoi gian cho (giay) truoc khi cat sung (de hieu ung chop/u tai chay xong)")]
     [SerializeField] private float holsterDelay = 0.4f;
 
-    [Tooltip("(Tuy chon) Animator cua sung neu co animation cất súng. De trong neu khong dung.")]
+    [Tooltip("(Tuy chon) Animator cua sung neu co animation. De trong = tu tim tren chinh GameObject nay hoac con.")]
     [SerializeField] private Animator gunAnimator;
+
+    [Tooltip("Ten Trigger trong Animator de chay animation khi ban sung")]
+    [SerializeField] private string shootAnimTrigger = "Shoot";
 
     [Tooltip("Ten Trigger trong Animator de chay animation cat sung")]
     [SerializeField] private string holsterAnimTrigger = "Holster";
 
     [Tooltip("(Tuy chon) GameObject rieng lam model sung. De trong = tu dung chinh gameObject nay.")]
     [SerializeField] private GameObject gunModelObject;
+
+    [Header("=== Do Giat Sung (Recoil) ===")]
+    [Tooltip("Tick = Dung Recoil code muot ma (khuyen dung de sung khong bi giat lech/bien dang). Khong tick = Dung Animator")]
+    [SerializeField] private bool useProceduralRecoil = true;
+    [Tooltip("Do nay giat nguoc ve sau (truc doc)")]
+    [SerializeField] private float recoilKickBack = 0.025f;
+    [Tooltip("Goc ngua nong sung len (do)")]
+    [SerializeField] private float recoilKickUp = 2.5f;
+    [Tooltip("Thoi gian nay sung giat (giay)")]
+    [SerializeField] private float recoilDuration = 0.12f;
+
+    [Header("=== Cau Hinh Dan (Ammo) ===")]
+    [Tooltip("So vien dan toi da trong 1 bang / 1 man choi")]
+    [SerializeField] private int maxAmmo = 6;
+    [Tooltip("So vien dan hien co (khi chua nhat hop dan thi bang 0)")]
+    [SerializeField] private int currentAmmo = 0;
+    [Tooltip("Am thanh khi het dan (bop co tach tach)")]
+    [SerializeField] private AudioClip emptyGunClip;
 
     [Header("=== Cau Hinh NPC ===")]
     [SerializeField] private string npcTag = "NPC";
@@ -58,10 +79,16 @@ public class PlayerGun : MonoBehaviour
     [Tooltip("Tick = sung dang cat trong tu luc bat dau game. Khong tick = cam sung ngay tu dau.")]
     [SerializeField] private bool startHolstered = true;
 
+    public int CurrentAmmo => currentAmmo;
+    public int MaxAmmo => maxAmmo;
+
     // ── Noi bo ──
     private AudioSource _audioSource;
     private float _nextFireTime = 0f;
     private Coroutine _muzzleFlashCoroutine;
+    private Coroutine _recoilCoroutine;
+    private Vector3 _defaultLocalPos = new Vector3(0.16f, -0.12f, 0.32f);
+    private Quaternion _defaultLocalRot = Quaternion.Euler(0f, -90f, 0f);
     private Camera _cam;
     private bool _isHolstered = false;
     private bool _hasBeenExplicitlyDrawn = false;
@@ -71,6 +98,15 @@ public class PlayerGun : MonoBehaviour
 
     private void Awake()
     {
+        maxAmmo = 6;     // Đảm bảo băng đạn luôn là 6 viên
+        currentAmmo = 0; // Đảm bảo súng luôn rỗng (0 viên) khi mới bắt đầu hoặc nhặt súng cho đến khi nhặt đạn
+
+        if (transform.parent != null)
+        {
+            _defaultLocalPos = transform.localPosition;
+            _defaultLocalRot = transform.localRotation;
+        }
+
         _audioSource = GetComponent<AudioSource>();
         if (_audioSource == null) _audioSource = gameObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
@@ -120,6 +156,12 @@ public class PlayerGun : MonoBehaviour
         _cam = GetComponentInParent<Camera>();
         if (_cam == null) _cam = Camera.main;
 
+        if (transform.parent != null && transform.localPosition.magnitude > 0.001f)
+        {
+            _defaultLocalPos = transform.localPosition;
+            _defaultLocalRot = transform.localRotation;
+        }
+
         // Đảm bảo collider luôn bị tắt
         DisableGunColliders();
 
@@ -143,6 +185,19 @@ public class PlayerGun : MonoBehaviour
                 gunshotClip = CreateProceduralGunshot();
         }
         _audioSource.clip = gunshotClip;
+
+        // Đảm bảo tìm Animator của súng nếu chưa được gán
+        if (gunAnimator == null)
+        {
+            gunAnimator = GetComponent<Animator>();
+            if (gunAnimator == null) gunAnimator = GetComponentInChildren<Animator>(true);
+        }
+
+        // Cập nhật giao diện số đạn
+        if (PlayerHUDManager.instance != null && !_isHolstered)
+        {
+            PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
+        }
     }
 
     /// <summary>
@@ -314,6 +369,7 @@ public class PlayerGun : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             firePressed = true;
+            gunAnimator.SetTrigger("Shoot");
         }
         else
         {
@@ -330,10 +386,53 @@ public class PlayerGun : MonoBehaviour
 
         if (firePressed && Time.time >= _nextFireTime)
         {
+            if (currentAmmo <= 0)
+            {
+                _nextFireTime = Time.time + 0.25f; // Thời gian delay giữa các lần bóp cò rỗng
+                PlayEmptyGunSound();
+                return;
+            }
+
             if (requireAimingAtNPC && !IsAimingAtNPC) return;
             _nextFireTime = Time.time + fireRate;
             Shoot();
         }
+    }
+
+    private void PlayEmptyGunSound()
+    {
+        if (emptyGunClip == null)
+        {
+            emptyGunClip = Resources.Load<AudioClip>("empty_gun");
+            if (emptyGunClip == null)
+                emptyGunClip = CreateProceduralDryFire();
+        }
+
+        if (_audioSource != null && emptyGunClip != null)
+        {
+            _audioSource.PlayOneShot(emptyGunClip);
+        }
+
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
+        }
+        Debug.Log("[PlayerGun] HẾT ĐẠN! Cần chuyển màn mới hoặc nhặt hộp đạn để nạp lại đầy 6 viên đạn.");
+    }
+
+    private AudioClip CreateProceduralDryFire()
+    {
+        int sampleRate = 44100;
+        int sampleCount = (int)(sampleRate * 0.08f);
+        float[] samples = new float[sampleCount];
+        for (int i = 0; i < sampleCount; i++)
+        {
+            float t = (float)i / sampleRate;
+            samples[i] = Mathf.Sin(2f * Mathf.PI * 1800f * t) * Mathf.Exp(-t * 80f) * 0.6f;
+        }
+        AudioClip clip = AudioClip.Create("DryFire", sampleCount, 1, sampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
     }
 
     private bool CheckAimingAtNPC()
@@ -359,9 +458,37 @@ public class PlayerGun : MonoBehaviour
 
     private void Shoot()
     {
-        // 1. Tieng sung
+        // Trừ đạn
+        currentAmmo = Mathf.Max(0, currentAmmo - 1);
+
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
+        }
+
+        // 1. Tieng sung & Animation giật súng
         if (_audioSource != null && gunshotClip != null)
             _audioSource.PlayOneShot(gunshotClip);
+
+        if (useProceduralRecoil)
+        {
+            if (_recoilCoroutine != null) StopCoroutine(_recoilCoroutine);
+            _recoilCoroutine = StartCoroutine(RecoilRoutine());
+        }
+        else
+        {
+            if (gunAnimator == null)
+            {
+                gunAnimator = GetComponent<Animator>();
+                if (gunAnimator == null) gunAnimator = GetComponentInChildren<Animator>(true);
+            }
+
+            if (gunAnimator != null && !string.IsNullOrEmpty(shootAnimTrigger))
+            {
+                gunAnimator.ResetTrigger(shootAnimTrigger);
+                gunAnimator.SetTrigger(shootAnimTrigger);
+            }
+        }
 
         // 2. Muzzle flash
         if (muzzleLight != null)
@@ -463,6 +590,12 @@ public class PlayerGun : MonoBehaviour
             transform.localScale = Vector3.one * 0.28f;
         }
 
+        if (transform.parent != null)
+        {
+            _defaultLocalPos = transform.localPosition;
+            _defaultLocalRot = transform.localRotation;
+        }
+
         // Bật tất cả Renderer con của súng
         Renderer[] rends = GetComponentsInChildren<Renderer>(true);
         foreach (var r in rends)
@@ -476,6 +609,11 @@ public class PlayerGun : MonoBehaviour
         if (gunAnimator != null)
             gunAnimator.SetTrigger("Draw");
 
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
+        }
+
         Debug.Log("[PlayerGun] Da rut sung va hien thi model thanh cong!");
     }
 
@@ -484,6 +622,45 @@ public class PlayerGun : MonoBehaviour
         muzzleLight.enabled = true;
         yield return new WaitForSeconds(muzzleFlashDuration);
         muzzleLight.enabled = false;
+    }
+
+    private IEnumerator RecoilRoutine()
+    {
+        // Giat súng: Đẩy lùi về sau (theo trục Z của camera hoặc -X của súng tùy setup)
+        // và hất nòng lên một chút
+        float elapsed = 0f;
+        float kickTime = recoilDuration * 0.25f;
+        float recoverTime = recoilDuration * 0.75f;
+
+        Vector3 kickPos = _defaultLocalPos - new Vector3(0f, -0.005f, recoilKickBack);
+        Quaternion kickRot = _defaultLocalRot * Quaternion.Euler(0f, 0f, recoilKickUp);
+
+        // Giai đoạn 1: Giật nảy tức thì
+        while (elapsed < kickTime)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / kickTime;
+            transform.localPosition = Vector3.Lerp(_defaultLocalPos, kickPos, t);
+            transform.localRotation = Quaternion.Slerp(_defaultLocalRot, kickRot, t);
+            yield return null;
+        }
+
+        // Giai đoạn 2: Hồi phục mượt mà về vị trí ban đầu
+        elapsed = 0f;
+        while (elapsed < recoverTime)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / recoverTime;
+            // Dùng SmoothStep để về vị trí cực kỳ êm ái
+            float smoothT = Mathf.SmoothStep(0f, 1f, t);
+            transform.localPosition = Vector3.Lerp(kickPos, _defaultLocalPos, smoothT);
+            transform.localRotation = Quaternion.Slerp(kickRot, _defaultLocalRot, smoothT);
+            yield return null;
+        }
+
+        transform.localPosition = _defaultLocalPos;
+        transform.localRotation = _defaultLocalRot;
+        _recoilCoroutine = null;
     }
 
     private AudioClip CreateProceduralGunshot()
@@ -499,6 +676,45 @@ public class PlayerGun : MonoBehaviour
         AudioClip clip = AudioClip.Create("ProceduralGunshot", sampleCount, 1, sampleRate, false);
         clip.SetData(samples, 0);
         return clip;
+    }
+
+    /// <summary>
+    /// Nạp thêm đạn khi nhặt được hộp đạn
+    /// </summary>
+    public void AddAmmo(int amount)
+    {
+        currentAmmo = Mathf.Clamp(currentAmmo + amount, 0, maxAmmo);
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
+        }
+        Debug.Log($"[PlayerGun] Đã nạp thêm đạn: {currentAmmo}/{maxAmmo}");
+    }
+
+    /// <summary>
+    /// Đặt trực tiếp số đạn hiện tại
+    /// </summary>
+    public void SetAmmo(int amount)
+    {
+        currentAmmo = Mathf.Clamp(amount, 0, maxAmmo);
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
+        }
+        Debug.Log($"[PlayerGun] Thiết lập số đạn: {currentAmmo}/{maxAmmo}");
+    }
+
+    /// <summary>
+    /// Nạp đầy đạn (6 viên) khi qua màn mới hoặc bắt đầu ngày mới
+    /// </summary>
+    public void ReplenishAmmo()
+    {
+        currentAmmo = maxAmmo;
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
+        }
+        Debug.Log($"[PlayerGun] Đã hồi đầy {maxAmmo} viên đạn cho màn mới!");
     }
 }
 
