@@ -22,6 +22,8 @@ public class PlayerInteract : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hitText;
     [SerializeField] private Animator armAnimator;
 
+    public bool isLookingAtInteractable { get; private set; } = false;
+
     private Transform playerRoot;
 
     void Awake()
@@ -29,16 +31,46 @@ public class PlayerInteract : MonoBehaviour
         playerRoot = transform.root;
     }
 
+    void Start()
+    {
+        if (hitText == null)
+        {
+            TextMeshProUGUI[] tmps = FindObjectsOfType<TextMeshProUGUI>(true);
+            foreach (var t in tmps)
+            {
+                if (t.name.ToLower().Contains("hittext") || t.name.ToLower().Contains("interacttext"))
+                {
+                    hitText = t;
+                    break;
+                }
+            }
+        }
+
+        if (hitText != null)
+        {
+            RectTransform rt = hitText.rectTransform;
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(1f, 0.5f); // Neo cạnh phải chữ tại vị trí lệch trái tâm
+            rt.anchoredPosition = new Vector2(-20f, 0f); // Nằm lệch về bên trái tâm màn hình 20 pixel
+            rt.sizeDelta = new Vector2(600f, 60f);
+            hitText.alignment = TextAlignmentOptions.MidlineRight;
+            hitText.enableWordWrapping = false;
+        }
+    }
+
     void Update()
     {
         if (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
         {
             if (hitText != null) hitText.gameObject.SetActive(false);
+            isLookingAtInteractable = false;
             return;
         }
         if (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused)
         {
             if (hitText != null) hitText.gameObject.SetActive(false);
+            isLookingAtInteractable = false;
             return;
         }
 
@@ -117,15 +149,17 @@ public class PlayerInteract : MonoBehaviour
                         // Nếu sau khi tương tác promptMessage bị xóa hoặc object bị tắt thì ẩn UI ngay lập tức
                         if (string.IsNullOrEmpty(interactable.promptMessage) || !interactable.gameObject.activeInHierarchy)
                         {
+                            isLookingAtInteractable = false;
                             if (hitText != null) hitText.gameObject.SetActive(false);
                             return;
                         }
                     }
 
-                    // Hiện gợi ý tương tác lên màn hình
+                    // Hiện gợi ý tương tác lên màn hình và đổi trạng thái tâm ngắm
+                    isLookingAtInteractable = true;
                     if (hitText != null)
                     {
-                        hitText.text = "[E] - " + interactable.promptMessage;
+                        hitText.text = $"<color=#FFDD44>[E]</color> {interactable.promptMessage}";
                         hitText.gameObject.SetActive(true);
                     }
                     return;
@@ -146,6 +180,7 @@ public class PlayerInteract : MonoBehaviour
         }
 
         // Nếu không có vật tương tác trong tầm nhìn -> Ẩn UI gợi ý
+        isLookingAtInteractable = false;
         if (hitText != null)
         {
             hitText.gameObject.SetActive(false);

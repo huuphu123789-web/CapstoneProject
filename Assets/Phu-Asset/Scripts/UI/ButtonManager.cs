@@ -13,6 +13,14 @@ public class ButtonManager : MonoBehaviour
    [SerializeField] private GameObject mainmenuPanel;
    [SerializeField] private TextMeshProUGUI jumpScareText;
 
+   [Header("=== Scene Transition (Fade) ===")]
+   [Tooltip("Thời gian mờ tối màn hình khi nhấn Play (giây)")]
+   [SerializeField] private float fadeOutDuration = 1.0f;
+   [Tooltip("Thời gian mở sáng dần màn hình khi vào Night-1 (giây)")]
+   [SerializeField] private float fadeInDuration = 2.0f;
+   [Tooltip("Tên scene cần nạp khi Play (để trống sẽ dùng build index 1)")]
+   [SerializeField] private string targetSceneName = "Night-1";
+
 
     void Start()
     {
@@ -65,7 +73,21 @@ public class ButtonManager : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene(1);
+        if (SceneFader.Instance != null)
+        {
+            if (!string.IsNullOrEmpty(targetSceneName))
+            {
+                SceneFader.Instance.FadeToScene(targetSceneName, fadeOutDuration, fadeInDuration);
+            }
+            else
+            {
+                SceneFader.Instance.FadeToScene(1, fadeOutDuration, fadeInDuration);
+            }
+        }
+        else
+        {
+            SceneManager.LoadScene(1);
+        }
     }
 
     public void Continue()

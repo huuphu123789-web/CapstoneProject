@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Quản lý đèn pin của người chơi.
@@ -40,6 +41,7 @@ public class FlashlightController : MonoBehaviour
         {
             PlayerHUDManager.instance.flashlightLight = flashlight;
             PlayerHUDManager.instance.UpdateFlashlightUI();
+            PlayerHUDManager.instance.UpdateControlsHintUI();
         }
     }
 
@@ -59,8 +61,20 @@ public class FlashlightController : MonoBehaviour
         if (!hasFlashlight)
             return;
 
-        // Nhấn F để bật/tắt đèn pin
-        if (Input.GetKeyDown(KeyCode.F))
+        // Nhấn F để bật/tắt đèn pin (hỗ trợ cả Old Input Manager và New Input System)
+        bool fPressed = Input.GetKeyDown(KeyCode.F);
+        if (!fPressed)
+        {
+            try
+            {
+                Keyboard kb = Keyboard.current;
+                if (kb != null && kb.fKey.wasPressedThisFrame)
+                    fPressed = true;
+            }
+            catch { }
+        }
+
+        if (fPressed)
         {
             ToggleFlashlight();
         }
@@ -84,6 +98,7 @@ public class FlashlightController : MonoBehaviour
         {
             PlayerHUDManager.instance.flashlightLight = flashlight;
             PlayerHUDManager.instance.UpdateFlashlightUI();
+            PlayerHUDManager.instance.UpdateControlsHintUI();
         }
     }
 
@@ -120,10 +135,11 @@ public class FlashlightController : MonoBehaviour
             }
         }
 
-        // Cập nhật Icon Đèn Pin trên HUD
+        // Cập nhật Icon Đèn Pin & Hướng dẫn phím trên HUD
         if (PlayerHUDManager.instance != null)
         {
             PlayerHUDManager.instance.UpdateFlashlightUI();
+            PlayerHUDManager.instance.UpdateControlsHintUI();
         }
     }
 }

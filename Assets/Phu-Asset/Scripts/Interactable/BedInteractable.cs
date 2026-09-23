@@ -308,7 +308,7 @@ public class BedInteractable : Interactable
         // Cập nhật câu nhắc nhở tùy theo tiến độ nhiệm vụ
         if (TaskManager.instance != null && !TaskManager.instance.AreAllTasksCompleted())
         {
-            promptMessage = "Complete chores first!";
+            promptMessage = "Complete all tasks first!";
         }
         else
         {

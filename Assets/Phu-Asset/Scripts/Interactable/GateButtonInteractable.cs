@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Nút bấm vật lý tại bốt gác để quyết định CHO QUA (APPROVE) hoặc TỪ CHỐI (DENY).
+/// </summary>
 public class GateButtonInteractable : Interactable
 {
     public enum ButtonType { ApprovePass, RejectDeny }
@@ -11,25 +14,30 @@ public class GateButtonInteractable : Interactable
     {
         // Gán câu chữ gợi ý hiển thị [E]
         if (buttonType == ButtonType.ApprovePass)
-            promptMessage = "CHO QUA (PASS)";
+            promptMessage = "APPROVE PASS (CHO QUA)";
         else
-            promptMessage = "TỪ CHỐI (DENY)";
+            promptMessage = "DENY ENTRY (TỪ CHỐI)";
     }
 
-    // GHI ĐÈ HÀM INTERACT
     public override void Interact()
     {
         base.Interact(); // Tự phát tiếng click button
 
+        if (NPCInspectionManager.instance == null)
+        {
+            Debug.LogWarning("[GateButton] NPCInspectionManager chưa được khởi tạo trong Scene!");
+            return;
+        }
+
         if (buttonType == ButtonType.ApprovePass)
         {
-            Debug.Log("✅ PLAYER BẤM NÚT CHO QUA!");
-            // Gọi logic cho NPC đi qua cổng...
+            Debug.Log("✅ PLAYER BẤM NÚT CHO QUA (APPROVE)!");
+            NPCInspectionManager.instance.ApproveCurrentNPC();
         }
         else
         {
-            Debug.Log("❌ PLAYER BẤM NÚT TỪ CHỐI!");
-            // Gọi logic đuổi NPC đi...
+            Debug.Log("❌ PLAYER BẤM NÚT TỪ CHỐI (DENY)!");
+            NPCInspectionManager.instance.RejectCurrentNPC();
         }
     }
 }

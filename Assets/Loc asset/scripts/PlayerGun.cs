@@ -51,6 +51,19 @@ public class PlayerGun : MonoBehaviour
     [Tooltip("Ten Trigger trong Animator de chay animation cat sung")]
     [SerializeField] private string holsterAnimTrigger = "Holster";
 
+    [Tooltip("Ten Trigger trong Animator de chay animation rut sung")]
+    [SerializeField] private string drawAnimTrigger = "Draw";
+
+    private bool HasParameter(Animator anim, string paramName)
+    {
+        if (anim == null || string.IsNullOrEmpty(paramName)) return false;
+        foreach (var param in anim.parameters)
+        {
+            if (param.name == paramName) return true;
+        }
+        return false;
+    }
+
     [Tooltip("(Tuy chon) GameObject rieng lam model sung. De trong = tu dung chinh gameObject nay.")]
     [SerializeField] private GameObject gunModelObject;
 
@@ -69,6 +82,12 @@ public class PlayerGun : MonoBehaviour
     [SerializeField] private int maxAmmo = 6;
     [Tooltip("So vien dan hien co (khi chua nhat hop dan thi bang 0)")]
     [SerializeField] private int currentAmmo = 0;
+
+    /// <summary>
+    /// Lưu trữ số đạn dự trữ người chơi đã nhặt (ngay cả khi chưa nhặt súng)
+    /// </summary>
+    public static int storedAmmo = 0;
+
     [Tooltip("Am thanh khi het dan (bop co tach tach)")]
     [SerializeField] private AudioClip emptyGunClip;
 
@@ -79,12 +98,27 @@ public class PlayerGun : MonoBehaviour
     [Tooltip("Tick = sung dang cat trong tu luc bat dau game. Khong tick = cam sung ngay tu dau.")]
     [SerializeField] private bool startHolstered = true;
 
+    [Header("=== Sở Hữu Súng ===")]
+    [Tooltip("Người chơi đã sở hữu súng chưa. Khi đã sở hữu thì có thể dùng phím 1 hoặc lăn chuột để rút/cất súng.")]
+    [SerializeField] private bool hasGun = false;
+
+    public bool HasGun
+    {
+        get => hasGun || _hasBeenExplicitlyDrawn || (TaskManager.instance != null && TaskManager.instance.hasGun);
+        set
+        {
+            hasGun = value;
+            if (value) _hasBeenExplicitlyDrawn = true;
+        }
+    }
+
     public int CurrentAmmo => currentAmmo;
     public int MaxAmmo => maxAmmo;
 
     // ── Noi bo ──
     private AudioSource _audioSource;
     private float _nextFireTime = 0f;
+    private float _nextToggleTime = 0f;
     private Coroutine _muzzleFlashCoroutine;
     private Coroutine _recoilCoroutine;
     private Vector3 _defaultLocalPos = new Vector3(0.16f, -0.12f, 0.32f);
@@ -99,7 +133,15 @@ public class PlayerGun : MonoBehaviour
     private void Awake()
     {
         maxAmmo = 6;     // Đảm bảo băng đạn luôn là 6 viên
-        currentAmmo = 0; // Đảm bảo súng luôn rỗng (0 viên) khi mới bắt đầu hoặc nhặt súng cho đến khi nhặt đạn
+        if (storedAmmo > 0)
+        {
+            currentAmmo = Mathf.Clamp(storedAmmo, 0, maxAmmo);
+        }
+        else
+        {
+            currentAmmo = 0;
+            storedAmmo = 0;
+        }
 
         if (transform.parent != null)
         {
@@ -169,11 +211,17 @@ public class PlayerGun : MonoBehaviour
         SetupMuzzle();
 
         // Chỉ ẩn súng lúc bắt đầu nếu người chơi chưa nhặt hoặc chưa gọi DrawGun()
-        if (startHolstered && !_hasBeenExplicitlyDrawn)
+        if (startHolstered && !_hasBeenExplicitlyDrawn && !hasGun)
         {
             _isHolstered = true;
-            GameObject t = gunModelObject != null ? gunModelObject : gameObject;
-            t.SetActive(false);
+            Renderer[] rends = GetComponentsInChildren<Renderer>(true);
+            foreach (var r in rends) r.enabled = false;
+            if (muzzleLight != null) muzzleLight.enabled = false;
+            if (gunModelObject != null && gunModelObject != gameObject) gunModelObject.SetActive(false);
+            if (PlayerHUDManager.instance != null && PlayerHUDManager.instance.ammoText != null)
+            {
+                PlayerHUDManager.instance.ammoText.gameObject.SetActive(false);
+            }
         }
 
         if (gunshotClip == null)
@@ -359,6 +407,9 @@ public class PlayerGun : MonoBehaviour
 
     private void Update()
     {
+        // Kiểm tra phím 1 hoặc lăn chuột giữa để rút/cất súng
+        HandleWeaponSwitchInput();
+
         // Khong lam gi khi da cat sung
         if (_isHolstered) return;
 
@@ -369,7 +420,6 @@ public class PlayerGun : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             firePressed = true;
-            gunAnimator.SetTrigger("Shoot");
         }
         else
         {
@@ -396,6 +446,71 @@ public class PlayerGun : MonoBehaviour
             if (requireAimingAtNPC && !IsAimingAtNPC) return;
             _nextFireTime = Time.time + fireRate;
             Shoot();
+        }
+    }
+
+    /// <summary>
+    /// Xử lý phím tắt đổi/rút/cất vũ khí (Phím 1 hoặc Lăn chuột giữa)
+    /// </summary>
+    public void HandleWeaponSwitchInput()
+    {
+        if ((PauseMenuController.instance != null && PauseMenuController.instance.isPaused) ||
+            (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused))
+            return;
+
+        if (!HasGun) return;
+
+        bool togglePressed = false;
+
+        // 1. Phím 1 (Alpha1 hoặc Keypad1)
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
+        {
+            togglePressed = true;
+        }
+        // 2. Lăn chuột giữa (Mouse ScrollWheel)
+        else if (Mathf.Abs(Input.GetAxis("Mouse ScrollWheel")) > 0.05f || Input.mouseScrollDelta.y != 0f)
+        {
+            togglePressed = true;
+        }
+        // 3. Hỗ trợ New Input System
+        else
+        {
+            try
+            {
+                Keyboard kb = Keyboard.current;
+                if (kb != null && (kb.digit1Key.wasPressedThisFrame || kb.numpad1Key.wasPressedThisFrame))
+                    togglePressed = true;
+
+                Mouse m = Mouse.current;
+                if (m != null && Mathf.Abs(m.scroll.ReadValue().y) > 0.1f)
+                    togglePressed = true;
+            }
+            catch { }
+        }
+
+        if (togglePressed)
+        {
+            ToggleGun();
+        }
+    }
+
+    /// <summary>
+    /// Chuyển đổi qua lại giữa Rút súng và Cất súng
+    /// </summary>
+    public void ToggleGun()
+    {
+        if (Time.time < _nextToggleTime) return;
+        if (!HasGun) return;
+
+        _nextToggleTime = Time.time + 0.3f;
+
+        if (_isHolstered)
+        {
+            DrawGun();
+        }
+        else
+        {
+            HolsterGun();
         }
     }
 
@@ -460,6 +575,7 @@ public class PlayerGun : MonoBehaviour
     {
         // Trừ đạn
         currentAmmo = Mathf.Max(0, currentAmmo - 1);
+        storedAmmo = currentAmmo;
 
         if (PlayerHUDManager.instance != null)
         {
@@ -483,7 +599,7 @@ public class PlayerGun : MonoBehaviour
                 if (gunAnimator == null) gunAnimator = GetComponentInChildren<Animator>(true);
             }
 
-            if (gunAnimator != null && !string.IsNullOrEmpty(shootAnimTrigger))
+            if (gunAnimator != null && !string.IsNullOrEmpty(shootAnimTrigger) && HasParameter(gunAnimator, shootAnimTrigger))
             {
                 gunAnimator.ResetTrigger(shootAnimTrigger);
                 gunAnimator.SetTrigger(shootAnimTrigger);
@@ -533,44 +649,55 @@ public class PlayerGun : MonoBehaviour
     /// </summary>
     private IEnumerator HolsterRoutine()
     {
-        _isHolstered = true;
-
         // Cho hieu ung chay xong
         yield return new WaitForSeconds(holsterDelay);
 
         // Neu co Animator thi chay animation cat sung truoc
-        if (gunAnimator != null && !string.IsNullOrEmpty(holsterAnimTrigger))
+        if (gunAnimator != null && !string.IsNullOrEmpty(holsterAnimTrigger) && HasParameter(gunAnimator, holsterAnimTrigger))
         {
             gunAnimator.SetTrigger(holsterAnimTrigger);
             // Cho animation chay (uoc tinh 0.5 giay)
             yield return new WaitForSeconds(0.5f);
         }
 
-        // An model sung di
-        GameObject target = gunModelObject != null ? gunModelObject : gameObject;
-        target.SetActive(false);
-
-        Debug.Log("[PlayerGun] Da cat sung.");
+        HolsterGun();
     }
 
     /// <summary>
-    /// Lay sung ra lai tu code hoac UnityEvent.
-    /// Vi du: GameManager goi DrawGun() khi vao tinh huong moi.
-    /// </summary>
-    /// <summary>
-    /// Cat sung vao (goi tu GunCabinet hoac GameManager).
+    /// Cất súng vào (giấu mô hình và cập nhật HUD).
     /// </summary>
     public void HolsterGun()
     {
         _isHolstered = true;
-        _hasBeenExplicitlyDrawn = false;
-        GameObject target = gunModelObject != null ? gunModelObject : gameObject;
-        target.SetActive(false);
+
+        // Ẩn renderers của súng thay vì tắt toàn bộ GameObject để script vẫn chạy Update nhận phím rút súng
+        Renderer[] rends = GetComponentsInChildren<Renderer>(true);
+        foreach (var r in rends)
+        {
+            r.enabled = false;
+        }
+
+        if (muzzleLight != null) muzzleLight.enabled = false;
+
+        if (gunModelObject != null && gunModelObject != gameObject)
+        {
+            gunModelObject.SetActive(false);
+        }
+
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.OnGunHolstered();
+        }
+
         Debug.Log("[PlayerGun] Da cat sung.");
     }
 
+    /// <summary>
+    /// Rút súng ra cầm trên tay.
+    /// </summary>
     public void DrawGun()
     {
+        hasGun = true;
         _hasBeenExplicitlyDrawn = true;
         _isHolstered = false;
 
@@ -606,8 +733,8 @@ public class PlayerGun : MonoBehaviour
 
         DisableGunColliders();
 
-        if (gunAnimator != null)
-            gunAnimator.SetTrigger("Draw");
+        if (gunAnimator != null && !string.IsNullOrEmpty(drawAnimTrigger) && HasParameter(gunAnimator, drawAnimTrigger))
+            gunAnimator.SetTrigger(drawAnimTrigger);
 
         if (PlayerHUDManager.instance != null)
         {
@@ -684,7 +811,9 @@ public class PlayerGun : MonoBehaviour
     public void AddAmmo(int amount)
     {
         currentAmmo = Mathf.Clamp(currentAmmo + amount, 0, maxAmmo);
-        if (PlayerHUDManager.instance != null)
+        storedAmmo = currentAmmo;
+
+        if (PlayerHUDManager.instance != null && !_isHolstered && HasGun)
         {
             PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
         }
@@ -697,7 +826,9 @@ public class PlayerGun : MonoBehaviour
     public void SetAmmo(int amount)
     {
         currentAmmo = Mathf.Clamp(amount, 0, maxAmmo);
-        if (PlayerHUDManager.instance != null)
+        storedAmmo = currentAmmo;
+
+        if (PlayerHUDManager.instance != null && !_isHolstered && HasGun)
         {
             PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
         }
@@ -710,6 +841,8 @@ public class PlayerGun : MonoBehaviour
     public void ReplenishAmmo()
     {
         currentAmmo = maxAmmo;
+        storedAmmo = maxAmmo;
+
         if (PlayerHUDManager.instance != null)
         {
             PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);

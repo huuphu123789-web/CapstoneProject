@@ -247,9 +247,15 @@ public class EquipmentPickup : Interactable
             if (gun != null)
             {
                 gun.gameObject.SetActive(true);
-                gun.SetAmmo(0); // Khi mới nhặt súng, số đạn luôn bắt đầu từ 0 cho đến khi nhặt hộp đạn
+                gun.HasGun = true;
+
+                // Nếu người chơi đã nhặt đạn trước đó, bảo toàn số đạn đã nhặt!
+                // Chỉ đặt về 0 nếu người chơi thực sự chưa nhặt viên đạn nào.
+                int currentAvailableAmmo = Mathf.Max(gun.CurrentAmmo, PlayerGun.storedAmmo);
+                gun.SetAmmo(currentAvailableAmmo);
+
                 gun.DrawGun();
-                Debug.Log("[EquipmentPickup] Đã nhặt và trang bị SÚNG PISTOL 92 lên tay! (Số đạn ban đầu: 0/6)");
+                Debug.Log($"[EquipmentPickup] Đã nhặt và trang bị SÚNG PISTOL 92 lên tay! (Số đạn hiện có: {gun.CurrentAmmo}/{gun.MaxAmmo})");
             }
             else
             {
@@ -275,12 +281,14 @@ public class EquipmentPickup : Interactable
             if (gun != null)
             {
                 gun.AddAmmo(ammoCount);
-                Debug.Log($"[EquipmentPickup] Đã nhặt thêm {ammoCount} viên đạn!");
             }
             else
             {
-                Debug.LogWarning("[EquipmentPickup] Chưa có PlayerGun trên người, đạn đã được lưu giữ!");
+                PlayerGun.storedAmmo = Mathf.Clamp(PlayerGun.storedAmmo + ammoCount, 0, 6);
             }
+
+            int total = (gun != null) ? gun.CurrentAmmo : PlayerGun.storedAmmo;
+            Debug.Log($"[EquipmentPickup] Đã nhặt thêm {ammoCount} viên đạn! (Tổng đạn trong túi/súng: {total})");
         }
 
         // 3. Ẩn mô hình này đi (đã nhặt vào người)
