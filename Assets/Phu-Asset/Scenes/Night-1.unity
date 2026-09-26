@@ -274,6 +274,18 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0.021095276
       objectReference: {fileID: 0}
+    - target: {fileID: 2630689299048977665, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: teleportToGateKey
+      value: 98
+      objectReference: {fileID: 0}
+    - target: {fileID: 2630689299048977665, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: skipToGateInspectionKey
+      value: 103
+      objectReference: {fileID: 0}
+    - target: {fileID: 2630689299048977665, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: playerBoothTeleportPoint
+      value: 
+      objectReference: {fileID: 1468887239}
     - target: {fileID: 2986792392290931297, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
       propertyPath: m_LocalPosition.x
       value: -38.563118
@@ -429,6 +441,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2ed65a064ead542b79662562047c7c64, type: 3}
+--- !u!1 &1468887238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1468887239}
+  m_Layer: 0
+  m_Name: PlayerBoothTeleportPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1468887239
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468887238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -48.63, y: 0.18, z: -50.445}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1478671648
 GameObject:
   m_ObjectHideFlags: 0
@@ -1302,16 +1345,34 @@ MonoBehaviour:
     dialogueOnArrive: 'Hello, Sir!
 
 '
+    defenseDialogues: []
     dialogueOnApproved: Thankyou, Sir!
     dialogueOnDenied: AHHHHHH!
+    voiceArriveClip: {fileID: 8300000, guid: 76cdacb580ee24f599680429f083697d, type: 3}
+    defenseVoiceClips:
+    - {fileID: 8300000, guid: 3fda1aaf8c6e74ff896900e95730a695, type: 3}
+    - {fileID: 8300000, guid: 826f5962125f4483d802764d5439905f, type: 3}
+    - {fileID: 8300000, guid: 97c366f8376c649418b96596a9e98691, type: 3}
+    - {fileID: 8300000, guid: 0a91b1a2a35194671b5e6e57f66f92b6, type: 3}
+    voiceApproveClip: {fileID: 8300000, guid: 27b9df5c94a1c4b59b396e9e49cc060f, type: 3}
+    voiceDenyClip: {fileID: 8300000, guid: a32f947a1b7734258ba582d633112324, type: 3}
   - npcName: Victor Jean Mercier
     isMutant: 0
     npcPrefab: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
     cccdTexture: {fileID: 2800000, guid: afa4ac6a135cca946baa35f62bbc193a, type: 3}
     surrenderConfirmTexture: {fileID: 2800000, guid: 41d3309fd063bee42abc24453ce7a9b8, type: 3}
     dialogueOnArrive: I'm clean, please let me pass
+    defenseDialogues: []
     dialogueOnApproved: "Yes, yes , yes\t"
     dialogueOnDenied: Ohh, C'mom shit F*ck
+    voiceArriveClip: {fileID: 8300000, guid: de81b9ced9ed44a618b955e592900045, type: 3}
+    defenseVoiceClips:
+    - {fileID: 8300000, guid: 0fdbd38d55b7f47babe05ad2db2b8624, type: 3}
+    - {fileID: 8300000, guid: fef3cae7a1bef466283b09c9ed7bb66d, type: 3}
+    - {fileID: 8300000, guid: 4a3f75378f5c949c2b721002d828a2be, type: 3}
+    - {fileID: 8300000, guid: cec661205502c4027a879c25e01c98c9, type: 3}
+    voiceApproveClip: {fileID: 8300000, guid: c876eb32cda87471ba998ceb43fe9212, type: 3}
+    voiceDenyClip: {fileID: 8300000, guid: 0ad537d18d2db4448a8fafb891e27b77, type: 3}
   autoPopulateDefaults: 0
   inspectionPoint: {fileID: 8803080477342578552}
   spawnPoint: {fileID: 267153067985036621}
@@ -1322,6 +1383,10 @@ MonoBehaviour:
   gateBuzzerSound: {fileID: 0}
   alarmBreachSound: {fileID: 0}
   correctDecisionChime: {fileID: 0}
+  dialoguePanel: {fileID: 0}
+  dialogueNameText: {fileID: 0}
+  dialogueContentText: {fileID: 0}
+  dialogueCanvasGroup: {fileID: 0}
   currentNPCIndex: -1
   isInspectionActive: 0
   isCurrentNPCAtDesk: 0
@@ -1597,3 +1662,4 @@ SceneRoots:
   - {fileID: 1848624747}
   - {fileID: 709130542}
   - {fileID: 3139017343680722795}
+  - {fileID: 1468887239}

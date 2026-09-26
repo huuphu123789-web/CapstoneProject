@@ -240,7 +240,7 @@ public class DocumentInspectionUI : MonoBehaviour
         cccdLabelRT.anchoredPosition = new Vector2(0f, 8f);
         cccdLabelRT.sizeDelta = new Vector2(400f, 30f);
         TextMeshProUGUI cccdLabel = cccdLabelGO.AddComponent<TextMeshProUGUI>();
-        cccdLabel.text = "NATIONAL ID / CĂN CƯỚC";
+        cccdLabel.text = "NATIONAL ID CARD";
         cccdLabel.fontSize = 18f;
         cccdLabel.fontStyle = FontStyles.Bold;
         cccdLabel.alignment = TextAlignmentOptions.Center;
@@ -278,7 +278,7 @@ public class DocumentInspectionUI : MonoBehaviour
         surrLabelRT.anchoredPosition = new Vector2(0f, 8f);
         surrLabelRT.sizeDelta = new Vector2(400f, 30f);
         TextMeshProUGUI surrLabel = surrLabelGO.AddComponent<TextMeshProUGUI>();
-        surrLabel.text = "SURRENDER CONFIRM / GIẤY THÔNG HÀNH";
+        surrLabel.text = "SURRENDER CONFIRMATION";
         surrLabel.fontSize = 18f;
         surrLabel.fontStyle = FontStyles.Bold;
         surrLabel.alignment = TextAlignmentOptions.Center;
@@ -306,15 +306,15 @@ public class DocumentInspectionUI : MonoBehaviour
 
         // Nút Cho qua (Xanh)
         approveButton = CreateButton(buttonsBar.transform, "ApproveBtn", new Vector2(-280f, 0f), new Vector2(220f, 50f),
-            new Color(0.12f, 0.65f, 0.28f, 0.95f), "APPROVE (CHO QUA)", robotoFont, OnApproveClicked);
+            new Color(0.12f, 0.65f, 0.28f, 0.95f), "APPROVE", robotoFont, OnApproveClicked);
 
         // Nút Đóng giấy tờ (Xám)
         closeButton = CreateButton(buttonsBar.transform, "CloseBtn", new Vector2(0f, 0f), new Vector2(240f, 50f),
-            new Color(0.3f, 0.3f, 0.3f, 0.9f), "[ESC / E] CLOSE (ĐÓNG)", robotoFont, CloseInspection);
+            new Color(0.3f, 0.3f, 0.3f, 0.9f), "[ESC / E] CLOSE", robotoFont, CloseInspection);
 
         // Nút Từ chối (Đỏ)
         rejectButton = CreateButton(buttonsBar.transform, "RejectBtn", new Vector2(280f, 0f), new Vector2(220f, 50f),
-            new Color(0.8f, 0.2f, 0.2f, 0.95f), "REJECT (TỪ CHỐI)", robotoFont, OnRejectClicked);
+            new Color(0.8f, 0.2f, 0.2f, 0.95f), "REJECT", robotoFont, OnRejectClicked);
 
         // 6. Gợi ý phím tắt
         GameObject hintGO = new GameObject("InspectionHint");

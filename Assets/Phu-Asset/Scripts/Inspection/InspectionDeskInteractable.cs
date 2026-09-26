@@ -21,7 +21,7 @@ public class InspectionDeskInteractable : Interactable
         }
         instance = this;
 
-        promptMessage = "Inspect Documents (Kiểm tra giấy tờ)";
+        promptMessage = "Inspect Documents";
     }
 
     void Start()
@@ -34,7 +34,7 @@ public class InspectionDeskInteractable : Interactable
     /// </summary>
     public void SetDocumentsAvailable(bool available)
     {
-        promptMessage = available ? "Inspect Documents (Kiểm tra giấy tờ)" : "";
+        promptMessage = available ? "Inspect Documents" : "";
         if (documentVisualProp != null)
         {
             documentVisualProp.SetActive(available);
