@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
@@ -16,7 +16,7 @@ public class NPCHealth : MonoBehaviour, IDamageable
 
     [Header("=== Su Kien ===")]
     [Tooltip("Goi khi NPC bien mat (dung de trigger animation, update UI, ...)")]
-    public UnityEvent onDisappear;
+    public UnityEvent onDisappear = new UnityEvent();
 
     private bool _isGone = false;
     private AudioSource _audio;

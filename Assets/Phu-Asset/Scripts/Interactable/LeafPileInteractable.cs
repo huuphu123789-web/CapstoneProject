@@ -25,9 +25,12 @@ public class LeafPileInteractable : Interactable
     public AudioSource localAudioSource;
 
     private bool isSwept = false;
+    private Rigidbody rb;
 
     void Awake()
     {
+        rb = GetComponent<Rigidbody>();
+
         if (localAudioSource == null)
         {
             localAudioSource = GetComponent<AudioSource>();
@@ -49,11 +52,21 @@ public class LeafPileInteractable : Interactable
         if (isSwept) return;
 
         isSwept = true;
-        promptMessage = ""; // Ẩn gợi ý tương tác
+        promptMessage = ""; // Ẩn gợi ý tương tác ngay lập tức
 
-        // Tắt Collider ngay lập tức để Raycast không còn quét trúng
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
+        // Khi bắt đầu quét, tắt trọng lực để đống lá không bị tụt xuống sàn lúc thu nhỏ
+        if (rb != null)
+        {
+            rb.useGravity = false;
+            rb.isKinematic = true;
+        }
+
+        // Tắt toàn bộ Collider để Raycast không quét trúng nữa
+        Collider[] allCols = GetComponentsInChildren<Collider>();
+        foreach (var c in allCols)
+        {
+            c.enabled = false;
+        }
 
         StartCoroutine(SweepRoutine());
     }
@@ -66,7 +79,7 @@ public class LeafPileInteractable : Interactable
         // 2. Hiệu ứng đống lá co nhỏ lại như bị quét sạch
         Vector3 originalScale = transform.localScale;
         float elapsed = 0f;
-        float shrinkDuration = 0.8f;
+        float shrinkDuration = 0.5f;
 
         while (elapsed < shrinkDuration)
         {
@@ -77,14 +90,24 @@ public class LeafPileInteractable : Interactable
 
         transform.localScale = Vector3.zero;
 
-        // 3. Kích hoạt âm thanh ma quái hù dọa (đặc biệt ở đống lá thứ 2)
+        // 3. Tắt toàn bộ MeshRenderer để chắc chắn biến mất hoàn toàn
+        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (var r in renderers)
+        {
+            if (spookyVisualObject != null && (r.gameObject == spookyVisualObject || r.transform.IsChildOf(spookyVisualObject.transform)))
+                continue;
+
+            r.enabled = false;
+        }
+
+        // 4. Kích hoạt âm thanh ma quái hù dọa (đặc biệt ở đống lá thứ 2)
         if (spookySound != null)
         {
             yield return new WaitForSeconds(0.2f);
             PlaySound(spookySound);
         }
 
-        // 4. Kích hoạt bóng ma lướt qua nếu có
+        // 5. Kích hoạt bóng ma lướt qua nếu có
         if (spookyVisualObject != null)
         {
             spookyVisualObject.SetActive(true);
@@ -92,15 +115,14 @@ public class LeafPileInteractable : Interactable
             spookyVisualObject.SetActive(false);
         }
 
-        // 5. Báo về TaskManager hoàn thành đống lá này
+        // 6. Báo về TaskManager hoàn thành đống lá này
         if (TaskManager.instance != null)
         {
             TaskManager.instance.CompleteLeafPile(leafIndex);
         }
 
-        // 6. Tắt Collider để không tương tác lại
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
+        // 7. Tắt hẳn GameObject để dọn dẹp sạch sẽ
+        gameObject.SetActive(false);
     }
 
     private void PlaySound(AudioClip clip)

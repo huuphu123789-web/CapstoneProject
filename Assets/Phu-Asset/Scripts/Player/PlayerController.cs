@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
     [Header("Trong luc va Nhay")]
     public float gravity = -19.62f; //* Trong luc  (Thuong gap doi thuc te de game cam giac nhah hon)
     public float jumpHeight = 3f; //*Do cao cu nhay
+    [Tooltip("Vận tốc rơi tối đa (Terminal Velocity) - Ngăn nhân vật bị hút/rơi siêu tốc như tên lửa")]
+    public float maxFallSpeed = -20f;
     [Header("Cài đặt Check Chạm Đất")]
     [Tooltip("Kéo đối tượng GroundCheck vào đây")]
     public Transform groundCheck;
@@ -35,9 +37,83 @@ public class PlayerController : MonoBehaviour
 
 
     private Vector3 velocity;
-    private bool isGrounded;
+    [HideInInspector] public bool isGrounded;
+    public bool IsGrounded => isGrounded;
     private float footStepTimer;//* Bộ đếm thời gian bước chân
+    private int nonPlayerMask;
 
+    [Header("Leo Thang")]
+    [HideInInspector] public bool isClimbing = false;
+    public void SetClimbing(bool climbing)
+    {
+        isClimbing = climbing;
+        if (climbing)
+        {
+            velocity = Vector3.zero;
+        }
+    }
+
+    /// <summary>
+    /// Di chuyển nhân vật tức thời đến vị trí mới an toàn (tắt tạm CharacterController để không bị chặn vật lý)
+    /// </summary>
+    public void TeleportTo(Vector3 targetPosition, Quaternion targetRotation)
+    {
+        if (characterController == null)
+            characterController = GetComponent<CharacterController>();
+
+        if (characterController != null)
+            characterController.enabled = false;
+
+        velocity = Vector3.zero;
+
+        // Nếu PlayerController nằm trên PlayerModel con của Player root:
+        if (transform.parent != null)
+        {
+            transform.parent.position = targetPosition;
+            transform.parent.rotation = targetRotation;
+
+            // Reset local của con về 0
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            transform.position = targetPosition;
+            transform.rotation = targetRotation;
+        }
+
+        // Cập nhật Cinemachine Camera nếu có
+        var vcam = GetComponentInChildren<Unity.Cinemachine.CinemachineCamera>();
+        if (vcam == null && transform.parent != null)
+            vcam = transform.parent.GetComponentInChildren<Unity.Cinemachine.CinemachineCamera>();
+
+        if (vcam != null)
+        {
+            vcam.PreviousStateIsValid = false;
+        }
+
+        var panTilt = GetComponentInChildren<Unity.Cinemachine.CinemachinePanTilt>();
+        if (panTilt == null && transform.parent != null)
+            panTilt = transform.parent.GetComponentInChildren<Unity.Cinemachine.CinemachinePanTilt>();
+
+        if (panTilt != null)
+        {
+            panTilt.PanAxis.Value = targetRotation.eulerAngles.y;
+            panTilt.TiltAxis.Value = 0f;
+        }
+
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            cam.transform.position = targetPosition + Vector3.up * 1.6f;
+            cam.transform.rotation = targetRotation;
+        }
+
+        if (characterController != null)
+            characterController.enabled = true;
+
+        Debug.Log($"[PlayerController] Đã dịch chuyển Player tới: {targetPosition}");
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -46,9 +122,20 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
 
         //*Nếu quên kéo AudioSource thì sẽ tự tìm và gắn vào 
-       
         if(audioSource==null) audioSource = GetComponent<AudioSource>();
         if (animator == null) animator = GetComponent<Animator>();
+
+        nonPlayerMask = ~LayerMask.GetMask("Player", "Ignore Raycast");
+
+        // Tự động đảm bảo có PlayerHUDManager trên Player để quản lý Thể lực & HUD
+        if (PlayerHUDManager.instance == null)
+        {
+            PlayerHUDManager hud = GetComponent<PlayerHUDManager>();
+            if (hud == null)
+            {
+                hud = gameObject.AddComponent<PlayerHUDManager>();
+            }
+        }
     }
 
     // Update is called once per frame
@@ -58,11 +145,33 @@ public class PlayerController : MonoBehaviour
         if (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused)
             return;
 
+        UpdateGroundedState();
+
+        if (isClimbing)
+        {
+            velocity = Vector3.zero;
+            return;
+        }
+
         PlayerMove();
         PlayerJump();
     }
 
-    
+    /// <summary>
+    /// Kiểm tra chạm đất đa tầng:
+    /// Kết hợp CharacterController.isGrounded, Physics.CheckSphere và Raycast phụ.
+    /// Giúp nhân vật luôn nhận diện sàn (kể cả gác xép/tầng cao Hideout không thuộc Layer Ground),
+    /// triệt tiêu hoàn toàn lỗi tích lũy gia tốc trọng trường làm rơi siêu tốc!
+    /// </summary>
+    private void UpdateGroundedState()
+    {
+        bool ccGrounded = (characterController != null && characterController.isGrounded);
+        bool sphereCheck = (groundCheck != null) && Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        bool raycastGround = Physics.Raycast(transform.position + Vector3.up * 0.15f, Vector3.down, 0.35f, nonPlayerMask);
+
+        isGrounded = ccGrounded || sphereCheck || raycastGround;
+    }
+
     public void PlayerMove()
     {
         //*Lay du lieu nhap vao tu ban phim
@@ -73,44 +182,53 @@ public class PlayerController : MonoBehaviour
         Vector3 move = transform.right * x + transform.forward * z;
         //*Ra lenh cho Character Controller  di chuyen nhan vat
         
-        if(move.magnitude >0.1f)
-        { 
+        bool isMoving = (move.magnitude > 0.1f);
 
-            animator.SetBool("isWalk",true);
-            characterController.Move(move * moveSpeed * Time.deltaTime);
-        }
-        else
-        {
-            animator.SetBool("isWalk",false);
-            characterController.Move(move * moveSpeed * Time.deltaTime);
-        }
-
-        // Kiểm tra thể lực từ HUD (dùng instance, không FindObject mỗi frame)
-        bool hasStamina = true;
+        // Kiểm tra khả năng chạy nhanh từ HUD (chống giật loop animation khi hết thể lực)
+        bool canSprint = true;
         if (PlayerHUDManager.instance != null)
         {
-            hasStamina = (PlayerHUDManager.instance.currentStamina > 0);
+            canSprint = PlayerHUDManager.instance.CanSprint();
         }
 
-        if(Input.GetKey(KeyCode.LeftShift) && hasStamina && move.magnitude > 0.1f)
+        bool isSprinting = isMoving && Input.GetKey(KeyCode.LeftShift) && canSprint;
+
+        // Xử lý Di chuyển & Animation chuẩn xác (chỉ gọi Move đúng 1 lần duy nhất)
+        if (isSprinting)
         {
             characterController.Move(move * sprintSpeed * Time.deltaTime);
-            animator.SetBool("isWalk",false);
-            animator.SetBool("isRun",true);
+            if (animator != null)
+            {
+                animator.SetBool("isWalk", false);
+                animator.SetBool("isRun", true);
+            }
+        }
+        else if (isMoving)
+        {
+            characterController.Move(move * moveSpeed * Time.deltaTime);
+            if (animator != null)
+            {
+                animator.SetBool("isWalk", true);
+                animator.SetBool("isRun", false);
+            }
         }
         else
         {
-            characterController.Move(move * moveSpeed * Time.deltaTime);
-            animator.SetBool("isRun",false);
+            if (animator != null)
+            {
+                animator.SetBool("isWalk", false);
+                animator.SetBool("isRun", false);
+            }
         }
-        //*Điều kiện player đang trên mặt đất và dang di chuyển (move.mangitude >0)
-        if (isGrounded && move.magnitude > 0.1f)
+
+        //*Điều kiện player đang trên mặt đất và dang di chuyển (move.magnitude > 0.1f)
+        if (isGrounded && isMoving)
         {
             footStepTimer -= Time.deltaTime; //*Đếm ngược thời gian
             if (footStepTimer <= 0)
             {
                 PlayRandomFootStep();
-                footStepTimer = stepRate; //*Reset lai bo dem
+                footStepTimer = isSprinting ? (stepRate * 0.65f) : stepRate; //*Chạy nhanh thì bước chân nhanh hơn
             }
         }
         else
@@ -121,20 +239,27 @@ public class PlayerController : MonoBehaviour
 
     public void PlayerJump()
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         if (isGrounded && velocity.y < 0)
         {
             //*Reset van toc truc y khi cham dat
             velocity.y = -2f;
         }
+
         //*Xu li nhay
-        // 3. Nhảy (Sử dụng biến isGrounded tự quét ở trên)
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
+
         //*Ap dung trong luc roi tu do theo thoi gian
         velocity.y += gravity * Time.deltaTime;
+
+        // Giới hạn vận tốc rơi tối đa (Terminal Velocity)
+        if (velocity.y < maxFallSpeed)
+        {
+            velocity.y = maxFallSpeed;
+        }
+
         characterController.Move(velocity * Time.deltaTime);
 
         // Tự động kiểm tra bề mặt dưới chân (hỗ trợ cả MeshCollider cầu thang)

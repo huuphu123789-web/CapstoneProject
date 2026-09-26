@@ -72,7 +72,7 @@ public class SwingDoor : MonoBehaviour, IInteractable
     }
 
     // ── IInteractable ──
-    public string InteractPrompt => _doorState == DoorState.Open ? "Close Door [Right Click]" : "Open Door [Right Click]";
+    public string InteractPrompt => _doorState == DoorState.Open ? "Đóng cửa [Chuột phải]" : "Mở cửa [Chuột phải]";
 
     // ── Internal ──
     private DoorState _doorState = DoorState.Closed;

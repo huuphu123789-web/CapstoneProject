@@ -26,6 +26,7 @@ public class DrawerInteractable : Interactable
     public AudioSource localAudioSource;
 
     private bool isOpen = false;
+    public bool IsOpen => isOpen;
     private Vector3 closedLocalPos;
     private Vector3 openLocalPos;
     private Vector3 targetLocalPos;
