@@ -45,3 +45,6 @@ Thumbs.db
 .vscode/
 *.slnx
 .vs/
+# IDE and Local caches
+.local/
+.vsconfig
