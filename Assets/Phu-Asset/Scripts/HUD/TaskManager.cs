@@ -12,11 +12,15 @@ public class TaskManager : MonoBehaviour
     public static TaskManager instance;
 
     [Header("=== CẤU HÌNH SỐ LƯỢNG NHIỆM VỤ ===")]
-    [Tooltip("Số đống lá cần quét ngoài sân")]
-    public int totalLeaves = 5;
-
     [Tooltip("Số điểm hàng rào cần tuần tra")]
     public int totalFencePoints = 6;
+
+    [Tooltip("Số máy phát điện cần kiểm tra")]
+    public int totalGenerators = 1;
+
+    [Header("=== CHẾ ĐỘ TEST NHANH ===")]
+    [Tooltip("Tích vào đây nếu muốn hoàn thành ngay việc lặt vặt (hàng rào, máy phát điện, súng đèn) khi vào game để test ngay bốt gác NPC")]
+    public bool quickTestGateInspection = false;
 
     [Header("=== GIAO DIỆN HIỂN THỊ (TASK HUD) ===")]
     [Tooltip("Kéo TextMeshProUGUI hiển thị danh sách nhiệm vụ vào đây (nếu để trống script tự động tạo góc trái màn hình)")]
@@ -26,8 +30,15 @@ public class TaskManager : MonoBehaviour
     public AudioClip taskCompleteSound;
 
     // Tiến độ hiện tại
+    [HideInInspector] public bool hasFlashlight = false;
+    [HideInInspector] public bool hasGun = false;
+    public bool hasEquipment => (hasFlashlight && hasGun);
+    [HideInInspector] public int totalLeaves = 0; // Đã loại bỏ task quét lá
     [HideInInspector] public int leavesSwept = 0;
     [HideInInspector] public int fencePointsChecked = 0;
+    [HideInInspector] public int generatorsChecked = 0;
+    [HideInInspector] public bool gateInspectionDone = false;
+    [HideInInspector] public bool gateInspectionTriggered = false;
 
     private Coroutine cameraShakeCoroutine;
 
@@ -44,6 +55,14 @@ public class TaskManager : MonoBehaviour
     void Start()
     {
         EnsureTaskUI();
+
+        if (quickTestGateInspection)
+        {
+            CompleteEquipmentTask();
+            fencePointsChecked = totalFencePoints;
+            generatorsChecked = totalGenerators;
+        }
+
         UpdateTaskUI();
     }
 
@@ -70,6 +89,37 @@ public class TaskManager : MonoBehaviour
         {
             taskTextUI.gameObject.SetActive(visible);
         }
+    }
+
+    // ================= XỬ LÝ NHIỆM VỤ MỞ ĐẦU: LẤY ĐÈN PIN & SÚNG TRONG HẦM (CELLAR) =================
+    public void CollectFlashlight()
+    {
+        if (hasFlashlight) return;
+        hasFlashlight = true;
+        Debug.Log("[TaskManager] ĐÃ LẤY ĐÈN PIN!");
+
+        UpdateTaskUI();
+        CheckAllTasksDone();
+    }
+
+    public void CollectGun()
+    {
+        if (hasGun) return;
+        hasGun = true;
+        Debug.Log("[TaskManager] ĐÃ LẤY SÚNG!");
+
+        UpdateTaskUI();
+        CheckAllTasksDone();
+    }
+
+    public void CompleteEquipmentTask()
+    {
+        hasFlashlight = true;
+        hasGun = true;
+        Debug.Log("[TaskManager] ĐÃ LẤY TRANG BỊ: Đèn pin & Súng!");
+
+        UpdateTaskUI();
+        CheckAllTasksDone();
     }
 
     // ================= XỬ LÝ NHIỆM VỤ 1: QUÉT 5 ĐỐNG LÁ =================
@@ -155,9 +205,33 @@ public class TaskManager : MonoBehaviour
         CheckAllTasksDone();
     }
 
+    // ================= XỬ LÝ NHIỆM VỤ 3: KIỂM TRA MÁY PHÁT ĐIỆN =================
+    public void CompleteGenerator(int genIndex = 1)
+    {
+        generatorsChecked++;
+        Debug.Log($"[TaskManager] Đã kiểm tra máy phát điện: {generatorsChecked}/{totalGenerators}");
+
+        // Kích hoạt hiệu ứng hù dọa nhẹ khi mở/kiểm tra máy phát điện
+        FlickerFlashlight(3, 0.08f);
+
+        UpdateTaskUI();
+        CheckAllTasksDone();
+    }
+
     public bool AreAllTasksCompleted()
     {
-        return (leavesSwept >= totalLeaves) && (fencePointsChecked >= totalFencePoints);
+        return hasEquipment && (fencePointsChecked >= totalFencePoints) && (generatorsChecked >= totalGenerators) && gateInspectionDone;
+    }
+
+    public void CompleteGateInspection()
+    {
+        if (gateInspectionDone) return;
+        gateInspectionDone = true;
+        Debug.Log("[TaskManager] ĐÃ HOÀN THÀNH NHIỆM VỤ KIỂM TRA CỔNG GÁC! Mở khóa giường ngủ.");
+
+        PlayTaskCompleteSound();
+        UpdateTaskUI();
+        CheckAllTasksDone();
     }
 
     private void CheckAllTasksDone()
@@ -247,20 +321,80 @@ public class TaskManager : MonoBehaviour
     {
         if (taskTextUI == null) return;
 
-        bool leafDone = (leavesSwept >= totalLeaves);
+        bool equipDone = hasEquipment;
         bool fenceDone = (fencePointsChecked >= totalFencePoints);
-        bool allDone = leafDone && fenceDone;
+        bool genDone = (generatorsChecked >= totalGenerators);
+        bool choresDone = equipDone && fenceDone && genDone;
+        bool allDone = choresDone && gateInspectionDone;
 
-        string leafStatus = leafDone ? $"<color=#00FF88>[v] Sweep the leaves ({leavesSwept}/{totalLeaves})</color>" : $"[ ] Sweep the leaves ({leavesSwept}/{totalLeaves})";
+        // Tự động kích hoạt nhiệm vụ kiểm tra cổng gác khi xong các việc tuần tra & kiểm tra
+        if (choresDone && !gateInspectionTriggered)
+        {
+            gateInspectionTriggered = true;
+            if (NPCInspectionManager.instance != null)
+            {
+                NPCInspectionManager.instance.StartGateInspection();
+            }
+            else
+            {
+                NPCInspectionManager mgr = FindObjectOfType<NPCInspectionManager>();
+                if (mgr != null)
+                {
+                    mgr.StartGateInspection();
+                }
+                else
+                {
+                    GameObject mgrGO = new GameObject("NPCInspectionManager");
+                    mgr = mgrGO.AddComponent<NPCInspectionManager>();
+                    mgr.StartGateInspection();
+                }
+            }
+        }
+
+        string equipStatus;
+        if (hasFlashlight && hasGun)
+        {
+            equipStatus = "<color=#00FF88>[v] Take flashlight & gun from cabinet</color>";
+        }
+        else if (hasFlashlight && !hasGun)
+        {
+            equipStatus = "<color=#FFFF00>[ ] Take gun from drawer (Flashlight [v])</color>";
+        }
+        else if (!hasFlashlight && hasGun)
+        {
+            equipStatus = "<color=#FFFF00>[ ] Take flashlight from drawer (Gun [v])</color>";
+        }
+        else
+        {
+            equipStatus = "<color=#FFFF00>[ ] Take flashlight & gun from cabinet</color>";
+        }
+
         string fenceStatus = fenceDone ? $"<color=#00FF88>[v] Patrol perimeter fence ({fencePointsChecked}/{totalFencePoints})</color>" : $"[ ] Patrol perimeter fence ({fencePointsChecked}/{totalFencePoints})";
+        string genStatus = genDone ? $"<color=#00FF88>[v] Check generator ({generatorsChecked}/{totalGenerators})</color>" : $"[ ] Check generator ({generatorsChecked}/{totalGenerators})";
         
+        string gateStatus = "";
+        if (!choresDone)
+        {
+            gateStatus = "<color=#888888>[ ] Inspect incoming NPCs (Complete chores first)</color>";
+        }
+        else if (!gateInspectionDone)
+        {
+            gateStatus = "<color=#FFFF00>[ ] Go to the gate to inspect incoming NPCs</color>";
+        }
+        else
+        {
+            gateStatus = "<color=#00FF88>[v] Inspect incoming NPCs at the gate</color>";
+        }
+
         string bedStatus = allDone 
             ? "<color=#FFFF00>[ ] Go to sleep in bedroom</color>" 
-            : "<color=#888888>[ ] Go to sleep (Complete chores first)</color>";
+            : "<color=#888888>[ ] Go to sleep (Complete all tasks first)</color>";
 
         taskTextUI.text = $"<b>NIGHT 1 TASKS:</b>\n" +
-                          $"{leafStatus}\n" +
+                          $"{equipStatus}\n" +
                           $"{fenceStatus}\n" +
+                          $"{genStatus}\n" +
+                          $"{gateStatus}\n" +
                           $"{bedStatus}";
     }
 
@@ -408,7 +542,7 @@ public class TaskManager : MonoBehaviour
         rt.anchorMax = new Vector2(0f, 1f);
         rt.pivot = new Vector2(0f, 1f);
         rt.anchoredPosition = new Vector2(30f, -30f);
-        rt.sizeDelta = new Vector2(450f, 200f);
+        rt.sizeDelta = new Vector2(480f, 250f);
 
         taskTextUI = newTmp;
     }

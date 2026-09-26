@@ -53,6 +53,68 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Di chuyển nhân vật tức thời đến vị trí mới an toàn (tắt tạm CharacterController để không bị chặn vật lý)
+    /// </summary>
+    public void TeleportTo(Vector3 targetPosition, Quaternion targetRotation)
+    {
+        if (characterController == null)
+            characterController = GetComponent<CharacterController>();
+
+        if (characterController != null)
+            characterController.enabled = false;
+
+        velocity = Vector3.zero;
+
+        // Nếu PlayerController nằm trên PlayerModel con của Player root:
+        if (transform.parent != null)
+        {
+            transform.parent.position = targetPosition;
+            transform.parent.rotation = targetRotation;
+
+            // Reset local của con về 0
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            transform.position = targetPosition;
+            transform.rotation = targetRotation;
+        }
+
+        // Cập nhật Cinemachine Camera nếu có
+        var vcam = GetComponentInChildren<Unity.Cinemachine.CinemachineCamera>();
+        if (vcam == null && transform.parent != null)
+            vcam = transform.parent.GetComponentInChildren<Unity.Cinemachine.CinemachineCamera>();
+
+        if (vcam != null)
+        {
+            vcam.PreviousStateIsValid = false;
+        }
+
+        var panTilt = GetComponentInChildren<Unity.Cinemachine.CinemachinePanTilt>();
+        if (panTilt == null && transform.parent != null)
+            panTilt = transform.parent.GetComponentInChildren<Unity.Cinemachine.CinemachinePanTilt>();
+
+        if (panTilt != null)
+        {
+            panTilt.PanAxis.Value = targetRotation.eulerAngles.y;
+            panTilt.TiltAxis.Value = 0f;
+        }
+
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            cam.transform.position = targetPosition + Vector3.up * 1.6f;
+            cam.transform.rotation = targetRotation;
+        }
+
+        if (characterController != null)
+            characterController.enabled = true;
+
+        Debug.Log($"[PlayerController] Đã dịch chuyển Player tới: {targetPosition}");
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
