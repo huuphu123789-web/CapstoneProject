@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+using TMPro;
 
 [System.Serializable]
 public class NPCInspectionProfile
@@ -12,9 +14,118 @@ public class NPCInspectionProfile
     public GameObject npcPrefab;
     public Texture2D cccdTexture;
     public Texture2D surrenderConfirmTexture;
-    [TextArea(2, 4)] public string dialogueOnArrive = "Hello officer, here are my papers. Please let me in.";
-    [TextArea(2, 4)] public string dialogueOnApproved = "Thank you officer! God bless you.";
-    [TextArea(2, 4)] public string dialogueOnDenied = "Please don't leave me out here in the dark...";
+
+    [Header("=== DEFENSE DIALOGUE ===")]
+    [Tooltip("First line spoken upon arriving at the guard booth window")]
+    [TextArea(2, 4)] public string dialogueOnArrive = "Hello officer! I'm a normal human! Please let me in!";
+
+    [Tooltip("List of continuous defense dialogues while waiting for documents to be inspected")]
+    [TextArea(2, 4)] public string[] defenseDialogues;
+
+    [Tooltip("Dialogue when approved to pass through")]
+    [TextArea(2, 4)] public string dialogueOnApproved = "Thank you so much, officer! You saved my life!";
+
+    [Tooltip("Dialogue when denied entry")]
+    [TextArea(2, 4)] public string dialogueOnDenied = "No! Please don't leave me out here in the dark!!";
+
+    [Header("=== VOICE ACTING AUDIO CLIPS ===")]
+    [Tooltip("Voice audio clip when NPC first arrives at the window")]
+    public AudioClip voiceArriveClip;
+
+    [Tooltip("List of defense voice audio clips cycled continuously")]
+    public AudioClip[] defenseVoiceClips;
+
+    [Tooltip("Voice audio clip when approved")]
+    public AudioClip voiceApproveClip;
+
+    [Tooltip("Voice audio clip when denied")]
+    public AudioClip voiceDenyClip;
+
+    /// <summary>
+    /// Returns the defense dialogues. Falls back to default English survivor/mutant lines if none provided.
+    /// </summary>
+    public string[] GetEffectiveDefenseDialogues()
+    {
+        if (defenseDialogues != null && defenseDialogues.Length > 0)
+        {
+            bool hasValid = false;
+            for (int i = 0; i < defenseDialogues.Length; i++)
+            {
+                if (!string.IsNullOrEmpty(defenseDialogues[i])) { hasValid = true; break; }
+            }
+            if (hasValid) return defenseDialogues;
+        }
+
+        if (isMutant)
+        {
+            return new string[]
+            {
+                "I am... I am fine... See? I look completely normal... Just like you...",
+                "Officer... why are you staring at me? My papers... they are real...",
+                "Open the gate... quickly... It is so cold... I am starving... I mean, exhausted...",
+                "Don't suspect me... I am human... I swear... Please..."
+            };
+        }
+        else
+        {
+            return new string[]
+            {
+                "I am a normal human, officer! Look at me, I am not one of those mutants!",
+                "I have my ID card and surrender confirm right here! Everything is legitimate, check it yourself!",
+                "Please, it is freezing out here and monsters are prowling in the dark... don't leave me outside!",
+                "I swear on my life, I am completely clean! No signs of infection at all!"
+            };
+        }
+    }
+
+    public AudioClip GetEffectiveArriveClip()
+    {
+        if (voiceArriveClip != null) return voiceArriveClip;
+        string path = isMutant 
+            ? "Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Arrive.wav"
+            : "Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Arrive.wav";
+        return LoadAudioFromPath(path);
+    }
+
+    public AudioClip GetEffectiveDefenseClip(int index)
+    {
+        if (defenseVoiceClips != null && defenseVoiceClips.Length > 0)
+        {
+            return defenseVoiceClips[index % defenseVoiceClips.Length];
+        }
+        int clipNum = (index % 4) + 1;
+        string path = isMutant
+            ? $"Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Defense_{clipNum}.wav"
+            : $"Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Defense_{clipNum}.wav";
+        return LoadAudioFromPath(path);
+    }
+
+    public AudioClip GetEffectiveApproveClip()
+    {
+        if (voiceApproveClip != null) return voiceApproveClip;
+        string path = isMutant
+            ? "Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Approve.wav"
+            : "Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Approve.wav";
+        return LoadAudioFromPath(path);
+    }
+
+    public AudioClip GetEffectiveDenyClip()
+    {
+        if (voiceDenyClip != null) return voiceDenyClip;
+        string path = isMutant
+            ? "Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Deny.wav"
+            : "Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Deny.wav";
+        return LoadAudioFromPath(path);
+    }
+
+    private static AudioClip LoadAudioFromPath(string path)
+    {
+#if UNITY_EDITOR
+        return UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+#else
+        return null;
+#endif
+    }
 }
 
 /// <summary>
@@ -58,6 +169,13 @@ public class NPCInspectionManager : MonoBehaviour
     public AudioClip alarmBreachSound;
     public AudioClip correctDecisionChime;
 
+    [Header("=== GIAO DIỆN LỜI THOẠI (DIALOGUE SUBTITLE UI) ===")]
+    [Tooltip("Panel chứa khung phụ đề lời thoại NPC (nếu để trống script tự động tạo ở đáy màn hình)")]
+    public GameObject dialoguePanel;
+    public TextMeshProUGUI dialogueNameText;
+    public TextMeshProUGUI dialogueContentText;
+    public CanvasGroup dialogueCanvasGroup;
+
     [Header("=== TRẠNG THÁI HIỆN TẠI ===")]
     public int currentNPCIndex = -1;
     public bool isInspectionActive = false;
@@ -67,6 +185,9 @@ public class NPCInspectionManager : MonoBehaviour
     private NavMeshAgent currentAgent;
     private NPCInspectionProfile currentProfile;
     private bool hasDecisionBeenMade = false;
+
+    private Coroutine typingCoroutine;
+    private Coroutine defenseCycleCoroutine;
 
     void Awake()
     {
@@ -83,6 +204,30 @@ public class NPCInspectionManager : MonoBehaviour
         EnsureSceneReferences();
         EnsureDefaultProfiles();
         EnsureDeskAndButtons();
+        EnsureDialogueUI();
+        EnsureVoiceClipsAssigned();
+    }
+
+    /// <summary>
+    /// Tự động nạp file lồng tiếng tiếng Việt cho các NPC trong danh sách nếu chưa kéo thủ công
+    /// </summary>
+    public void EnsureVoiceClipsAssigned()
+    {
+        if (npcQueue == null) return;
+        foreach (var npc in npcQueue)
+        {
+            if (npc.voiceArriveClip == null) npc.voiceArriveClip = npc.GetEffectiveArriveClip();
+            if (npc.voiceApproveClip == null) npc.voiceApproveClip = npc.GetEffectiveApproveClip();
+            if (npc.voiceDenyClip == null) npc.voiceDenyClip = npc.GetEffectiveDenyClip();
+            if (npc.defenseVoiceClips == null || npc.defenseVoiceClips.Length == 0)
+            {
+                npc.defenseVoiceClips = new AudioClip[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    npc.defenseVoiceClips[i] = npc.GetEffectiveDefenseClip(i);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -172,13 +317,20 @@ public class NPCInspectionManager : MonoBehaviour
 
         npcQueue = new List<NPCInspectionProfile>();
 
-        // --- NPC 1: Người Thường (Human Survivor) ---
+        // --- NPC 1: Human Survivor ---
         NPCInspectionProfile p1 = new NPCInspectionProfile();
         p1.npcName = "Nguyen Van An (ID: 079201004521)";
         p1.isMutant = false;
-        p1.dialogueOnArrive = "Hello officer, I've walked miles through the forest. Here are my ID and surrender confirm.";
-        p1.dialogueOnApproved = "Thank you so much officer! Stay safe!";
-        p1.dialogueOnDenied = "Please reconsider... there are monsters out there!";
+        p1.dialogueOnArrive = "Hello officer! I just escaped from the forest. Here are my ID and pass papers, please let me in!";
+        p1.defenseDialogues = new string[]
+        {
+            "I am a normal human, officer! Look at me, I am not one of those mutants!",
+            "I have my ID card and surrender confirm right here! Everything is legitimate, check it yourself!",
+            "Please, it is freezing out here and monsters are prowling in the dark... don't leave me outside!",
+            "I swear on my life, I am completely clean! No signs of infection at all!"
+        };
+        p1.dialogueOnApproved = "Thank you so much, officer! You saved my life!";
+        p1.dialogueOnDenied = "No! Please don't leave me out here in the dark!!";
 
         // Load hình ảnh
         p1.cccdTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/CCQN/Victor Jean Mercier.png");
@@ -195,13 +347,20 @@ public class NPCInspectionManager : MonoBehaviour
 
         npcQueue.Add(p1);
 
-        // --- NPC 2: Sinh Vật Đột Biến (Mutant Anomaly) ---
+        // --- NPC 2: Mutant Anomaly ---
         NPCInspectionProfile p2 = new NPCInspectionProfile();
         p2.npcName = "Trinh Hoang Long (ID: 031198007214)";
         p2.isMutant = true;
-        p2.dialogueOnArrive = "O...ff...i...cer... l...et... m...e... in...";
-        p2.dialogueOnApproved = "Ssssskrrrreeeech!";
-        p2.dialogueOnDenied = "Grrrraaaagh!";
+        p2.dialogueOnArrive = "Officer... I am... normal... Please let me in...";
+        p2.defenseDialogues = new string[]
+        {
+            "I am... I am fine... See? I look completely normal... Just like you...",
+            "Officer... why are you staring at me? My papers... they are real...",
+            "Open the gate... quickly... It is so cold... I am starving... I mean, exhausted...",
+            "Don't suspect me... I am human... I swear... Please..."
+        };
+        p2.dialogueOnApproved = "Heheheh... Thank... you... officer...";
+        p2.dialogueOnDenied = "Grrrraaaagh! You will pay for this!";
 
         p2.cccdTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/CCQN/Trinh Hoang Long.png");
         if (p2.cccdTexture == null) p2.cccdTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/CCQN/npc-6.png");
@@ -339,6 +498,10 @@ public class NPCInspectionManager : MonoBehaviour
         currentProfile = npcQueue[currentNPCIndex];
         hasDecisionBeenMade = false;
         isCurrentNPCAtDesk = false;
+
+        // Dừng hội thoại của NPC trước
+        StopDefenseDialogueLoop();
+        HideDialogue();
 
         if (InspectionDeskInteractable.instance != null)
         {
@@ -536,6 +699,9 @@ public class NPCInspectionManager : MonoBehaviour
         if (detached != null) detached.StartInspection();
 
         Debug.Log($"[NPCInspectionManager] NPC [{currentProfile.npcName}] ĐÃ ĐẾN VẠCH KIỂM TRA. Giấy tờ đã sẵn sàng!");
+
+        // Bắt đầu chuỗi hội thoại biện hộ / thanh minh liên tục của NPC
+        StartDefenseDialogueLoop();
     }
 
     /// <summary>
@@ -567,6 +733,17 @@ public class NPCInspectionManager : MonoBehaviour
     {
         if (hasDecisionBeenMade || !isCurrentNPCAtDesk) return;
         hasDecisionBeenMade = true;
+
+        StopDefenseDialogueLoop();
+        AudioClip voice = currentProfile != null ? currentProfile.GetEffectiveApproveClip() : null;
+        string approveText = (currentProfile != null && !string.IsNullOrEmpty(currentProfile.dialogueOnApproved))
+            ? currentProfile.dialogueOnApproved
+            : (currentProfile != null && currentProfile.isMutant
+                ? "Heheheh... Thank... you... officer..."
+                : "Thank you so much, officer! You saved my life!");
+
+        float dur = (voice != null && voice.length > 0) ? Mathf.Max(3.5f, voice.length + 1.0f) : 4.0f;
+        ShowDialogue(currentProfile != null ? currentProfile.npcName : "Citizen", approveText, dur, voice);
 
         if (gateBuzzerSound != null && AudioManager.instance != null)
         {
@@ -601,6 +778,17 @@ public class NPCInspectionManager : MonoBehaviour
         if (hasDecisionBeenMade || !isCurrentNPCAtDesk) return;
         hasDecisionBeenMade = true;
 
+        StopDefenseDialogueLoop();
+        AudioClip voice = currentProfile != null ? currentProfile.GetEffectiveDenyClip() : null;
+        string denyText = (currentProfile != null && !string.IsNullOrEmpty(currentProfile.dialogueOnDenied))
+            ? currentProfile.dialogueOnDenied
+            : (currentProfile != null && currentProfile.isMutant
+                ? "Grrrraaaagh! You will pay for this!"
+                : "No! Please don't leave me out here in the dark!!");
+
+        float dur = (voice != null && voice.length > 0) ? Mathf.Max(3.5f, voice.length + 1.0f) : 4.0f;
+        ShowDialogue(currentProfile != null ? currentProfile.npcName : "Citizen", denyText, dur, voice);
+
         if (currentProfile.isMutant)
         {
             // ĐÚNG ĐẮN: Phát hiện và đuổi đột biến
@@ -627,6 +815,9 @@ public class NPCInspectionManager : MonoBehaviour
     {
         if (hasDecisionBeenMade) return;
         hasDecisionBeenMade = true;
+
+        StopDefenseDialogueLoop();
+        HideDialogue();
 
         if (currentProfile != null && currentProfile.isMutant)
         {
@@ -826,6 +1017,304 @@ public class NPCInspectionManager : MonoBehaviour
         if (TaskManager.instance != null)
         {
             TaskManager.instance.CompleteGateInspection();
+        }
+    }
+
+    // ================= HỆ THỐNG PHỤ ĐỀ & LỜI THOẠI BIỆN HỘ CỦA NPC =================
+
+    /// <summary>
+    /// Đảm bảo giao diện phụ đề đối thoại tồn tại trên màn hình
+    /// </summary>
+    public void EnsureDialogueUI()
+    {
+        if (dialoguePanel != null && dialogueContentText != null) return;
+
+        Canvas targetCanvas = null;
+        Canvas[] canvases = FindObjectsOfType<Canvas>(true);
+        foreach (var c in canvases)
+        {
+            if (c.gameObject.name == "NPCDialogue_Canvas")
+            {
+                targetCanvas = c;
+                break;
+            }
+        }
+
+        if (targetCanvas == null)
+        {
+            GameObject canvasGO = new GameObject("NPCDialogue_Canvas");
+            targetCanvas = canvasGO.AddComponent<Canvas>();
+            targetCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            targetCanvas.sortingOrder = 160; // Nằm trên cả DocumentInspectionUI (150) để người chơi vừa xem hồ sơ vừa đọc lời thanh minh
+
+            CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+            scaler.matchWidthOrHeight = 0.5f;
+
+            canvasGO.AddComponent<GraphicRaycaster>();
+        }
+        else
+        {
+            targetCanvas.gameObject.SetActive(true);
+        }
+
+        // Tạo khung Panel phụ đề nằm sát đáy màn hình
+        GameObject panelGO = new GameObject("NPCDialogue_Panel");
+        panelGO.transform.SetParent(targetCanvas.transform, false);
+
+        RectTransform panelRT = panelGO.AddComponent<RectTransform>();
+        panelRT.anchorMin = new Vector2(0.5f, 0f);
+        panelRT.anchorMax = new Vector2(0.5f, 0f);
+        panelRT.pivot = new Vector2(0.5f, 0f);
+        panelRT.anchoredPosition = new Vector2(0f, 45f);
+        panelRT.sizeDelta = new Vector2(980f, 130f);
+
+        Image panelImg = panelGO.AddComponent<Image>();
+        panelImg.color = new Color(0.05f, 0.07f, 0.1f, 0.92f); // Nền tối cao cấp
+        panelImg.raycastTarget = false;
+
+        dialogueCanvasGroup = panelGO.AddComponent<CanvasGroup>();
+        dialogueCanvasGroup.alpha = 1f;
+
+        // Thanh viền vàng hổ phách trên nóc khung thoại
+        GameObject accentGO = new GameObject("TopAccentBar");
+        accentGO.transform.SetParent(panelGO.transform, false);
+        RectTransform accentRT = accentGO.AddComponent<RectTransform>();
+        accentRT.anchorMin = new Vector2(0f, 1f);
+        accentRT.anchorMax = new Vector2(1f, 1f);
+        accentRT.pivot = new Vector2(0.5f, 1f);
+        accentRT.anchoredPosition = Vector2.zero;
+        accentRT.sizeDelta = new Vector2(0f, 3f);
+        Image accentImg = accentGO.AddComponent<Image>();
+        accentImg.color = new Color(1f, 0.8f, 0.2f, 0.85f);
+        accentImg.raycastTarget = false;
+
+        // Tên người nói (Speaker Name)
+        GameObject nameGO = new GameObject("SpeakerNameText");
+        nameGO.transform.SetParent(panelGO.transform, false);
+        RectTransform nameRT = nameGO.AddComponent<RectTransform>();
+        nameRT.anchorMin = new Vector2(0f, 1f);
+        nameRT.anchorMax = new Vector2(1f, 1f);
+        nameRT.pivot = new Vector2(0f, 1f);
+        nameRT.anchoredPosition = new Vector2(25f, -14f);
+        nameRT.sizeDelta = new Vector2(-50f, 28f);
+
+        dialogueNameText = nameGO.AddComponent<TextMeshProUGUI>();
+        dialogueNameText.fontSize = 21;
+        dialogueNameText.fontStyle = FontStyles.Bold;
+        dialogueNameText.color = new Color(1f, 0.85f, 0.3f, 1f);
+        dialogueNameText.alignment = TextAlignmentOptions.TopLeft;
+        dialogueNameText.raycastTarget = false;
+
+        // Nội dung lời thoại (Content Text)
+        GameObject contentGO = new GameObject("DialogueContentText");
+        contentGO.transform.SetParent(panelGO.transform, false);
+        RectTransform contentRT = contentGO.AddComponent<RectTransform>();
+        contentRT.anchorMin = new Vector2(0f, 0f);
+        contentRT.anchorMax = new Vector2(1f, 1f);
+        contentRT.pivot = new Vector2(0f, 1f);
+        contentRT.anchoredPosition = new Vector2(25f, -44f);
+        contentRT.sizeDelta = new Vector2(-50f, -54f);
+
+        dialogueContentText = contentGO.AddComponent<TextMeshProUGUI>();
+        dialogueContentText.fontSize = 20;
+        dialogueContentText.color = Color.white;
+        dialogueContentText.alignment = TextAlignmentOptions.TopLeft;
+        dialogueContentText.enableWordWrapping = true;
+        dialogueContentText.raycastTarget = false;
+
+        TMP_FontAsset robotoFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Roboto-Bold SDF");
+        if (robotoFont == null) robotoFont = TMP_Settings.defaultFontAsset;
+        if (robotoFont != null)
+        {
+            dialogueNameText.font = robotoFont;
+            dialogueContentText.font = robotoFont;
+        }
+
+        dialoguePanel = panelGO;
+        dialoguePanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// Hiển thị lời thoại kèm hiệu ứng gõ chữ và phát âm thanh
+    /// </summary>
+    public void ShowDialogue(string speakerName, string message, float duration = 5f, AudioClip voiceClip = null)
+    {
+        // 1. Luôn luôn phát giọng nói lồng tiếng 3D nếu có audio clip (không phụ thuộc vào text)
+        if (voiceClip != null)
+        {
+            PlayVoiceClip(voiceClip);
+        }
+
+        // 2. Nếu không có nội dung chữ thì không cần mở khung phụ đề
+        if (string.IsNullOrEmpty(message)) return;
+
+        EnsureDialogueUI();
+        if (dialoguePanel == null || dialogueContentText == null) return;
+
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+        typingCoroutine = StartCoroutine(TypeDialogueRoutine(speakerName, message, duration));
+    }
+
+    private IEnumerator TypeDialogueRoutine(string speakerName, string fullMessage, float duration)
+    {
+        dialoguePanel.SetActive(true);
+        if (dialogueCanvasGroup != null) dialogueCanvasGroup.alpha = 1f;
+
+        if (dialogueNameText != null)
+        {
+            dialogueNameText.text = $"[ {speakerName} ]";
+        }
+
+        dialogueContentText.text = "";
+
+        // Tốc độ gõ chữ mượt mà
+        float charDelay = 0.02f;
+        for (int i = 0; i < fullMessage.Length; i++)
+        {
+            dialogueContentText.text = fullMessage.Substring(0, i + 1);
+
+            char c = fullMessage[i];
+            if (c == '.' || c == '!' || c == '?' || c == ',')
+            {
+                yield return new WaitForSeconds(0.08f);
+            }
+            else
+            {
+                yield return new WaitForSeconds(charDelay);
+            }
+        }
+
+        dialogueContentText.text = fullMessage;
+
+        yield return new WaitForSeconds(duration);
+
+        if (dialogueCanvasGroup != null)
+        {
+            float elapsed = 0f;
+            float fadeDuration = 0.4f;
+            while (elapsed < fadeDuration)
+            {
+                elapsed += Time.deltaTime;
+                dialogueCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsed / fadeDuration);
+                yield return null;
+            }
+        }
+
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+        typingCoroutine = null;
+    }
+
+    /// <summary>
+    /// Phát âm thanh giọng nói 3D chân thực phát ra từ chính NPC đang đứng ngoài cửa kính bốt gác
+    /// </summary>
+    public void PlayVoiceClip(AudioClip clip)
+    {
+        if (clip == null) return;
+
+        if (currentNPCObject != null)
+        {
+            AudioSource src = currentNPCObject.GetComponent<AudioSource>();
+            if (src == null)
+            {
+                src = currentNPCObject.AddComponent<AudioSource>();
+                src.spatialBlend = 0.75f; // Âm thanh định hướng 3D trong không gian
+                src.minDistance = 2f;
+                src.maxDistance = 25f;
+                src.rolloffMode = AudioRolloffMode.Linear;
+            }
+
+            src.clip = clip;
+            src.volume = 1.0f;
+            src.Play();
+            return;
+        }
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX(clip);
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(clip, Camera.main != null ? Camera.main.transform.position : transform.position);
+        }
+    }
+
+    /// <summary>
+    /// Ẩn ngay lập tức khung thoại
+    /// </summary>
+    public void HideDialogue()
+    {
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Bắt đầu chuỗi hội thoại biện hộ / thanh minh liên tục khi NPC đứng chờ tại bốt gác
+    /// </summary>
+    public void StartDefenseDialogueLoop()
+    {
+        StopDefenseDialogueLoop();
+        defenseCycleCoroutine = StartCoroutine(DefenseDialogueLoopRoutine());
+    }
+
+    /// <summary>
+    /// Dừng chuỗi hội thoại biện hộ khi người chơi đã đưa ra quyết định
+    /// </summary>
+    public void StopDefenseDialogueLoop()
+    {
+        if (defenseCycleCoroutine != null)
+        {
+            StopCoroutine(defenseCycleCoroutine);
+            defenseCycleCoroutine = null;
+        }
+    }
+
+    private IEnumerator DefenseDialogueLoopRoutine()
+    {
+        if (currentProfile == null) yield break;
+
+        // 1. Câu thoại đầu tiên khi vừa tới trước cửa kính
+        string firstLine = !string.IsNullOrEmpty(currentProfile.dialogueOnArrive)
+            ? currentProfile.dialogueOnArrive
+            : (currentProfile.isMutant
+                ? "Officer... I am... normal... Please let me in..."
+                : "Hello officer! Here are my papers, please check them!");
+
+        AudioClip arriveVoice = currentProfile.GetEffectiveArriveClip();
+        float arriveShowTime = (arriveVoice != null && arriveVoice.length > 0) ? Mathf.Max(4.5f, arriveVoice.length + 1.2f) : 5.0f;
+        ShowDialogue(currentProfile.npcName, firstLine, arriveShowTime, arriveVoice);
+
+        // Chờ hết câu thoại đầu tiên + nghỉ trước khi bắt đầu chuỗi thanh minh
+        yield return new WaitForSeconds(arriveShowTime + 3.0f);
+
+        string[] defenseLines = currentProfile.GetEffectiveDefenseDialogues();
+        int lineIdx = 0;
+
+        // Vòng lặp liên tục thanh minh / biện hộ khi đang đứng chờ quyết định
+        while (isCurrentNPCAtDesk && !hasDecisionBeenMade && currentNPCObject != null)
+        {
+            string line = (defenseLines != null && defenseLines.Length > 0)
+                ? defenseLines[lineIdx % defenseLines.Length]
+                : "";
+
+            AudioClip voice = currentProfile.GetEffectiveDefenseClip(lineIdx);
+            lineIdx++;
+
+            float showTime = (voice != null && voice.length > 0) ? Mathf.Max(4.5f, voice.length + 1.2f) : 5.0f;
+            ShowDialogue(currentProfile.npcName, line, showTime, voice);
+
+            // Giữ thoại xong nghỉ 3.5s trước câu tiếp theo
+            yield return new WaitForSeconds(showTime + 3.5f);
         }
     }
 
