@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Quản lý danh sách nhiệm vụ (Quest List) & Hiệu ứng hù dọa tăng tiến cho Night-1.
@@ -18,7 +19,25 @@ public class TaskManager : MonoBehaviour
     [Tooltip("Số máy phát điện cần kiểm tra")]
     public int totalGenerators = 1;
 
-    [Header("=== CHẾ ĐỘ TEST NHANH ===")]
+    [Header("=== PHÍM TẮT TEST (DEBUG HOTKEY) ===")]
+    [Tooltip("Phím tắt chính để hoàn thành ngay các việc ban đầu và chuyển sang kiểm soát bốt gác (Mặc định: Phím K)")]
+    public KeyCode skipToGateInspectionKey = KeyCode.K;
+
+    [Tooltip("Phím tắt phụ dự phòng (Mặc định: Phím F1)")]
+    public KeyCode alternativeSkipKey = KeyCode.F1;
+
+    [Tooltip("Tự động dịch chuyển người chơi đến bốt gác khi bấm phím tắt Test")]
+    public bool teleportToBoothOnSkip = false;
+
+    [Tooltip("Phím tắt dịch chuyển nhanh người chơi đến bốt gác kiểm tra NPC bất kỳ lúc nào (Mặc định: Phím L hoặc F2)")]
+    public KeyCode teleportToGateKey = KeyCode.L;
+    public KeyCode alternativeTeleportKey = KeyCode.F2;
+
+    [Header("=== ĐIỂM DỊCH CHUYỂN BỐT GÁC (TỰ ĐẶT) ===")]
+    [Tooltip("Tạo một Empty GameObject đặt tại vị trí đứng bên trong bốt gác và kéo vào đây")]
+    public Transform playerBoothTeleportPoint;
+
+    [Header("=== CHẾ ĐỘ TEST NHANH KHI BẮT ĐẦU ===")]
     [Tooltip("Tích vào đây nếu muốn hoàn thành ngay việc lặt vặt (hàng rào, máy phát điện, súng đèn) khi vào game để test ngay bốt gác NPC")]
     public bool quickTestGateInspection = false;
 
@@ -58,16 +77,19 @@ public class TaskManager : MonoBehaviour
 
         if (quickTestGateInspection)
         {
-            CompleteEquipmentTask();
-            fencePointsChecked = totalFencePoints;
-            generatorsChecked = totalGenerators;
+            SkipToGateInspection(teleportToBoothOnSkip);
         }
-
-        UpdateTaskUI();
+        else
+        {
+            UpdateTaskUI();
+        }
     }
 
     void Update()
     {
+        // Kiểm tra phím tắt debug để test nhanh
+        CheckDebugHotkeys();
+
         if (taskTextUI == null) return;
 
         bool isPaused = (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
@@ -80,6 +102,229 @@ public class TaskManager : MonoBehaviour
         if (taskTextUI.gameObject.activeSelf != shouldShow)
         {
             taskTextUI.gameObject.SetActive(shouldShow);
+        }
+    }
+
+    private void CheckDebugHotkeys()
+    {
+        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.ToLower();
+        if (currentScene.Contains("menu")) return;
+
+        bool isPaused = (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
+                     || (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused);
+        if (isPaused) return;
+
+        // Phím tắt: Hoàn thành các việc ban đầu -> Nhảy sang nhiệm vụ kiểm soát bốt gác (Mặc định: Phím K hoặc F1)
+        bool skipPressed = Input.GetKeyDown(skipToGateInspectionKey) || Input.GetKeyDown(alternativeSkipKey);
+        if (!skipPressed)
+        {
+            try
+            {
+                var kb = Keyboard.current;
+                if (kb != null)
+                {
+                    if ((skipToGateInspectionKey == KeyCode.K && kb.kKey.wasPressedThisFrame) ||
+                        (alternativeSkipKey == KeyCode.F1 && kb.f1Key.wasPressedThisFrame))
+                    {
+                        skipPressed = true;
+                    }
+                }
+            }
+            catch { }
+        }
+
+        if (skipPressed)
+        {
+            SkipToGateInspection(teleportToBoothOnSkip);
+        }
+
+        // Phím tắt phụ: Dịch chuyển ngay đến bốt gác kiểm tra NPC (Mặc định: Phím L hoặc F2)
+        bool tpPressed = Input.GetKeyDown(teleportToGateKey) || Input.GetKeyDown(alternativeTeleportKey);
+        if (!tpPressed)
+        {
+            try
+            {
+                var kb = Keyboard.current;
+                if (kb != null)
+                {
+                    if ((teleportToGateKey == KeyCode.L && kb.lKey.wasPressedThisFrame) ||
+                        (alternativeTeleportKey == KeyCode.F2 && kb.f2Key.wasPressedThisFrame))
+                    {
+                        tpPressed = true;
+                    }
+                }
+            }
+            catch { }
+        }
+
+        if (tpPressed)
+        {
+            TeleportToGateBooth();
+        }
+    }
+
+    /// <summary>
+    /// Phím tắt Test: Hoàn thành ngay các nhiệm vụ mở đầu (Trang bị súng/đèn, Tuần tra hàng rào, Kiểm tra máy phát điện)
+    /// và mở khóa ngay nhiệm vụ Kiểm tra cổng gác (Gate Inspection).
+    /// </summary>
+    public void SkipToGateInspection(bool teleport = false)
+    {
+        Debug.Log("[TaskManager] >>> KÍCH HOẠT PHÍM TẮT: Hoàn thành các việc ban đầu -> Nhảy sang nhiệm vụ Kiểm Soát Bốt Gác!");
+
+        // 1. Cập nhật trạng thái nhiệm vụ hoàn tất
+        hasFlashlight = true;
+        hasGun = true;
+        fencePointsChecked = totalFencePoints;
+        generatorsChecked = totalGenerators;
+
+        // 2. Tự động trang bị Đèn pin cho người chơi
+        FlashlightController fController = FindObjectOfType<FlashlightController>();
+        if (fController != null)
+        {
+            fController.EquipFlashlight();
+        }
+
+        // 3. Tự động trang bị Súng Pistol 92 cho người chơi và nạp sẵn đạn
+        PlayerGun gun = FindObjectOfType<PlayerGun>(true);
+        if (gun != null)
+        {
+            gun.gameObject.SetActive(true);
+            gun.HasGun = true;
+            if (PlayerGun.storedAmmo < 12) PlayerGun.storedAmmo = 12;
+            gun.SetAmmo(Mathf.Max(gun.CurrentAmmo, PlayerGun.storedAmmo));
+            gun.DrawGun();
+        }
+        else
+        {
+            Camera cam = Camera.main;
+            if (cam != null)
+            {
+                GameObject gunPrefab = BedInteractable.LoadGunPrefab();
+                if (gunPrefab != null)
+                {
+                    GameObject gunObj = Instantiate(gunPrefab, cam.transform);
+                    gunObj.name = "gun";
+                    gunObj.transform.localPosition = new Vector3(0.16f, -0.12f, 0.32f);
+                    gunObj.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
+                    gunObj.transform.localScale = Vector3.one * 0.28f;
+
+                    gun = gunObj.GetComponentInChildren<PlayerGun>(true) ?? gunObj.AddComponent<PlayerGun>();
+                    gun.DisableGunColliders();
+                    gun.gameObject.SetActive(true);
+                    gun.HasGun = true;
+                    PlayerGun.storedAmmo = 12;
+                    gun.SetAmmo(12);
+                    gun.DrawGun();
+                }
+            }
+        }
+
+        // 4. Ẩn các vật phẩm trên tủ (đèn pin/súng) nếu chưa nhặt
+        EquipmentPickup[] pickups = FindObjectsOfType<EquipmentPickup>(true);
+        foreach (var p in pickups)
+        {
+            if (p.equipmentType == EquipmentPickupType.Flashlight || 
+                p.equipmentType == EquipmentPickupType.Gun)
+            {
+                p.gameObject.SetActive(false);
+            }
+        }
+
+        // 5. Ẩn các điểm tuần tra hàng rào và tắt collider
+        FencePatrolZone[] zones = FindObjectsOfType<FencePatrolZone>();
+        foreach (var z in zones)
+        {
+            z.gameObject.SetActive(false);
+        }
+
+        // 6. Bật hệ thống đèn hàng rào kết nối máy phát điện
+        GeneratorInteractable gen = FindObjectOfType<GeneratorInteractable>();
+        if (gen != null)
+        {
+            gen.TurnOnAllFenceLights(false);
+        }
+
+        // 7. Đồng bộ HUD
+        if (PlayerHUDManager.instance != null)
+        {
+            if (gun != null) PlayerHUDManager.instance.UpdateAmmoUI(gun.CurrentAmmo, gun.MaxAmmo);
+            PlayerHUDManager.instance.UpdateFlashlightUI();
+            PlayerHUDManager.instance.UpdateControlsHintUI();
+        }
+
+        // 8. Phát âm thanh hoàn thành chuông ngân
+        PlayTaskCompleteSound();
+
+        // 9. Cập nhật bảng nhiệm vụ & Tự động kích hoạt nhiệm vụ kiểm soát bốt gác NPC
+        UpdateTaskUI();
+
+        // Đảm bảo bốt gác được khởi động
+        if (NPCInspectionManager.instance != null && !NPCInspectionManager.instance.isInspectionActive)
+        {
+            NPCInspectionManager.instance.StartGateInspection();
+        }
+
+        // 10. Dịch chuyển đến bốt gác nếu được yêu cầu
+        if (teleport)
+        {
+            TeleportToGateBooth();
+        }
+    }
+
+    /// <summary>
+    /// Dịch chuyển nhanh người chơi đến bốt gác kiểm tra NPC
+    /// </summary>
+    public void TeleportToGateBooth()
+    {
+        Vector3 targetPos = Vector3.zero;
+        Quaternion targetRot = Quaternion.identity;
+        bool foundDestination = false;
+
+        // 1. Ưu tiên số 1: Điểm do người dùng tự đặt trong Inspector
+        if (playerBoothTeleportPoint != null)
+        {
+            targetPos = playerBoothTeleportPoint.position;
+            targetRot = playerBoothTeleportPoint.rotation;
+            foundDestination = true;
+        }
+        else if (InspectionDeskInteractable.instance != null)
+        {
+            Transform desk = InspectionDeskInteractable.instance.transform;
+            targetPos = desk.position - desk.forward * 1.2f;
+            targetRot = Quaternion.LookRotation(desk.forward);
+            foundDestination = true;
+        }
+        else if (NPCInspectionManager.instance != null && NPCInspectionManager.instance.inspectionPoint != null)
+        {
+            Transform insp = NPCInspectionManager.instance.inspectionPoint;
+            targetPos = insp.position;
+            targetRot = insp.rotation;
+            foundDestination = true;
+        }
+
+        if (foundDestination)
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player == null && Camera.main != null)
+            {
+                player = Camera.main.transform.root.gameObject;
+            }
+
+            if (player != null)
+            {
+                CharacterController cc = player.GetComponent<CharacterController>();
+                if (cc != null) cc.enabled = false;
+
+                player.transform.position = targetPos;
+                player.transform.rotation = targetRot;
+
+                if (cc != null) cc.enabled = true;
+                Debug.Log($"[TaskManager] Đã dịch chuyển người chơi đến Bốt Gác tại toạ độ {targetPos}!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[TaskManager] Chưa gán điểm dịch chuyển 'Player Booth Teleport Point' trong Inspector!");
         }
     }
 
@@ -545,5 +790,27 @@ public class TaskManager : MonoBehaviour
         rt.sizeDelta = new Vector2(480f, 250f);
 
         taskTextUI = newTmp;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (playerBoothTeleportPoint != null)
+        {
+            // Điểm đặt chân (Vòng tròn Cyan)
+            Gizmos.color = new Color(0f, 0.9f, 1f, 0.9f);
+            Gizmos.DrawWireSphere(playerBoothTeleportPoint.position, 0.35f);
+
+            // Chiều cao mô phỏng người chơi (1.8m)
+            Vector3 headPos = playerBoothTeleportPoint.position + Vector3.up * 1.8f;
+            Gizmos.DrawLine(playerBoothTeleportPoint.position, headPos);
+            Gizmos.DrawWireSphere(headPos, 0.22f);
+
+            // Hướng mắt nhìn (Mũi tên Vàng hướng về phía trước)
+            Gizmos.color = Color.yellow;
+            Vector3 eyePos = playerBoothTeleportPoint.position + Vector3.up * 1.6f;
+            Vector3 forwardTarget = eyePos + playerBoothTeleportPoint.forward * 1.2f;
+            Gizmos.DrawLine(eyePos, forwardTarget);
+            Gizmos.DrawWireSphere(forwardTarget, 0.08f);
+        }
     }
 }

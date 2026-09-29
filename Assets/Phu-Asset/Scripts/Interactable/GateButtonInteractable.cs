@@ -14,9 +14,9 @@ public class GateButtonInteractable : Interactable
     {
         // Gán câu chữ gợi ý hiển thị [E]
         if (buttonType == ButtonType.ApprovePass)
-            promptMessage = "APPROVE PASS (CHO QUA)";
+            promptMessage = "Approve Pass";
         else
-            promptMessage = "DENY ENTRY (TỪ CHỐI)";
+            promptMessage = "Deny Entry";
     }
 
     public override void Interact()
