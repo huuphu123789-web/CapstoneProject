@@ -121,18 +121,25 @@ public class PauseMenuController : MonoBehaviour
         float savedSFX    = PlayerPrefs.GetFloat("SFXVolume", 1f);
         float savedMusic  = PlayerPrefs.GetFloat("MusicVolume", 1f);
 
+        if (savedMaster <= 0.01f) savedMaster = 1f;
+        if (savedSFX <= 0.01f) savedSFX = 1f;
+        if (savedMusic <= 0.01f) savedMusic = 1f;
+
         if (masterVolumeSlider != null)
         {
+            masterVolumeSlider.onValueChanged.RemoveListener(OnMasterChanged);
             masterVolumeSlider.value = savedMaster;
             masterVolumeSlider.onValueChanged.AddListener(OnMasterChanged);
         }
         if (sfxVolumeSlider != null)
         {
+            sfxVolumeSlider.onValueChanged.RemoveListener(OnSFXChanged);
             sfxVolumeSlider.value = savedSFX;
             sfxVolumeSlider.onValueChanged.AddListener(OnSFXChanged);
         }
         if (musicVolumeSlider != null)
         {
+            musicVolumeSlider.onValueChanged.RemoveListener(OnMusicChanged);
             musicVolumeSlider.value = savedMusic;
             musicVolumeSlider.onValueChanged.AddListener(OnMusicChanged);
         }
@@ -200,9 +207,9 @@ public class PauseMenuController : MonoBehaviour
     /// <summary>Gán vào OnClick() nút "Lưu & Thoát Main Menu"</summary>
     public void SaveAndQuitToMainMenu()
     {
-        if (masterVolumeSlider != null) PlayerPrefs.SetFloat("MasterVolume", masterVolumeSlider.value);
-        if (sfxVolumeSlider != null)    PlayerPrefs.SetFloat("SFXVolume", sfxVolumeSlider.value);
-        if (musicVolumeSlider != null)  PlayerPrefs.SetFloat("MusicVolume", musicVolumeSlider.value);
+        if (masterVolumeSlider != null && masterVolumeSlider.value > 0.01f) PlayerPrefs.SetFloat("MasterVolume", masterVolumeSlider.value);
+        if (sfxVolumeSlider != null && sfxVolumeSlider.value > 0.01f)    PlayerPrefs.SetFloat("SFXVolume", sfxVolumeSlider.value);
+        if (musicVolumeSlider != null && musicVolumeSlider.value > 0.01f)  PlayerPrefs.SetFloat("MusicVolume", musicVolumeSlider.value);
 
         // Lưu Quality nếu có
         if (qualityDropdown != null)

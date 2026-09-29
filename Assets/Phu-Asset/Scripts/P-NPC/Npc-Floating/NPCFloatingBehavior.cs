@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
 public class NPCFloatingBehavior : MonoBehaviour
 {
     [Header("=== Cấu Hình Tự Đi Bộ ===")]
@@ -33,8 +32,11 @@ public class NPCFloatingBehavior : MonoBehaviour
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        if (agent == null) agent = GetComponentInParent<NavMeshAgent>();
         if (animator == null) animator = GetComponent<Animator>();
+        if (animator == null) animator = GetComponentInChildren<Animator>();
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = GetComponentInParent<AudioSource>();
     }
 
     void Start()
@@ -46,29 +48,50 @@ public class NPCFloatingBehavior : MonoBehaviour
             if (zoneObj != null) inspectionPoint = zoneObj.transform;
         }
 
-        if (inspectionPoint != null) MoveToInspectionPoint();
+        if (NPCInspectionManager.instance == null && inspectionPoint != null)
+        {
+            MoveToInspectionPoint();
+        }
+    }
+
+    private void EnsureAgentOnNavMesh()
+    {
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
+        if (agent != null && !agent.isOnNavMesh)
+        {
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 20f, NavMesh.AllAreas))
+            {
+                agent.Warp(hit.position);
+            }
+        }
     }
 
     public void MoveToInspectionPoint()
     {
         isInspecting = false;
-        agent.isStopped = false;
-        agent.speed = walkSpeed;
-        agent.SetDestination(inspectionPoint.position);
+        EnsureAgentOnNavMesh();
+        if (agent != null && agent.isOnNavMesh && inspectionPoint != null)
+        {
+            agent.isStopped = false;
+            agent.speed = walkSpeed;
+            Vector3 target = inspectionPoint.position;
+            if (NavMesh.SamplePosition(target, out NavMeshHit hit, 20f, NavMesh.AllAreas)) target = hit.position;
+            agent.SetDestination(target);
+        }
         if (animator != null) animator.SetBool("isWalk", true);
     }
 
     public void StartInspection()
     {
         isInspecting = true;
-        agent.isStopped = true;
+        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
         if (animator != null) animator.SetBool("isWalk", false);
         originalLocalPos = transform.localPosition;
     }
 
     void Update()
     {
-        if (!isInspecting && agent.velocity.magnitude > 0.1f)
+        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.velocity.magnitude > 0.1f)
         {
             footstepTimer -= Time.deltaTime;
             if (footstepTimer <= 0)
@@ -78,9 +101,9 @@ public class NPCFloatingBehavior : MonoBehaviour
             }
         }
 
-        if (!isInspecting && agent.enabled && agent.hasPath)
+        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.enabled && !agent.pathPending && agent.hasPath)
         {
-            if (agent.remainingDistance <= agent.stoppingDistance + 0.2f)
+            if (agent.remainingDistance > 0.1f && agent.remainingDistance <= agent.stoppingDistance + 0.2f)
             {
                 StartInspection();
             }
