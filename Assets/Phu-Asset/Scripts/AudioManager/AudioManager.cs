@@ -34,11 +34,17 @@ public class AudioManager : MonoBehaviour
     [Header("AudioSource")] 
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;  
+    [SerializeField] private AudioSource windSource;
 
     [Header("Audio Clips")]
     public AudioClip backgroundMusic;
     public AudioClip buttonHoverSFX;
     public AudioClip buttonclickSFX;
+
+    [Header("Ambient Wind")]
+    public AudioClip windSound;
+    [Range(0f, 1f)] public float windVolume = 0.45f;
+    public bool playWindOnStart = true;
 
     void Awake()
     {
@@ -64,9 +70,17 @@ public class AudioManager : MonoBehaviour
         {
             musicSource = gameObject.AddComponent<AudioSource>();
         }
+        if (windSource == null)
+        {
+            windSource = gameObject.AddComponent<AudioSource>();
+        }
 
         sfxSource.mute = false;
         musicSource.mute = false;
+        windSource.mute = false;
+        windSource.loop = true;
+        windSource.playOnAwake = false;
+        windSource.spatialBlend = 0f; // 2D Sound
 
         // Nếu có mainMixer nhưng AudioSource chưa gán OutputAudioMixerGroup, tự động gán
         if (mainMixer != null)
@@ -82,6 +96,18 @@ public class AudioManager : MonoBehaviour
                 var musicGroups = mainMixer.FindMatchingGroups("Music");
                 if (musicGroups != null && musicGroups.Length > 0)
                     musicSource.outputAudioMixerGroup = musicGroups[0];
+            }
+            if (windSource.outputAudioMixerGroup == null)
+            {
+                var ambGroups = mainMixer.FindMatchingGroups("Ambient");
+                if (ambGroups != null && ambGroups.Length > 0)
+                    windSource.outputAudioMixerGroup = ambGroups[0];
+                else
+                {
+                    var sfxGroups = mainMixer.FindMatchingGroups("SFX");
+                    if (sfxGroups != null && sfxGroups.Length > 0)
+                        windSource.outputAudioMixerGroup = sfxGroups[0];
+                }
             }
         }
     }
@@ -136,6 +162,14 @@ public class AudioManager : MonoBehaviour
 
         // 4. Phát nhạc nền nếu có
         if (backgroundMusic != null) PlayMusic(backgroundMusic);
+
+        // 5. Phát tiếng gió nền nếu có
+        float savedWind = PlayerPrefs.GetFloat("WindVolume", windVolume);
+        SetWindVolume(savedWind);
+        if (playWindOnStart && windSound != null)
+        {
+            PlayWind(windSound, savedWind);
+        }
     }
 
     void Update()
@@ -192,10 +226,16 @@ public class AudioManager : MonoBehaviour
         SetMasterVolume(1f);
         SetSFXVolume(1f);
         SetMusicVolume(1f);
+        SetWindVolume(windVolume);
 
         if (backgroundMusic != null && (musicSource == null || !musicSource.isPlaying))
         {
             PlayMusic(backgroundMusic);
+        }
+
+        if (windSound != null && (windSource == null || !windSource.isPlaying))
+        {
+            PlayWind(windSound, windVolume);
         }
 
         Debug.Log("[AudioManager] Đã khôi phục toàn bộ âm thanh về 100%!");
@@ -215,6 +255,40 @@ public class AudioManager : MonoBehaviour
         if(clip == null) return;
         EnsureAudioSources();
         sfxSource.PlayOneShot(clip);
+    }
+
+    public void PlayWind(AudioClip clip = null, float volume = -1f)
+    {
+        EnsureAudioSources();
+        if (clip != null) windSound = clip;
+        if (windSound == null) return;
+
+        if (volume >= 0f) windVolume = Mathf.Clamp01(volume);
+        windSource.clip = windSound;
+        windSource.volume = windVolume;
+        windSource.loop = true;
+        if (!windSource.isPlaying)
+        {
+            windSource.Play();
+        }
+    }
+
+    public void StopWind()
+    {
+        if (windSource != null && windSource.isPlaying)
+        {
+            windSource.Stop();
+        }
+    }
+
+    public void SetWindVolume(float sliderValue)
+    {
+        windVolume = Mathf.Clamp01(sliderValue);
+        PlayerPrefs.SetFloat("WindVolume", windVolume);
+        if (windSource != null)
+        {
+            windSource.volume = windVolume;
+        }
     }
 
     public void SetMasterVolume(float sliderValue)
