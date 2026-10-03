@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f5da0db8dd5c249189f32bcc4319bc96
+guid: 9c07a97b75b5e0c4484a59844c506c5e
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -402,5 +402,5 @@ AssetOrigin:
   productId: 394832
   packageName: Deadbody 3D Lite
   packageVersion: 1.0
-  assetPath: Assets/Nghia Asset/Packages/DeadBody LITE/Meshes/Bdy.fbx
+  assetPath: Assets/DeadBody LITE/Meshes/Bdy.fbx
   uploadId: 958374
