@@ -16,6 +16,11 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Slider sfxSlider;
     [SerializeField] private Slider musicSlider;
 
+    [Header("=== TEXT HIỂN THỊ ÂM LƯỢNG (TÙY CHỌN) ===")]
+    [SerializeField] private TextMeshProUGUI masterValueText;
+    [SerializeField] private TextMeshProUGUI sfxValueText;
+    [SerializeField] private TextMeshProUGUI musicValueText;
+
     [Header("=== NÚT MUTE MASTER (TÙY CHỌN) ===")]
     [SerializeField] private Image masterMuteImage;
     [SerializeField] private Sprite masterSoundOnSprite;
@@ -34,6 +39,24 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown qualityDropdown;
     [SerializeField] private Dropdown legacyQualityDropdown;
 
+    [Header("=== CHẾ ĐỘ MÀN HÌNH (WINDOW MODE) ===")]
+    [SerializeField] private TMP_Dropdown windowModeDropdown;
+
+    [Header("=== ĐỒNG BỘ DỌC (V-SYNC) ===")]
+    [SerializeField] private Toggle vsyncToggle;
+
+    [Header("=== ĐỘ SÁNG MÀN HÌNH (BRIGHTNESS) ===")]
+    [SerializeField] private Slider brightnessSlider;
+    [SerializeField] private TextMeshProUGUI brightnessValueText;
+    [SerializeField] private Image brightnessOverlay; // Panel đen phủ màn hình điều chỉnh độ sáng (tùy chọn)
+
+    [Header("=== GÓC NHÌN CAMERA (FIELD OF VIEW) ===")]
+    [SerializeField] private Slider fovSlider;
+    [SerializeField] private TextMeshProUGUI fovValueText;
+
+    [Header("=== GIỚI HẠN KHUNG HÌNH (FPS LIMIT) ===")]
+    [SerializeField] private TMP_Dropdown fpsLimitDropdown;
+
     private Resolution[] resolutions;
     private bool isMasterMuted = false;
     private bool isSFXMuted = false;
@@ -48,6 +71,11 @@ public class SettingManager : MonoBehaviour
         SetupAudioUI();
         SetupResolutionDropdown();
         SetupQualityDropdown();
+        SetupWindowModeDropdown();
+        SetupVSyncToggle();
+        SetupBrightnessSlider();
+        SetupFOVSlider();
+        SetupFPSLimitDropdown();
     }
 
     void OnEnable()
@@ -89,6 +117,10 @@ public class SettingManager : MonoBehaviour
         UpdateMasterMuteUI();
         UpdateSFXMuteUI();
 
+        if (masterValueText != null) masterValueText.text = Mathf.RoundToInt(savedMaster * 100) + "%";
+        if (sfxValueText != null) sfxValueText.text = Mathf.RoundToInt(savedSFX * 100) + "%";
+        if (musicValueText != null) musicValueText.text = Mathf.RoundToInt(savedMusic * 100) + "%";
+
         // Áp dụng âm thanh vào AudioManager ngay lập tức
         if (AudioManager.instance != null)
         {
@@ -101,6 +133,7 @@ public class SettingManager : MonoBehaviour
     public void OnMasterSliderChanged(float value)
     {
         PlayerPrefs.SetFloat("MasterVolume", value);
+        if (masterValueText != null) masterValueText.text = Mathf.RoundToInt(value * 100) + "%";
         if (!isMasterMuted && AudioManager.instance != null)
         {
             AudioManager.instance.SetMasterVolume(value);
@@ -110,6 +143,7 @@ public class SettingManager : MonoBehaviour
     public void OnSFXSliderChanged(float value)
     {
         PlayerPrefs.SetFloat("SFXVolume", value);
+        if (sfxValueText != null) sfxValueText.text = Mathf.RoundToInt(value * 100) + "%";
         if (!isSFXMuted && AudioManager.instance != null)
         {
             AudioManager.instance.SetSFXVolume(value);
@@ -119,6 +153,7 @@ public class SettingManager : MonoBehaviour
     public void OnMusicSliderChanged(float value)
     {
         PlayerPrefs.SetFloat("MusicVolume", value);
+        if (musicValueText != null) musicValueText.text = Mathf.RoundToInt(value * 100) + "%";
         if (AudioManager.instance != null)
         {
             AudioManager.instance.SetMusicVolume(value);
@@ -244,5 +279,136 @@ public class SettingManager : MonoBehaviour
     {
         QualitySettings.SetQualityLevel(qualityIndex);
         PlayerPrefs.SetInt("QualityLevel", qualityIndex);
+    }
+
+    // ================= 4. XỬ LÝ CHẾ ĐỘ MÀN HÌNH (WINDOW MODE) =================
+    private void SetupWindowModeDropdown()
+    {
+        if (windowModeDropdown == null) return;
+
+        List<string> modes = new List<string>() { "Toàn màn hình (Fullscreen)", "Không viền (Borderless)", "Cửa sổ (Windowed)" };
+        windowModeDropdown.ClearOptions();
+        windowModeDropdown.AddOptions(modes);
+
+        int savedMode = PlayerPrefs.GetInt("WindowMode", 0);
+        windowModeDropdown.value = savedMode;
+        windowModeDropdown.RefreshShownValue();
+        windowModeDropdown.onValueChanged.AddListener(SetWindowMode);
+        SetWindowMode(savedMode);
+    }
+
+    public void SetWindowMode(int index)
+    {
+        FullScreenMode mode = FullScreenMode.ExclusiveFullScreen;
+        if (index == 0) mode = FullScreenMode.ExclusiveFullScreen;
+        else if (index == 1) mode = FullScreenMode.FullScreenWindow;
+        else if (index == 2) mode = FullScreenMode.Windowed;
+
+        Screen.fullScreenMode = mode;
+        PlayerPrefs.SetInt("WindowMode", index);
+    }
+
+    // ================= 5. XỬ LÝ V-SYNC =================
+    private void SetupVSyncToggle()
+    {
+        if (vsyncToggle == null) return;
+
+        bool savedVSync = PlayerPrefs.GetInt("VSync", 1) == 1;
+        vsyncToggle.isOn = savedVSync;
+        vsyncToggle.onValueChanged.AddListener(SetVSync);
+        SetVSync(savedVSync);
+    }
+
+    public void SetVSync(bool isEnabled)
+    {
+        QualitySettings.vSyncCount = isEnabled ? 1 : 0;
+        PlayerPrefs.SetInt("VSync", isEnabled ? 1 : 0);
+    }
+
+    // ================= 6. XỬ LÝ ĐỘ SÁNG (BRIGHTNESS) =================
+    private void SetupBrightnessSlider()
+    {
+        if (brightnessSlider == null) return;
+
+        float savedBrightness = PlayerPrefs.GetFloat("Brightness", 0.5f);
+        brightnessSlider.onValueChanged.RemoveListener(OnBrightnessChanged);
+        brightnessSlider.value = savedBrightness;
+        brightnessSlider.onValueChanged.AddListener(OnBrightnessChanged);
+        OnBrightnessChanged(savedBrightness);
+    }
+
+    public void OnBrightnessChanged(float val)
+    {
+        PlayerPrefs.SetFloat("Brightness", val);
+        if (brightnessValueText != null)
+        {
+            brightnessValueText.text = val.ToString("0.0");
+        }
+
+        if (brightnessOverlay != null)
+        {
+            float alpha = Mathf.Abs(val - 0.5f) * 1.5f;
+            Color c = val < 0.5f ? Color.black : Color.white;
+            c.a = Mathf.Clamp(alpha, 0f, 0.7f);
+            brightnessOverlay.color = c;
+        }
+
+        RenderSettings.ambientLight = Color.white * val;
+    }
+
+    // ================= 7. XỬ LÝ GÓC NHÌN (FIELD OF VIEW) =================
+    private void SetupFOVSlider()
+    {
+        if (fovSlider == null) return;
+
+        float savedFOV = PlayerPrefs.GetFloat("FOV", 75f);
+        fovSlider.onValueChanged.RemoveListener(OnFOVChanged);
+        fovSlider.value = savedFOV;
+        fovSlider.onValueChanged.AddListener(OnFOVChanged);
+        OnFOVChanged(savedFOV);
+    }
+
+    public void OnFOVChanged(float val)
+    {
+        PlayerPrefs.SetFloat("FOV", val);
+        if (fovValueText != null)
+        {
+            fovValueText.text = Mathf.RoundToInt(val).ToString();
+        }
+
+        if (Camera.main != null)
+        {
+            Camera.main.fieldOfView = val;
+        }
+    }
+
+    // ================= 8. XỬ LÝ GIỚI HẠN FPS =================
+    private void SetupFPSLimitDropdown()
+    {
+        if (fpsLimitDropdown == null) return;
+
+        List<string> fpsOptions = new List<string>() { "Không giới hạn", "60 FPS", "120 FPS", "144 FPS" };
+        fpsLimitDropdown.ClearOptions();
+        fpsLimitDropdown.AddOptions(fpsOptions);
+
+        int savedIndex = PlayerPrefs.GetInt("FPSLimitIndex", 0);
+        fpsLimitDropdown.value = savedIndex;
+        fpsLimitDropdown.RefreshShownValue();
+        fpsLimitDropdown.onValueChanged.AddListener(SetFPSLimit);
+        SetFPSLimit(savedIndex);
+    }
+
+    public void SetFPSLimit(int index)
+    {
+        int targetFPS = -1;
+        switch (index)
+        {
+            case 1: targetFPS = 60; break;
+            case 2: targetFPS = 120; break;
+            case 3: targetFPS = 144; break;
+            default: targetFPS = -1; break;
+        }
+        Application.targetFrameRate = targetFPS;
+        PlayerPrefs.SetInt("FPSLimitIndex", index);
     }
 }
