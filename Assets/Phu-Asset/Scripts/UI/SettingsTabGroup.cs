@@ -39,16 +39,23 @@ public class SettingsTabGroup : MonoBehaviour
     public int defaultTabIndex = 0;
 
     [Header("=== MÀU SẮC CHỮ (TEXT COLORS) ===")]
-    [Tooltip("Màu chữ khi tab ĐƯỢC CHỌN (nằm trên nền cọ trắng nên để màu tối/đen)")]
-    public Color textActiveColor = new Color(0.1f, 0.1f, 0.1f, 1.0f); // #1A1A1A
+    [Tooltip("Màu chữ khi tab ĐƯỢC CHỌN (Chữ trắng sáng nổi bật)")]
+    public Color textActiveColor = Color.white;
 
     [Tooltip("Màu chữ khi tab KHÔNG CHỌN (màu trắng mờ)")]
-    public Color textInactiveColor = new Color(1f, 1f, 1f, 0.45f);
+    public Color textInactiveColor = new Color(1f, 1f, 1f, 0.4f);
 
-    [Tooltip("Màu chữ khi RÊ CHUỘT VÀO tab chưa chọn (sáng rõ hơn)")]
-    public Color textHoverColor = Color.white;
+    [Tooltip("Màu chữ khi RÊ CHUỘT VÀO tab chưa chọn (sáng hơn)")]
+    public Color textHoverColor = new Color(1f, 1f, 1f, 0.85f);
 
-    [Header("=== HIỆU ỨNG VỆT CỌ (BRUSH ANIMATION) ===")]
+    [Header("=== HIỆU ỨNG VỆT CỌ NỀN (BRUSH SETTINGS) ===")]
+    [Tooltip("Màu vệt cọ (Mặc định màu trắng, hoặc có thể chỉnh màu xám đen / đỏ tùy thích)")]
+    public Color brushColor = Color.white;
+
+    [Range(0.05f, 1f)]
+    [Tooltip("Độ mờ tối đa của vệt nền khi chọn (Đặt 0.35 - 0.5 để tạo vệt sáng mờ ảo phía sau chữ trắng, hoặc 1.0 nếu nền tối)")]
+    public float brushMaxAlpha = 0.45f;
+
     [Range(0.05f, 0.5f)]
     [Tooltip("Thời gian mờ / hiện vệt cọ (giây)")]
     public float transitionDuration = 0.2f;
@@ -108,6 +115,7 @@ public class SettingsTabGroup : MonoBehaviour
             // Thiết lập CanvasGroup cho vệt cọ để làm mượt fade
             if (tab.brushBackground != null)
             {
+                tab.brushBackground.color = brushColor;
                 tab.brushCanvasGroup = tab.brushBackground.GetComponent<CanvasGroup>();
                 if (tab.brushCanvasGroup == null)
                 {
@@ -210,8 +218,8 @@ public class SettingsTabGroup : MonoBehaviour
     private IEnumerator AnimateBrush(TabItem tab, bool show)
     {
         float duration = transitionDuration;
-        float startAlpha = tab.brushCanvasGroup != null ? tab.brushCanvasGroup.alpha : (show ? 0f : 1f);
-        float targetAlpha = show ? 1f : 0f;
+        float startAlpha = tab.brushCanvasGroup != null ? tab.brushCanvasGroup.alpha : (show ? 0f : brushMaxAlpha);
+        float targetAlpha = show ? brushMaxAlpha : 0f;
 
         Transform brushT = tab.brushBackground.transform;
         Vector3 startScale = brushT.localScale;
