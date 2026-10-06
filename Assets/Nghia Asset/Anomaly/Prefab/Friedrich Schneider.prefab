@@ -7879,8 +7879,9 @@ GameObject:
   - component: {fileID: 6172087832360520759}
   - component: {fileID: 454452331748628047}
   - component: {fileID: 126026709229118763}
+  - component: {fileID: 6983802197507274932}
   m_Layer: 9
-  m_Name: npc_Anomaly7
+  m_Name: Friedrich Schneider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7978,7 +7979,7 @@ Animator:
   m_GameObject: {fileID: 7515273807484383229}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 4350b309aa35d8241b5a918441629bdc, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0696035dc095462479ee2aad92685e61, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -7990,6 +7991,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6983802197507274932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515273807484383229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ead6dcd10da448d9d1a63bdd953d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCNormalBehavior
+  inspectionPoint: {fileID: 0}
+  walkSpeed: 2.5
+  footstepSounds: []
+  footstepInterval: 0.45
+  isInspecting: 0
+  animator: {fileID: 0}
+  audioSource: {fileID: 0}
 --- !u!1 &7553022859084554286
 GameObject:
   m_ObjectHideFlags: 0

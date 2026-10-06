@@ -11383,8 +11383,9 @@ GameObject:
   - component: {fileID: 5000063141429211784}
   - component: {fileID: 2884277216064698653}
   - component: {fileID: 7648916917466938263}
+  - component: {fileID: -3522330462236076484}
   m_Layer: 9
-  m_Name: npc_Anomaly9
+  m_Name: Hans Becker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11482,7 +11483,7 @@ Animator:
   m_GameObject: {fileID: 7334465058201160172}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 4350b309aa35d8241b5a918441629bdc, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0696035dc095462479ee2aad92685e61, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -11494,6 +11495,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-3522330462236076484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7334465058201160172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ead6dcd10da448d9d1a63bdd953d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCNormalBehavior
+  inspectionPoint: {fileID: 0}
+  walkSpeed: 2.5
+  footstepSounds: []
+  footstepInterval: 0.45
+  isInspecting: 0
+  animator: {fileID: 0}
+  audioSource: {fileID: 0}
 --- !u!1 &7337404514408433300
 GameObject:
   m_ObjectHideFlags: 0

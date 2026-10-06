@@ -169,8 +169,9 @@ GameObject:
   - component: {fileID: 7153582921349707197}
   - component: {fileID: 5310498722229325584}
   - component: {fileID: 5204988546649191782}
+  - component: {fileID: 9158038389966861141}
   m_Layer: 0
-  m_Name: npc_Anomaly3
+  m_Name: "\u041C\u0438\u0445\u0430\u0438\u043B \u041C\u043E\u0440\u043E\u0437\u043E\u0432"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -276,7 +277,7 @@ Animator:
   m_GameObject: {fileID: 142227596585828413}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 4350b309aa35d8241b5a918441629bdc, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0696035dc095462479ee2aad92685e61, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -288,6 +289,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &9158038389966861141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142227596585828413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ead6dcd10da448d9d1a63bdd953d11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCNormalBehavior
+  inspectionPoint: {fileID: 0}
+  walkSpeed: 2.5
+  footstepSounds: []
+  footstepInterval: 0.45
+  isInspecting: 0
+  animator: {fileID: 0}
+  audioSource: {fileID: 0}
 --- !u!1 &207086890599480694
 GameObject:
   m_ObjectHideFlags: 0

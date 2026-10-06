@@ -119,10 +119,20 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &273431338 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2339909951102193981, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
+  m_PrefabInstance: {fileID: 5010960218114833173}
+  m_PrefabAsset: {fileID: 0}
 --- !u!108 &410087040 stripped
 Light:
   m_CorrespondingSourceObject: {fileID: 5175023466763809439, guid: 16c5705770875449f8729da152f8765c, type: 3}
   m_PrefabInstance: {fileID: 7627084061642077724}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &451687347 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4972868011503049434, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+  m_PrefabInstance: {fileID: 709130542}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &522875478 stripped
 GameObject:
@@ -251,16 +261,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 527353050}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1559231107}
+  m_Father: {fileID: 1496887390}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.000030518}
+  m_AnchoredPosition: {x: 0, y: -0.00012207031}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &527353052
@@ -406,9 +416,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8805726778319792335, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4972868011503049434, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1496887390}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
 --- !u!1 &734146457
@@ -504,7 +521,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 734146457}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 4
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -597,6 +614,74 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &941126525
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 941126526}
+  - component: {fileID: 941126528}
+  - component: {fileID: 941126527}
+  m_Layer: 0
+  m_Name: CCTVInteract
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &941126526
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941126525}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.43045938, y: -0.70105743, z: -0.5609855, w: 0.09229593}
+  m_LocalPosition: {x: -49.831, y: 0.619, z: -47.214}
+  m_LocalScale: {x: 1.2000002, y: 1.2, z: 1.9409}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 273431338}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &941126527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941126525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fd330c8e61383f4fb51193dc41e2da2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CCTVInteract
+  cctvPanel: {fileID: 1496887387}
+  cctvCamera: {fileID: 734146461}
+--- !u!65 &941126528
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 941126525}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2, y: 2, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1187255251
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -764,6 +849,82 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1496887387
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1496887390}
+  - component: {fileID: 1496887389}
+  - component: {fileID: 1496887388}
+  m_Layer: 5
+  m_Name: CCTVPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1496887388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1496887387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1496887389
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1496887387}
+  m_CullTransparentMesh: 1
+--- !u!224 &1496887390
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1496887387}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 527353051}
+  m_Father: {fileID: 451687347}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0.00012207031}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &1536094390 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7559002052989597440, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
@@ -993,10 +1154,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 1925166454959586638, guid: 9035c1a6c8c8742a5b398ceac4b5895a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 527353051}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 9073342852589852426, guid: 9035c1a6c8c8742a5b398ceac4b5895a, type: 3}
       insertIndex: -1
@@ -1005,11 +1163,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 522875485}
   m_SourcePrefab: {fileID: 100100000, guid: 9035c1a6c8c8742a5b398ceac4b5895a, type: 3}
---- !u!224 &1559231107 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1925166454959586638, guid: 9035c1a6c8c8742a5b398ceac4b5895a, type: 3}
-  m_PrefabInstance: {fileID: 1559231106}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1848624747
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1552,6 +1705,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2339909951102193981, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
+      insertIndex: 20
+      addedObject: {fileID: 941126526}
     - targetCorrespondingSourceObject: {fileID: 7559002052989597440, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
       insertIndex: -1
       addedObject: {fileID: 734146458}
@@ -1885,6 +2041,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCInspectionManager
   npcQueue:
+  - npcName: npc_Anomaly1
+    isMutant: 0
+    npcPrefab: {fileID: 307589746605876181, guid: 828c86cff88e1e949a8a77e2a2af9e3a, type: 3}
+    cccdTexture: {fileID: 2800000, guid: afa4ac6a135cca946baa35f62bbc193a, type: 3}
+    surrenderConfirmTexture: {fileID: 2800000, guid: 41d3309fd063bee42abc24453ce7a9b8, type: 3}
+    dialogueOnArrive: I'm clean, please let me pass
+    defenseDialogues: []
+    dialogueOnApproved: "Yes, yes , yes\t"
+    dialogueOnDenied: Ohh, C'mom shit F*ck
+    voiceArriveClip: {fileID: 8300000, guid: de81b9ced9ed44a618b955e592900045, type: 3}
+    defenseVoiceClips:
+    - {fileID: 8300000, guid: 0fdbd38d55b7f47babe05ad2db2b8624, type: 3}
+    - {fileID: 8300000, guid: fef3cae7a1bef466283b09c9ed7bb66d, type: 3}
+    - {fileID: 8300000, guid: 4a3f75378f5c949c2b721002d828a2be, type: 3}
+    - {fileID: 8300000, guid: cec661205502c4027a879c25e01c98c9, type: 3}
+    voiceApproveClip: {fileID: 8300000, guid: c876eb32cda87471ba998ceb43fe9212, type: 3}
+    voiceDenyClip: {fileID: 8300000, guid: 0ad537d18d2db4448a8fafb891e27b77, type: 3}
   - npcName: Trinh Hoang Long
     isMutant: 1
     npcPrefab: {fileID: 9104195658466713365, guid: bbbe81fe76f4b46a7b58feeb77bcc7f0, type: 3}
@@ -1907,23 +2080,6 @@ MonoBehaviour:
   - npcName: Victor Jean Mercier
     isMutant: 0
     npcPrefab: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
-    cccdTexture: {fileID: 2800000, guid: afa4ac6a135cca946baa35f62bbc193a, type: 3}
-    surrenderConfirmTexture: {fileID: 2800000, guid: 41d3309fd063bee42abc24453ce7a9b8, type: 3}
-    dialogueOnArrive: I'm clean, please let me pass
-    defenseDialogues: []
-    dialogueOnApproved: "Yes, yes , yes\t"
-    dialogueOnDenied: Ohh, C'mom shit F*ck
-    voiceArriveClip: {fileID: 8300000, guid: de81b9ced9ed44a618b955e592900045, type: 3}
-    defenseVoiceClips:
-    - {fileID: 8300000, guid: 0fdbd38d55b7f47babe05ad2db2b8624, type: 3}
-    - {fileID: 8300000, guid: fef3cae7a1bef466283b09c9ed7bb66d, type: 3}
-    - {fileID: 8300000, guid: 4a3f75378f5c949c2b721002d828a2be, type: 3}
-    - {fileID: 8300000, guid: cec661205502c4027a879c25e01c98c9, type: 3}
-    voiceApproveClip: {fileID: 8300000, guid: c876eb32cda87471ba998ceb43fe9212, type: 3}
-    voiceDenyClip: {fileID: 8300000, guid: 0ad537d18d2db4448a8fafb891e27b77, type: 3}
-  - npcName: npc_Anomaly1
-    isMutant: 0
-    npcPrefab: {fileID: 307589746605876181, guid: 828c86cff88e1e949a8a77e2a2af9e3a, type: 3}
     cccdTexture: {fileID: 2800000, guid: afa4ac6a135cca946baa35f62bbc193a, type: 3}
     surrenderConfirmTexture: {fileID: 2800000, guid: 41d3309fd063bee42abc24453ce7a9b8, type: 3}
     dialogueOnArrive: I'm clean, please let me pass
