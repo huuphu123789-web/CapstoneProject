@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8a14175f27a8f4f66b8547a774c43936
+guid: 1e4cafb5f86cd184788f97ca5bcde3cd
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -109,5 +109,5 @@ AssetOrigin:
   productId: 394832
   packageName: Deadbody 3D Lite
   packageVersion: 1.0
-  assetPath: Assets/Nghia Asset/Packages/DeadBody LITE/Meshes/Deadbody_Hanging2.fbx
+  assetPath: Assets/DeadBody LITE/Meshes/Deadbody_Hanging2.fbx
   uploadId: 958374

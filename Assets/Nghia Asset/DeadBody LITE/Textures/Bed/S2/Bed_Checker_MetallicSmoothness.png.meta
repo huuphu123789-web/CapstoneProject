@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0bae3c64829074040a3c5444e91cffe3
+guid: 36c0e7df0f8973340b1699a3a4198c3b
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -99,5 +99,5 @@ AssetOrigin:
   productId: 394832
   packageName: Deadbody 3D Lite
   packageVersion: 1.0
-  assetPath: Assets/Nghia Asset/Packages/DeadBody LITE/Textures/Bed/S2/Bed_Checker_MetallicSmoothness.png
+  assetPath: Assets/DeadBody LITE/Textures/Bed/S2/Bed_Checker_MetallicSmoothness.png
   uploadId: 958374

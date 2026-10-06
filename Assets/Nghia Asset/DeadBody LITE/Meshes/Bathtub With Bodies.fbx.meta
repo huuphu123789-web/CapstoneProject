@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1d8f2b09834a64baebc0410ffb30b5a5
+guid: d322808153d7c8e488ab21f970924e9b
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -109,5 +109,5 @@ AssetOrigin:
   productId: 394832
   packageName: Deadbody 3D Lite
   packageVersion: 1.0
-  assetPath: Assets/Nghia Asset/Packages/DeadBody LITE/Meshes/Bathtub With Bodies.fbx
+  assetPath: Assets/DeadBody LITE/Meshes/Bathtub With Bodies.fbx
   uploadId: 958374
