@@ -57,6 +57,20 @@ public class SettingManager : MonoBehaviour
     [Header("=== GIỚI HẠN KHUNG HÌNH (FPS LIMIT) ===")]
     [SerializeField] private TMP_Dropdown fpsLimitDropdown;
 
+    [Header("=== GAMEPLAY SETTINGS ===")]
+    [SerializeField] private Toggle headBobbingToggle;
+    [SerializeField] private Toggle interactHintsToggle;
+    [SerializeField] private TMP_Dropdown sprintModeDropdown;
+    [SerializeField] private Toggle crosshairToggle;
+
+    [Header("=== UI SCALE ===")]
+    [SerializeField] private TMP_Dropdown uiScaleDropdown;
+    [SerializeField] private Slider uiScaleSlider;
+    [SerializeField] private TextMeshProUGUI uiScaleValueText;
+
+    [Header("=== LANGUAGE ===")]
+    [SerializeField] private TMP_Dropdown languageDropdown;
+
     private Resolution[] resolutions;
     private bool isMasterMuted = false;
     private bool isSFXMuted = false;
@@ -76,11 +90,17 @@ public class SettingManager : MonoBehaviour
         SetupBrightnessSlider();
         SetupFOVSlider();
         SetupFPSLimitDropdown();
+        SetupGameplaySettings();
+        SetupUIScale();
+        SetupLanguage();
     }
 
     void OnEnable()
     {
         SetupAudioUI();
+        SetupGameplaySettings();
+        SetupUIScale();
+        SetupLanguage();
     }
 
     // ================= 1. XỬ LÝ ÂM THANH =================
@@ -286,7 +306,7 @@ public class SettingManager : MonoBehaviour
     {
         if (windowModeDropdown == null) return;
 
-        List<string> modes = new List<string>() { "Toàn màn hình (Fullscreen)", "Không viền (Borderless)", "Cửa sổ (Windowed)" };
+        List<string> modes = new List<string>() { "Fullscreen", "Borderless", "Windowed" };
         windowModeDropdown.ClearOptions();
         windowModeDropdown.AddOptions(modes);
 
@@ -387,7 +407,7 @@ public class SettingManager : MonoBehaviour
     {
         if (fpsLimitDropdown == null) return;
 
-        List<string> fpsOptions = new List<string>() { "Không giới hạn", "60 FPS", "120 FPS", "144 FPS" };
+        List<string> fpsOptions = new List<string>() { "Unlimited", "60 FPS", "120 FPS", "144 FPS" };
         fpsLimitDropdown.ClearOptions();
         fpsLimitDropdown.AddOptions(fpsOptions);
 
@@ -410,5 +430,187 @@ public class SettingManager : MonoBehaviour
         }
         Application.targetFrameRate = targetFPS;
         PlayerPrefs.SetInt("FPSLimitIndex", index);
+    }
+
+    // ================= 9. GAMEPLAY SETTINGS =================
+    private void SetupGameplaySettings()
+    {
+        // 1. Head Bobbing
+        if (headBobbingToggle != null)
+        {
+            bool isHeadBobOn = PlayerPrefs.GetInt("HeadBobbing", 1) == 1;
+            headBobbingToggle.onValueChanged.RemoveListener(SetHeadBobbing);
+            headBobbingToggle.isOn = isHeadBobOn;
+            headBobbingToggle.onValueChanged.AddListener(SetHeadBobbing);
+        }
+
+        // 2. Interaction Hints
+        if (interactHintsToggle != null)
+        {
+            bool isHintsOn = PlayerPrefs.GetInt("InteractHints", 1) == 1;
+            interactHintsToggle.onValueChanged.RemoveListener(SetInteractHints);
+            interactHintsToggle.isOn = isHintsOn;
+            interactHintsToggle.onValueChanged.AddListener(SetInteractHints);
+        }
+
+        // 3. Sprint Mode (Hold = 0, Toggle = 1)
+        if (sprintModeDropdown != null)
+        {
+            List<string> sprintOptions = new List<string>() { "Hold", "Toggle" };
+            sprintModeDropdown.ClearOptions();
+            sprintModeDropdown.AddOptions(sprintOptions);
+
+            int savedSprintMode = PlayerPrefs.GetInt("SprintMode", 0);
+            sprintModeDropdown.onValueChanged.RemoveListener(SetSprintMode);
+            sprintModeDropdown.value = savedSprintMode;
+            sprintModeDropdown.RefreshShownValue();
+            sprintModeDropdown.onValueChanged.AddListener(SetSprintMode);
+        }
+
+        // 4. Crosshair
+        if (crosshairToggle != null)
+        {
+            bool isCrosshairOn = PlayerPrefs.GetInt("Crosshair", 1) == 1;
+            crosshairToggle.onValueChanged.RemoveListener(SetCrosshair);
+            crosshairToggle.isOn = isCrosshairOn;
+            crosshairToggle.onValueChanged.AddListener(SetCrosshair);
+        }
+    }
+
+    public void SetHeadBobbing(bool isEnabled)
+    {
+        PlayerPrefs.SetInt("HeadBobbing", isEnabled ? 1 : 0);
+    }
+
+    public void SetInteractHints(bool isEnabled)
+    {
+        PlayerPrefs.SetInt("InteractHints", isEnabled ? 1 : 0);
+    }
+
+    public void SetSprintMode(int modeIndex)
+    {
+        PlayerPrefs.SetInt("SprintMode", modeIndex);
+    }
+
+    public void SetCrosshair(bool isEnabled)
+    {
+        PlayerPrefs.SetInt("Crosshair", isEnabled ? 1 : 0);
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.showCrosshair = isEnabled;
+        }
+    }
+
+    // ================= 10. UI SCALE =================
+    private readonly float[] scaleValues = new float[] { 0.8f, 0.9f, 1.0f, 1.1f, 1.2f };
+
+    private void SetupUIScale()
+    {
+        float savedScale = PlayerPrefs.GetFloat("UIScale", 1.0f);
+
+        if (uiScaleDropdown != null)
+        {
+            List<string> options = new List<string>() { "80%", "90%", "100%", "110%", "120%" };
+            uiScaleDropdown.ClearOptions();
+            uiScaleDropdown.AddOptions(options);
+
+            int index = 2; // Default 100%
+            float minDiff = float.MaxValue;
+            for (int i = 0; i < scaleValues.Length; i++)
+            {
+                float diff = Mathf.Abs(scaleValues[i] - savedScale);
+                if (diff < minDiff)
+                {
+                    minDiff = diff;
+                    index = i;
+                }
+            }
+
+            uiScaleDropdown.onValueChanged.RemoveListener(SetUIScaleFromDropdown);
+            uiScaleDropdown.value = index;
+            uiScaleDropdown.RefreshShownValue();
+            uiScaleDropdown.onValueChanged.AddListener(SetUIScaleFromDropdown);
+        }
+
+        if (uiScaleSlider != null)
+        {
+            uiScaleSlider.minValue = 0.8f;
+            uiScaleSlider.maxValue = 1.2f;
+            uiScaleSlider.onValueChanged.RemoveListener(SetUIScaleFromSlider);
+            uiScaleSlider.value = savedScale;
+            uiScaleSlider.onValueChanged.AddListener(SetUIScaleFromSlider);
+        }
+
+        if (uiScaleValueText != null)
+        {
+            uiScaleValueText.text = Mathf.RoundToInt(savedScale * 100f) + "%";
+        }
+
+        ApplyUIScale(savedScale);
+    }
+
+    public void SetUIScaleFromDropdown(int index)
+    {
+        if (index >= 0 && index < scaleValues.Length)
+        {
+            float scale = scaleValues[index];
+            ApplyUIScale(scale);
+            if (uiScaleSlider != null) uiScaleSlider.value = scale;
+            if (uiScaleValueText != null) uiScaleValueText.text = Mathf.RoundToInt(scale * 100f) + "%";
+        }
+    }
+
+    public void SetUIScaleFromSlider(float scale)
+    {
+        ApplyUIScale(scale);
+        if (uiScaleValueText != null) uiScaleValueText.text = Mathf.RoundToInt(scale * 100f) + "%";
+    }
+
+    public static void ApplyUIScale(float scale)
+    {
+        PlayerPrefs.SetFloat("UIScale", scale);
+
+        CanvasScaler[] scalers = FindObjectsByType<CanvasScaler>(FindObjectsSortMode.None);
+        foreach (var scaler in scalers)
+        {
+            if (scaler == null) continue;
+            if (scaler.uiScaleMode == CanvasScaler.ScaleMode.ScaleWithScreenSize)
+            {
+                scaler.referenceResolution = new Vector2(1920f / scale, 1080f / scale);
+            }
+            else if (scaler.uiScaleMode == CanvasScaler.ScaleMode.ConstantPixelSize)
+            {
+                scaler.scaleFactor = scale;
+            }
+        }
+    }
+
+    // ================= 11. LANGUAGE =================
+    private void SetupLanguage()
+    {
+        if (languageDropdown == null) return;
+
+        List<string> languages = new List<string>() { "English", "Vietnamese" };
+        languageDropdown.ClearOptions();
+        languageDropdown.AddOptions(languages);
+
+        int savedLangIndex = PlayerPrefs.GetInt("LanguageIndex", 0);
+        languageDropdown.onValueChanged.RemoveListener(SetLanguage);
+        languageDropdown.value = savedLangIndex;
+        languageDropdown.RefreshShownValue();
+        languageDropdown.onValueChanged.AddListener(SetLanguage);
+        SetLanguage(savedLangIndex);
+    }
+
+    public void SetLanguage(int index)
+    {
+        PlayerPrefs.SetInt("LanguageIndex", index);
+        string lang = index == 1 ? "Vietnamese" : "English";
+        PlayerPrefs.SetString("Language", lang);
+
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.ChangeLanguage(lang);
+        }
     }
 }

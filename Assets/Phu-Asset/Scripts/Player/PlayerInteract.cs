@@ -23,6 +23,7 @@ public class PlayerInteract : MonoBehaviour
     [SerializeField] private Animator armAnimator;
 
     public bool isLookingAtInteractable { get; private set; } = false;
+    public bool showInteractHints = true;
 
     private Transform playerRoot;
 
@@ -155,12 +156,20 @@ public class PlayerInteract : MonoBehaviour
                         }
                     }
 
-                    // Hiện gợi ý tương tác lên màn hình và đổi trạng thái tâm ngắm
+                    // Show interaction prompt on screen
                     isLookingAtInteractable = true;
+                    showInteractHints = PlayerPrefs.GetInt("InteractHints", 1) == 1;
                     if (hitText != null)
                     {
-                        hitText.text = $"<color=#FFDD44>[E]</color> {interactable.promptMessage}";
-                        hitText.gameObject.SetActive(true);
+                        if (showInteractHints)
+                        {
+                            hitText.text = $"<color=#FFDD44>[E]</color> {interactable.promptMessage}";
+                            hitText.gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            hitText.gameObject.SetActive(false);
+                        }
                     }
                     return;
                 }

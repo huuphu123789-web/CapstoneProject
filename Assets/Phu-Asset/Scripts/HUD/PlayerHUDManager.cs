@@ -92,6 +92,8 @@ public class PlayerHUDManager : MonoBehaviour
     void Start()
     {
         currentStamina = maxStamina;
+        showCrosshair = PlayerPrefs.GetInt("Crosshair", 1) == 1;
+        SettingManager.ApplyUIScale(PlayerPrefs.GetFloat("UIScale", 1f));
 
         // Tự động tìm hoặc tạo UI thanh thể lực nếu chưa có
         EnsureStaminaUI();

@@ -312,13 +312,30 @@ public class TaskManager : MonoBehaviour
 
             if (player != null)
             {
-                CharacterController cc = player.GetComponent<CharacterController>();
-                if (cc != null) cc.enabled = false;
+                PlayerController pc = player.GetComponentInChildren<PlayerController>();
+                if (pc == null) pc = player.GetComponentInParent<PlayerController>();
 
-                player.transform.position = targetPos;
-                player.transform.rotation = targetRot;
+                if (pc != null)
+                {
+                    pc.TeleportTo(targetPos, targetRot);
+                }
+                else
+                {
+                    CharacterController cc = player.GetComponent<CharacterController>();
+                    if (cc != null) cc.enabled = false;
 
-                if (cc != null) cc.enabled = true;
+                    player.transform.position = targetPos;
+                    player.transform.rotation = targetRot;
+
+                    if (cc != null) cc.enabled = true;
+                }
+
+                if (Camera.main != null)
+                {
+                    Camera.main.transform.position = targetPos + Vector3.up * 1.6f;
+                    Camera.main.transform.rotation = targetRot;
+                }
+
                 Debug.Log($"[TaskManager] Đã dịch chuyển người chơi đến Bốt Gác tại toạ độ {targetPos}!");
             }
         }

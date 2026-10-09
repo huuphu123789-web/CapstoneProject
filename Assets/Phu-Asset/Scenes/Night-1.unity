@@ -1179,6 +1179,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   hitText: {fileID: 6942112877125948843}
   armAnimator: {fileID: 0}
+  showInteractHints: 1
 --- !u!1001 &5010960218114833173
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1250,6 +1251,10 @@ PrefabInstance:
     - target: {fileID: 2339909951102193981, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3319769363257552910, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1584,43 +1589,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCInspectionManager
   npcQueue:
-  - npcName: Trinh Hoang Long
+  - npcName: Subject C-02 (The Crawler)
     isMutant: 1
-    npcPrefab: {fileID: 9104195658466713365, guid: bbbe81fe76f4b46a7b58feeb77bcc7f0, type: 3}
-    cccdTexture: {fileID: 2800000, guid: 6c26e6c743112724ebc63bbbd38d6d84, type: 3}
+    npcPrefab: {fileID: 6039426732363062861, guid: 0d3ad9f5d19b24d75adb8d4978d00d06, type: 3}
+    cccdTexture: {fileID: 0}
     surrenderConfirmTexture: {fileID: 0}
-    dialogueOnArrive: 'Hello, Sir!
-
-'
-    defenseDialogues: []
-    dialogueOnApproved: Thankyou, Sir!
-    dialogueOnDenied: AHHHHHH!
-    voiceArriveClip: {fileID: 8300000, guid: 76cdacb580ee24f599680429f083697d, type: 3}
-    defenseVoiceClips:
-    - {fileID: 8300000, guid: 3fda1aaf8c6e74ff896900e95730a695, type: 3}
-    - {fileID: 8300000, guid: 826f5962125f4483d802764d5439905f, type: 3}
-    - {fileID: 8300000, guid: 97c366f8376c649418b96596a9e98691, type: 3}
-    - {fileID: 8300000, guid: 0a91b1a2a35194671b5e6e57f66f92b6, type: 3}
-    voiceApproveClip: {fileID: 8300000, guid: 27b9df5c94a1c4b59b396e9e49cc060f, type: 3}
-    voiceDenyClip: {fileID: 8300000, guid: a32f947a1b7734258ba582d633112324, type: 3}
-  - npcName: Victor Jean Mercier
-    isMutant: 0
-    npcPrefab: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
-    cccdTexture: {fileID: 2800000, guid: afa4ac6a135cca946baa35f62bbc193a, type: 3}
-    surrenderConfirmTexture: {fileID: 2800000, guid: 41d3309fd063bee42abc24453ce7a9b8, type: 3}
-    dialogueOnArrive: I'm clean, please let me pass
-    defenseDialogues: []
-    dialogueOnApproved: "Yes, yes , yes\t"
-    dialogueOnDenied: Ohh, C'mom shit F*ck
-    voiceArriveClip: {fileID: 8300000, guid: de81b9ced9ed44a618b955e592900045, type: 3}
-    defenseVoiceClips:
-    - {fileID: 8300000, guid: 0fdbd38d55b7f47babe05ad2db2b8624, type: 3}
-    - {fileID: 8300000, guid: fef3cae7a1bef466283b09c9ed7bb66d, type: 3}
-    - {fileID: 8300000, guid: 4a3f75378f5c949c2b721002d828a2be, type: 3}
-    - {fileID: 8300000, guid: cec661205502c4027a879c25e01c98c9, type: 3}
-    voiceApproveClip: {fileID: 8300000, guid: c876eb32cda87471ba998ceb43fe9212, type: 3}
-    voiceDenyClip: {fileID: 8300000, guid: 0ad537d18d2db4448a8fafb891e27b77, type: 3}
-  autoPopulateDefaults: 0
+    dialogueOnArrive: Officer... down here... please help me... my legs...
+    defenseDialogues:
+    - I had to crawl through the mud... don't look at my joints...
+    - The documents are here... just look at them...
+    dialogueOnApproved: '*Chittering noise* ...Warm meat...'
+    dialogueOnDenied: '*HISSS* YOU WON''T ESCAPE THIS MIST!'
+    voiceArriveClip: {fileID: 0}
+    defenseVoiceClips: []
+    voiceApproveClip: {fileID: 0}
+    voiceDenyClip: {fileID: 0}
+  - npcName: Subject C-02 (The Crawler)
+    isMutant: 1
+    npcPrefab: {fileID: 6039426732363062861, guid: 0d3ad9f5d19b24d75adb8d4978d00d06, type: 3}
+    cccdTexture: {fileID: 0}
+    surrenderConfirmTexture: {fileID: 0}
+    dialogueOnArrive: Officer... down here... please help me... my legs...
+    defenseDialogues:
+    - I had to crawl through the mud... don't look at my joints...
+    - The documents are here... just look at them...
+    dialogueOnApproved: '*Chittering noise* ...Warm meat...'
+    dialogueOnDenied: '*HISSS* YOU WON''T ESCAPE THIS MIST!'
+    voiceArriveClip: {fileID: 0}
+    defenseVoiceClips: []
+    voiceApproveClip: {fileID: 0}
+    voiceDenyClip: {fileID: 0}
+  autoPopulateDefaults: 1
   inspectionPoint: {fileID: 8927299313804127812}
   spawnPoint: {fileID: 4020875550884268238}
   spawnHeightOffset: 0
@@ -1637,6 +1636,7 @@ MonoBehaviour:
   currentNPCIndex: -1
   isInspectionActive: 0
   isCurrentNPCAtDesk: 0
+  hasDecisionBeenMade: 0
 --- !u!1 &7558936735717977094
 GameObject:
   m_ObjectHideFlags: 0
@@ -1833,6 +1833,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: add93888d4ffaaf44917e3c9646e4df4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraShake
+  virtualCamera: {fileID: 0}
+  cameraOffset: {fileID: 0}
+  followComponent: {fileID: 0}
+  shakeIntensityMultiplier: 1
+  rotationalShakeMultiplier: 4
 --- !u!4 &8927299313804127812 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2574529345845229198, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
