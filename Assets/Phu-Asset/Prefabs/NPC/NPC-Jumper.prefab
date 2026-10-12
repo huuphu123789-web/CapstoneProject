@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &8821989126983267206
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_Name
+      value: NPC-Jumper
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -34.0694
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -26.48429
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.67613477
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.736778
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 94.915
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 8770740018908210156, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2651958078945192364}
+  m_SourcePrefab: {fileID: 100100000, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+--- !u!1 &6254132896306504086 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+  m_PrefabInstance: {fileID: 8821989126983267206}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2651958078945192364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6254132896306504086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4a599bb15734c8b8aa1d59644f8ea4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCJumperBehavior
+  inspectionPoint: {fileID: 0}
+  walkSpeed: 2.4
+  minTriggerDelay: 2
+  maxTriggerDelay: 4
+  jumpscareModel: {fileID: 0}
+  jumpscarePrefab: {fileID: 4440158785677964267, guid: d926b4145f4c5b44cb07b5d1615e0bcb, type: 3}
+  jumpscareSpawnPoint: {fileID: 0}
+  cameraForwardOffset: 1.2
+  jumpscareDuration: 1.8
+  hideNormalModelDuringScare: 1
+  cameraShakeDuration: 0.6
+  cameraShakeMagnitude: 0.4
+  footstepSounds: []
+  nervousBreathingSound: {fileID: 8300000, guid: f6967dfa537a8e443993626155359ba9, type: 3}
+  jumpscareSound: {fileID: 8300000, guid: 534c6a88498e2034da2140adbb9e831c, type: 3}
+  footstepInterval: 0.45
+  isInspecting: 0
+  hasTriggeredScare: 0
+  animator: {fileID: 0}
+  audioSource: {fileID: 0}

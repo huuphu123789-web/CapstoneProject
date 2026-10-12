@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &6515281787191785757
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_Name
+      value: NPC-Screamer
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -34.0694
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -26.48429
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.67613477
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.736778
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 94.915
+      objectReference: {fileID: 0}
+    - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 8770740018908210156, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8676671216653454005}
+  m_SourcePrefab: {fileID: 100100000, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+--- !u!4 &4438832174091929502 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7490339522462383747, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+  m_PrefabInstance: {fileID: 6515281787191785757}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8561284209920862989 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
+  m_PrefabInstance: {fileID: 6515281787191785757}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8676671216653454005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8561284209920862989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c64ce15f524e1426bb6da828533e9f88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCScreamerBehavior
+  inspectionPoint: {fileID: 0}
+  walkSpeed: 2.2
+  initialScreamDelay: 1.8
+  screamDuration: 3.2
+  screamInterval: 5.5
+  loopScreams: 1
+  headBone: {fileID: 4438832174091929502}
+  neckBone: {fileID: 0}
+  spineBone: {fileID: 0}
+  headShakeFrequency: 42
+  headShakeMagnitude: 22
+  bodyJitterMagnitude: 0.035
+  boothLight: {fileID: 0}
+  flickerSpeed: 35
+  minFlickerIntensity: 0.05
+  maxFlickerIntensity: 1.6
+  cameraShakeIntensity: 0.22
+  footstepSounds: []
+  screamShriekSound: {fileID: 8300000, guid: 5d0f19e894ac5c54fa2840ed1f23c394, type: 3}
+  radioStaticSound: {fileID: 8300000, guid: 6303796f76424da41adaee2a629b1e3e, type: 3}
+  earRingingSound: {fileID: 8300000, guid: 7cb5c5322756dee4f8f73d470b349769, type: 3}
+  footstepInterval: 0.5
+  isInspecting: 0
+  isScreaming: 0
+  animator: {fileID: 0}
+  audioSource: {fileID: 0}

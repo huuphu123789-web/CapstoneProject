@@ -184,7 +184,7 @@ public class NPCInspectionManager : MonoBehaviour
     private GameObject currentNPCObject;
     private NavMeshAgent currentAgent;
     private NPCInspectionProfile currentProfile;
-    private bool hasDecisionBeenMade = false;
+    public bool hasDecisionBeenMade = false;
 
     private Coroutine typingCoroutine;
     private Coroutine defenseCycleCoroutine;
@@ -588,9 +588,19 @@ public class NPCInspectionManager : MonoBehaviour
         currentAgent = currentNPCObject.GetComponent<NavMeshAgent>();
         if (currentAgent == null) currentAgent = currentNPCObject.AddComponent<NavMeshAgent>();
         currentAgent.enabled = true;
-        currentAgent.speed = 2.4f;
         currentAgent.stoppingDistance = 0.5f;
-        currentAgent.baseOffset = 0f;
+
+        NPCCrawlerBehavior crawlerComp = currentNPCObject.GetComponentInChildren<NPCCrawlerBehavior>();
+        if (crawlerComp != null)
+        {
+            currentAgent.baseOffset = 0f;
+            currentAgent.speed = crawlerComp.walkSpeed;
+        }
+        else
+        {
+            currentAgent.speed = 2.4f;
+            currentAgent.baseOffset = 0f;
+        }
 
         // Reset vị trí Agent chuẩn xác trên NavMesh bằng Warp
         currentNPCObject.transform.position = spawnPos;
@@ -697,6 +707,15 @@ public class NPCInspectionManager : MonoBehaviour
 
         NPCDetachedLimbsBehavior detached = currentNPCObject.GetComponentInChildren<NPCDetachedLimbsBehavior>();
         if (detached != null) detached.StartInspection();
+
+        NPCJumperBehavior jumper = currentNPCObject.GetComponentInChildren<NPCJumperBehavior>();
+        if (jumper != null) jumper.StartInspection();
+
+        NPCCrawlerBehavior crawler = currentNPCObject.GetComponentInChildren<NPCCrawlerBehavior>();
+        if (crawler != null) crawler.StartInspection();
+
+        NPCScreamerBehavior screamer = currentNPCObject.GetComponentInChildren<NPCScreamerBehavior>();
+        if (screamer != null) screamer.StartInspection();
 
         Debug.Log($"[NPCInspectionManager] NPC [{currentProfile.npcName}] ĐÃ ĐẾN VẠCH KIỂM TRA. Giấy tờ đã sẵn sàng!");
 

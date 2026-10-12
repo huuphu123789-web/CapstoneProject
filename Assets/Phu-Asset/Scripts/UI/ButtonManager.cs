@@ -22,6 +22,13 @@ public class ButtonManager : MonoBehaviour
    [SerializeField] private string targetSceneName = "Night-1";
 
 
+    public static ButtonManager instance;
+
+    void Awake()
+    {
+        instance = this;
+    }
+
     void Start()
     {
         if (mainmenuPanel == null)
@@ -68,7 +75,13 @@ public class ButtonManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (settingPanel != null && settingPanel.activeSelf)
+            {
+                CloseSetting();
+            }
+        }
     }
 
     public void StartGame()

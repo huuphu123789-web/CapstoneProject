@@ -19,7 +19,9 @@ public class PlayerGun : MonoBehaviour
     [SerializeField] private Transform muzzlePoint;
     [SerializeField] private Light muzzleLight;
     [SerializeField] private float muzzleFlashDuration = 0.05f;
-    [Tooltip("Particle tia lua dau nong neu co (tuy chon)")]
+    [Tooltip("Prefab tia lua dau nong sung (Muzzle Flash Prefab). Keo tha Prefab Particle vao day de tao lua dau nong khi ban.")]
+    [SerializeField] private GameObject muzzleFlashPrefab;
+    [Tooltip("Particle tia lua dau nong truc tiep neu co (tuy chon)")]
     [SerializeField] private ParticleSystem muzzleFlashParticles;
     [Tooltip("Toa do cuc bo cua dau nong sung (PB Pistol kem nong giam thanh: X=0, Y=0.114, Z=0.275)")]
     [SerializeField] private Vector3 muzzleLocalOffset = new Vector3(0f, 0.114f, 0.275f);
@@ -130,8 +132,74 @@ public class PlayerGun : MonoBehaviour
     public bool IsAimingAtNPC { get; private set; }
     public bool IsHolstered => _isHolstered;
 
+    public static PlayerGun Instance { get; private set; }
+
+    /// <summary>
+    /// Tìm chính xác khẩu súng trên Camera / Player thay vì súng nằm trong tủ trưng bày
+    /// </summary>
+    public static PlayerGun GetPlayerGun()
+    {
+        if (Instance != null) return Instance;
+
+        // 1. Tìm trên toàn bộ GameObject có tag "Player" hoặc tên chứa "Player"
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (var p in players)
+        {
+            PlayerGun g = p.GetComponentInChildren<PlayerGun>(true);
+            if (g != null)
+            {
+                Instance = g;
+                return g;
+            }
+        }
+
+        // 2. Tìm trên Camera
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            PlayerGun g = cam.GetComponentInChildren<PlayerGun>(true);
+            if (g != null)
+            {
+                Instance = g;
+                return g;
+            }
+        }
+
+        // 3. Quét tất cả PlayerGun trong scene và ưu tiên cái nằm dưới Player hoặc Camera
+        PlayerGun[] allGuns = FindObjectsOfType<PlayerGun>(true);
+        foreach (var g in allGuns)
+        {
+            if (g.transform.root.CompareTag("Player") || 
+                g.transform.root.name.ToLower().Contains("player") || 
+                g.GetComponentInParent<Camera>() != null ||
+                g.GetComponentInParent<PlayerController>() != null)
+            {
+                Instance = g;
+                return g;
+            }
+        }
+
+        if (allGuns.Length > 0)
+        {
+            Instance = allGuns[0];
+            return allGuns[0];
+        }
+
+        return null;
+    }
+
     private void Awake()
     {
+        bool isPlayerGun = transform.root.CompareTag("Player") 
+                        || transform.root.name.ToLower().Contains("player")
+                        || GetComponentInParent<PlayerController>() != null 
+                        || GetComponentInParent<Camera>() != null
+                        || gameObject.name.ToLower().Contains("gun");
+        if (isPlayerGun)
+        {
+            Instance = this;
+        }
+
         maxAmmo = 6;     // Đảm bảo băng đạn luôn là 6 viên
         if (storedAmmo > 0)
         {
@@ -210,18 +278,14 @@ public class PlayerGun : MonoBehaviour
         // Thiết lập vị trí đầu nòng súng chính xác
         SetupMuzzle();
 
-        // Chỉ ẩn súng lúc bắt đầu nếu người chơi chưa nhặt hoặc chưa gọi DrawGun()
-        if (startHolstered && !_hasBeenExplicitlyDrawn && !hasGun)
+        // Mặc định luôn ẩn súng lúc bắt đầu game nếu chưa nhận trang bị súng
+        if (!hasGun && (TaskManager.instance == null || !TaskManager.instance.hasGun))
         {
-            _isHolstered = true;
-            Renderer[] rends = GetComponentsInChildren<Renderer>(true);
-            foreach (var r in rends) r.enabled = false;
-            if (muzzleLight != null) muzzleLight.enabled = false;
-            if (gunModelObject != null && gunModelObject != gameObject) gunModelObject.SetActive(false);
-            if (PlayerHUDManager.instance != null && PlayerHUDManager.instance.ammoText != null)
-            {
-                PlayerHUDManager.instance.ammoText.gameObject.SetActive(false);
-            }
+            HolsterGun();
+        }
+        else if (startHolstered && !_hasBeenExplicitlyDrawn)
+        {
+            HolsterGun();
         }
 
         if (gunshotClip == null)
@@ -407,7 +471,23 @@ public class PlayerGun : MonoBehaviour
 
     private void Update()
     {
-        // Kiểm tra phím 1 hoặc lăn chuột giữa để rút/cất súng
+        // Khong xu ly neu day la model sung trang tri trong Map/Tu ma khong nam tren Player
+        if (Instance != null && Instance != this && GetComponentInParent<Camera>() == null && !transform.root.CompareTag("Player"))
+        {
+            return;
+        }
+
+        // 1. Tuyệt đối KHÔNG xử lý bắn hoặc đổi súng khi đang Pause hoặc Time.timeScale = 0
+        if (Time.timeScale == 0f) return;
+        if (PauseMenuController.instance != null && PauseMenuController.instance.isPaused) return;
+        if (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused) return;
+
+        // 2. Không bắn khi chuột đang click trên UI (Menu, Setting, Button)
+        if (UnityEngine.EventSystems.EventSystem.current != null && 
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        // Kiểm tra phím 1, H, G hoặc lăn chuột giữa để rút/cất súng
         HandleWeaponSwitchInput();
 
         // Khong lam gi khi da cat sung
@@ -450,7 +530,7 @@ public class PlayerGun : MonoBehaviour
     }
 
     /// <summary>
-    /// Xử lý phím tắt đổi/rút/cất vũ khí (Phím 1 hoặc Lăn chuột giữa)
+    /// Xử lý phím tắt đổi/rút/cất vũ khí (Phím 1, Phím H, Phím G hoặc Lăn chuột giữa)
     /// </summary>
     public void HandleWeaponSwitchInput()
     {
@@ -458,7 +538,9 @@ public class PlayerGun : MonoBehaviour
             (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused))
             return;
 
-        if (!HasGun) return;
+        // Cho phép cất súng nếu súng đang cầm trên tay (!isHolstered), hoặc rút súng nếu đã sở hữu (HasGun)
+        bool canSwitch = HasGun || !_isHolstered;
+        if (!canSwitch) return;
 
         bool togglePressed = false;
 
@@ -467,19 +549,35 @@ public class PlayerGun : MonoBehaviour
         {
             togglePressed = true;
         }
-        // 2. Lăn chuột giữa (Mouse ScrollWheel)
+        // 2. Phím H (Holster - Rất trực quan để cất súng)
+        else if (Input.GetKeyDown(KeyCode.H))
+        {
+            togglePressed = true;
+        }
+        // 3. Phím G (Nếu đã sở hữu súng thì nhấn G sẽ cất / rút súng)
+        else if (Input.GetKeyDown(KeyCode.G))
+        {
+            togglePressed = true;
+        }
+        // 4. Lăn chuột giữa (Mouse ScrollWheel)
         else if (Mathf.Abs(Input.GetAxis("Mouse ScrollWheel")) > 0.05f || Input.mouseScrollDelta.y != 0f)
         {
             togglePressed = true;
         }
-        // 3. Hỗ trợ New Input System
+        // 5. Hỗ trợ New Input System
         else
         {
             try
             {
                 Keyboard kb = Keyboard.current;
-                if (kb != null && (kb.digit1Key.wasPressedThisFrame || kb.numpad1Key.wasPressedThisFrame))
-                    togglePressed = true;
+                if (kb != null)
+                {
+                    if (kb.digit1Key.wasPressedThisFrame || kb.numpad1Key.wasPressedThisFrame ||
+                        kb.hKey.wasPressedThisFrame || kb.gKey.wasPressedThisFrame)
+                    {
+                        togglePressed = true;
+                    }
+                }
 
                 Mouse m = Mouse.current;
                 if (m != null && Mathf.Abs(m.scroll.ReadValue().y) > 0.1f)
@@ -500,7 +598,6 @@ public class PlayerGun : MonoBehaviour
     public void ToggleGun()
     {
         if (Time.time < _nextToggleTime) return;
-        if (!HasGun) return;
 
         _nextToggleTime = Time.time + 0.3f;
 
@@ -573,6 +670,9 @@ public class PlayerGun : MonoBehaviour
 
     private void Shoot()
     {
+        if (Time.timeScale == 0f) return;
+        if (PauseMenuController.instance != null && PauseMenuController.instance.isPaused) return;
+
         // Trừ đạn
         currentAmmo = Mathf.Max(0, currentAmmo - 1);
         storedAmmo = currentAmmo;
@@ -612,7 +712,23 @@ public class PlayerGun : MonoBehaviour
             if (_muzzleFlashCoroutine != null) StopCoroutine(_muzzleFlashCoroutine);
             _muzzleFlashCoroutine = StartCoroutine(MuzzleFlashRoutine());
         }
-        if (muzzleFlashParticles != null)
+        // Kích hoạt Prefab hiệu ứng lửa nòng súng (nếu người chơi gán Prefab)
+        if (muzzleFlashPrefab != null && muzzlePoint != null)
+        {
+            GameObject flashInstance = Instantiate(muzzleFlashPrefab, muzzlePoint.position, muzzlePoint.rotation, muzzlePoint);
+            ParticleSystem[] pss = flashInstance.GetComponentsInChildren<ParticleSystem>();
+            foreach (var ps in pss)
+            {
+                ps.Play();
+            }
+            float destroyDelay = 0.5f;
+            if (pss.Length > 0 && pss[0].main.duration > 0)
+            {
+                destroyDelay = Mathf.Max(0.2f, pss[0].main.duration);
+            }
+            Destroy(flashInstance, destroyDelay);
+        }
+        else if (muzzleFlashParticles != null)
         {
             muzzleFlashParticles.Play();
         }
@@ -670,11 +786,21 @@ public class PlayerGun : MonoBehaviour
     {
         _isHolstered = true;
 
-        // Ẩn renderers của súng thay vì tắt toàn bộ GameObject để script vẫn chạy Update nhận phím rút súng
+        // 1. Tắt toàn bộ Renderers
         Renderer[] rends = GetComponentsInChildren<Renderer>(true);
         foreach (var r in rends)
         {
             r.enabled = false;
+        }
+
+        // 2. Tắt toàn bộ GameObject con chứa Mesh súng (Cube.000, Cube.004, Cylinder.006, v.v.)
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform child = transform.GetChild(i);
+            if (muzzlePoint == null || child != muzzlePoint)
+            {
+                child.gameObject.SetActive(false);
+            }
         }
 
         if (muzzleLight != null) muzzleLight.enabled = false;
@@ -684,12 +810,17 @@ public class PlayerGun : MonoBehaviour
             gunModelObject.SetActive(false);
         }
 
+        if (gunAnimator != null)
+        {
+            gunAnimator.enabled = false;
+        }
+
         if (PlayerHUDManager.instance != null)
         {
             PlayerHUDManager.instance.OnGunHolstered();
         }
 
-        Debug.Log("[PlayerGun] Da cat sung.");
+        Debug.Log("[PlayerGun] ĐÃ CẤT SÚNG (Holstered)! Nhấn [1], [H] hoặc [G] để rút súng lại.");
     }
 
     /// <summary>
@@ -708,6 +839,12 @@ public class PlayerGun : MonoBehaviour
         gameObject.SetActive(true);
         if (gunModelObject != null) gunModelObject.SetActive(true);
         if (transform.parent != null) transform.parent.gameObject.SetActive(true);
+
+        // Bật lại toàn bộ GameObject con chứa Mesh súng
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            transform.GetChild(i).gameObject.SetActive(true);
+        }
 
         // Đảm bảo tọa độ FPS luôn đúng nếu chưa được đặt
         if (transform.parent != null && transform.localPosition.magnitude < 0.01f)
@@ -731,17 +868,21 @@ public class PlayerGun : MonoBehaviour
             r.gameObject.SetActive(true);
         }
 
-        DisableGunColliders();
+        if (gunAnimator != null)
+        {
+            gunAnimator.enabled = true;
+            if (!string.IsNullOrEmpty(drawAnimTrigger) && HasParameter(gunAnimator, drawAnimTrigger))
+                gunAnimator.SetTrigger(drawAnimTrigger);
+        }
 
-        if (gunAnimator != null && !string.IsNullOrEmpty(drawAnimTrigger) && HasParameter(gunAnimator, drawAnimTrigger))
-            gunAnimator.SetTrigger(drawAnimTrigger);
+        DisableGunColliders();
 
         if (PlayerHUDManager.instance != null)
         {
             PlayerHUDManager.instance.UpdateAmmoUI(currentAmmo, maxAmmo);
         }
 
-        Debug.Log("[PlayerGun] Da rut sung va hien thi model thanh cong!");
+        Debug.Log("[PlayerGun] ĐÃ RÚT SÚNG (Drawn)! Nhấn [1], [H] hoặc [G] để cất súng.");
     }
 
     private IEnumerator MuzzleFlashRoutine()

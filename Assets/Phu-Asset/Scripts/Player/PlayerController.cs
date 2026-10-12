@@ -37,6 +37,11 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity;
     [HideInInspector] public bool isGrounded;
     public bool IsGrounded => isGrounded;
+    [HideInInspector] public bool isMoving;
+    public bool IsMoving => isMoving;
+    [HideInInspector] public bool isSprinting;
+    public bool IsSprinting => isSprinting;
+    private bool isSprintToggled = false;
     private float footStepTimer;//* Bộ đếm thời gian bước chân
     private int nonPlayerMask;
 
@@ -134,6 +139,13 @@ public class PlayerController : MonoBehaviour
                 hud = gameObject.AddComponent<PlayerHUDManager>();
             }
         }
+
+        // Tự động gắn HeadBobbing vào Camera nếu chưa có
+        Camera cam = Camera.main;
+        if (cam != null && cam.GetComponent<HeadBobbing>() == null)
+        {
+            cam.gameObject.AddComponent<HeadBobbing>();
+        }
     }
 
     // Update is called once per frame
@@ -180,16 +192,35 @@ public class PlayerController : MonoBehaviour
         Vector3 move = transform.right * x + transform.forward * z;
         //*Ra lenh cho Character Controller  di chuyen nhan vat
         
-        bool isMoving = (move.magnitude > 0.1f);
+        isMoving = (move.magnitude > 0.1f);
 
-        // Kiểm tra khả năng chạy nhanh từ HUD (chống giật loop animation khi hết thể lực)
+        // Check stamina from HUD
         bool canSprint = true;
         if (PlayerHUDManager.instance != null)
         {
             canSprint = PlayerHUDManager.instance.CanSprint();
         }
 
-        bool isSprinting = isMoving && Input.GetKey(KeyCode.LeftShift) && canSprint;
+        // Sprint Mode: 0 = Hold, 1 = Toggle
+        int sprintMode = PlayerPrefs.GetInt("SprintMode", 0);
+        if (sprintMode == 1)
+        {
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                isSprintToggled = !isSprintToggled;
+            }
+            if (!isMoving || !canSprint)
+            {
+                isSprintToggled = false;
+            }
+        }
+        else
+        {
+            isSprintToggled = false;
+        }
+
+        bool sprintInput = (sprintMode == 1) ? isSprintToggled : Input.GetKey(KeyCode.LeftShift);
+        isSprinting = isMoving && sprintInput && canSprint;
 
         // Xử lý Di chuyển & Animation chuẩn xác (chỉ gọi Move đúng 1 lần duy nhất)
         if (isSprinting)
