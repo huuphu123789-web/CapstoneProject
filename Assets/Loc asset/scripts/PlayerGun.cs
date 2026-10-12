@@ -373,31 +373,65 @@ public class PlayerGun : MonoBehaviour
     }
 
     /// <summary>
-    /// Tự động thiết lập Muzzle Point và đèn chớp nòng tại đúng miệng nòng súng
+    /// Thiết lập Muzzle Point và đèn chớp nòng.
+    /// Nếu người dùng đã gán Muzzle Point (hoặc prefab đã có sẵn), GIỮ NGUYÊN 100% tọa độ và góc xoay mà người dùng thiết lập.
     /// </summary>
-    [ContextMenu("Căn lại Muzzle vào đầu nòng súng")]
-    public void SetupMuzzle()
+    public void SetupMuzzle(bool forceRecalculate = false)
     {
-        Quaternion targetRot = Quaternion.identity;
-        Vector3 targetPos = CalculateMuzzleLocalPosition(out targetRot);
-
-        if (muzzlePoint == null)
+        // 1. Nếu người dùng đã gán Muzzle Point trong Inspector hoặc Prefab
+        if (muzzlePoint != null)
         {
-            Transform found = transform.Find("MuzzlePoint");
-            if (found != null)
+            if (forceRecalculate)
             {
-                muzzlePoint = found;
+                Quaternion targetRot = Quaternion.identity;
+                Vector3 targetPos = CalculateMuzzleLocalPosition(out targetRot);
+                muzzlePoint.localPosition = targetPos;
+                muzzlePoint.localRotation = targetRot;
             }
-            else
+            SetupMuzzleLightAndParticles();
+            return;
+        }
+
+        // 2. Tìm kiếm tự động các Transform con có tên chứa "muzzle" (ví dụ: "Muzzle Point", "MuzzlePoint", "muzzle")
+        foreach (Transform child in transform)
+        {
+            if (child.name.ToLower().Contains("muzzle"))
             {
-                GameObject mp = new GameObject("MuzzlePoint");
-                mp.transform.SetParent(transform, false);
-                muzzlePoint = mp.transform;
+                muzzlePoint = child;
+                if (forceRecalculate)
+                {
+                    Quaternion targetRot = Quaternion.identity;
+                    Vector3 targetPos = CalculateMuzzleLocalPosition(out targetRot);
+                    muzzlePoint.localPosition = targetPos;
+                    muzzlePoint.localRotation = targetRot;
+                }
+                SetupMuzzleLightAndParticles();
+                return;
             }
         }
 
-        muzzlePoint.localPosition = targetPos;
-        muzzlePoint.localRotation = targetRot;
+        // 3. Chỉ khi hoàn toàn không có Muzzle Point nào, mới tự động tạo mới
+        Quaternion defaultRot = Quaternion.identity;
+        Vector3 defaultPos = CalculateMuzzleLocalPosition(out defaultRot);
+
+        GameObject mp = new GameObject("Muzzle Point");
+        mp.transform.SetParent(transform, false);
+        mp.transform.localPosition = defaultPos;
+        mp.transform.localRotation = defaultRot;
+        muzzlePoint = mp.transform;
+
+        SetupMuzzleLightAndParticles();
+    }
+
+    [ContextMenu("Tự động tính lại vị trí Muzzle (Ghi đè)")]
+    public void ContextMenuRecalculateMuzzle()
+    {
+        SetupMuzzle(forceRecalculate: true);
+    }
+
+    private void SetupMuzzleLightAndParticles()
+    {
+        if (muzzlePoint == null) return;
 
         if (muzzleLight == null)
         {

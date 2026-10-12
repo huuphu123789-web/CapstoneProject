@@ -152,6 +152,9 @@ public class FlashlightController : MonoBehaviour
 
     void Awake()
     {
+        // Tối đa hóa giới hạn đèn pixel để đèn pin không bao giờ làm tắt các nguồn sáng khác
+        QualitySettings.pixelLightCount = 16;
+
         GetFlashlightLight();
 
         localAudioSource = GetComponent<AudioSource>();
@@ -169,12 +172,35 @@ public class FlashlightController : MonoBehaviour
             flashlight.enabled = false;
         }
 
+        // Đảm bảo đèn phòng hầm Cellar không bị cúp khi bật đèn pin
+        EnsureCellarLightsNeverCulled();
+
         // Đồng bộ đèn pin với HUD Manager
         if (PlayerHUDManager.instance != null)
         {
             PlayerHUDManager.instance.flashlightLight = flashlight;
             PlayerHUDManager.instance.UpdateFlashlightUI();
             PlayerHUDManager.instance.UpdateControlsHintUI();
+        }
+    }
+
+    /// <summary>
+    /// Đảm bảo các nguồn sáng trong phòng hầm (Cellar) luôn được ưu tiên (ForcePixel)
+    /// để Unity URP không bao giờ cúp đèn phòng hầm khi người chơi bật đèn pin.
+    /// </summary>
+    public void EnsureCellarLightsNeverCulled()
+    {
+        GameObject cellarObj = GameObject.Find("Cellar");
+        if (cellarObj != null)
+        {
+            Light[] cellarLights = cellarObj.GetComponentsInChildren<Light>(true);
+            foreach (var l in cellarLights)
+            {
+                if (l != null && l.renderMode != LightRenderMode.ForcePixel)
+                {
+                    l.renderMode = LightRenderMode.ForcePixel;
+                }
+            }
         }
     }
 
@@ -258,6 +284,7 @@ public class FlashlightController : MonoBehaviour
         if (flLight != null)
         {
             ApplyOptimalLightSettings(flLight);
+            EnsureCellarLightsNeverCulled();
             flLight.gameObject.SetActive(true);
             if (flLight.transform.parent != null)
             {

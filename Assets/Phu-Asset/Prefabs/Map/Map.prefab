@@ -14807,7 +14807,7 @@ Light:
   m_Cookie: {fileID: 0}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -29696,7 +29696,6 @@ Terrain:
   m_AllowAutoConnect: 1
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
-  m_EnableHeightmapLODFrustumCulling: 1
   m_TreeMotionVectorModeOverride: 3
 --- !u!154 &94557754866325565
 TerrainCollider:
@@ -34859,6 +34858,7 @@ MonoBehaviour:
   muzzlePoint: {fileID: 0}
   muzzleLight: {fileID: 0}
   muzzleFlashDuration: 0.05
+  muzzleFlashPrefab: {fileID: 0}
   muzzleFlashParticles: {fileID: 0}
   muzzleLocalOffset: {x: 0, y: 0.114, z: 0.275}
   gunshotClip: {fileID: 0}
@@ -70535,7 +70535,7 @@ Light:
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.9675993, b: 0.2971698, a: 1}
-  m_Intensity: 1
+  m_Intensity: 10
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -108663,7 +108663,7 @@ Light:
   m_Cookie: {fileID: 0}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295

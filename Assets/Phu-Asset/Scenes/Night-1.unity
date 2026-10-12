@@ -223,8 +223,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fd330c8e61383f4fb51193dc41e2da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CCTVInteract
-  cctvPanel: {fileID: 1496887387}
-  cctvCamera: {fileID: 734146461}
+  cctvPanel: {fileID: 0}
+  cctvCamera: {fileID: 0}
 --- !u!65 &941126528
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -413,7 +413,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1502682265
+--- !u!1001 &1495055884
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -431,15 +431,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2986792392290931297, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.5110116
+      value: -47.88
       objectReference: {fileID: 0}
     - target: {fileID: 2986792392290931297, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.131919
+      value: -1.49
       objectReference: {fileID: 0}
     - target: {fileID: 2986792392290931297, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -17.854849
+      value: -49.47
       objectReference: {fileID: 0}
     - target: {fileID: 2986792392290931297, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -469,22 +469,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3006886999898733406, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3006886999898733406, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3006886999898733406, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3006886999898733406, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4435470804544378220, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -497,57 +481,9 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6258292713998598884, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6258292713998598884, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6258292713998598884, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6258292713998598884, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6637442219687423418, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6637442219687423418, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6637442219687423418, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6637442219687423418, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6873226994149146907, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 8681035432400070163, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8681035432400070163, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8681035432400070163, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8681035432400070163, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -768,7 +704,7 @@ Transform:
   m_GameObject: {fileID: 1864494660678905637}
   serializedVersion: 2
   m_LocalRotation: {x: -0.012827206, y: -0.84162617, z: -0.020009205, w: 0.5395373}
-  m_LocalPosition: {x: -7.5300117, y: 2.998919, z: -17.446848}
+  m_LocalPosition: {x: -47.899002, y: 0.37699997, z: -49.062}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1032,9 +968,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2339909951102193981, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
       insertIndex: 20
       addedObject: {fileID: 941126526}
-    - targetCorrespondingSourceObject: {fileID: 7559002052989597440, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 734146458}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8334056753695935548, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
       insertIndex: -1
@@ -1381,9 +1314,9 @@ MonoBehaviour:
     defenseVoiceClips: []
     voiceApproveClip: {fileID: 0}
     voiceDenyClip: {fileID: 0}
-  - npcName: Subject C-02 (The Crawler)
+  - npcName: Subject C-02 (The Jumper)
     isMutant: 1
-    npcPrefab: {fileID: 6039426732363062861, guid: 0d3ad9f5d19b24d75adb8d4978d00d06, type: 3}
+    npcPrefab: {fileID: 6254132896306504086, guid: f57bf8835a7514295a52a60a3cd8c889, type: 3}
     cccdTexture: {fileID: 0}
     surrenderConfirmTexture: {fileID: 0}
     dialogueOnArrive: Officer... down here... please help me... my legs...
@@ -1633,4 +1566,4 @@ SceneRoots:
   - {fileID: 1848624747}
   - {fileID: 3139017343680722795}
   - {fileID: 1468887239}
-  - {fileID: 1502682265}
+  - {fileID: 1495055884}

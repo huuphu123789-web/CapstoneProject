@@ -12704,10 +12704,10 @@ MonoBehaviour:
   totalFencePoints: 6
   totalGenerators: 1
   getEquipmentKey: 103
-  skipToGateInspectionKey: 107
+  skipToGateInspectionKey: 103
   alternativeSkipKey: 282
   teleportToBoothOnSkip: 0
-  teleportToGateKey: 108
+  teleportToGateKey: 98
   alternativeTeleportKey: 283
   playerBoothTeleportPoint: {fileID: 0}
   quickTestGateInspection: 0
@@ -15385,7 +15385,7 @@ MonoBehaviour:
   ammoText: {fileID: 0}
   controlsHintText: {fileID: 0}
   controlsHintPanel: {fileID: 0}
-  showControlsHint: 1
+  showControlsHint: 0
   crosshairDot: {fileID: 0}
   showCrosshair: 1
   defaultDotSize: 5
