@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ed1a3b1a42d6a436b848dd4b0a9d56fe
+guid: 2c32a8fd4575f7b44bcd14383b00e348
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -99,5 +99,5 @@ AssetOrigin:
   productId: 394832
   packageName: Deadbody 3D Lite
   packageVersion: 1.0
-  assetPath: Assets/Nghia Asset/Packages/DeadBody LITE/Textures/Bed/S2/Bed_Checker_Normal.png
+  assetPath: Assets/DeadBody LITE/Textures/Bed/S2/Bed_Checker_Normal.png
   uploadId: 958374

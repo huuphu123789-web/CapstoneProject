@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7f7f725b79e164d109b466e50e8dd9f0
+guid: eb215e09fb283e746b5383d0adc43c47
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -126,5 +126,5 @@ AssetOrigin:
   productId: 394832
   packageName: Deadbody 3D Lite
   packageVersion: 1.0
-  assetPath: Assets/Nghia Asset/Packages/DeadBody LITE/Textures/Bed/S5/Bed_Checker_AlbedoTransparency.png
+  assetPath: Assets/DeadBody LITE/Textures/Bed/S4/Bed_Checker_AlbedoTransparency.png
   uploadId: 958374
