@@ -613,4 +613,66 @@ public class SettingManager : MonoBehaviour
             LocalizationManager.Instance.ChangeLanguage(lang);
         }
     }
+
+    // ================= 12. PAUSE MENU & IN-GAME ACTIONS =================
+    /// <summary>
+    /// Gán trực tiếp vào nút "Setting Exit" (hoặc nút X / Quay lại).
+    /// - Khi đang chơi game (Pause): Tự động mở lại game (Resume/Unpause).
+    /// - Khi đang ở Main Menu: Tự động đóng Setting và hiện lại Main Menu.
+    /// </summary>
+    public void OnExitButtonClicked()
+    {
+        if (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
+        {
+            PauseMenuController.instance.BackToGame();
+            return;
+        }
+
+        // Nếu ở Main Menu
+        ButtonManager bm = FindAnyObjectByType<ButtonManager>();
+        if (bm != null)
+        {
+            bm.CloseSetting();
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Gán vào nút "Về Menu Chính" (Quit to Main Menu) trên SettingPanel
+    /// </summary>
+    public void QuitToMainMenu()
+    {
+        if (PauseMenuController.instance != null)
+        {
+            PauseMenuController.instance.SaveAndQuitToMainMenu();
+        }
+        else
+        {
+            PlayerPrefs.Save();
+            Time.timeScale = 1f;
+            string sceneName = Application.CanStreamedLevelBeLoaded("NewMainMenu") ? "NewMainMenu" : "P-MainMenu";
+            UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        }
+    }
+
+    /// <summary>
+    /// Gán vào nút "Tiếp Tục / Resume" trên SettingPanel
+    /// </summary>
+    public void ResumeGame()
+    {
+        if (PauseMenuController.instance != null)
+        {
+            PauseMenuController.instance.BackToGame();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            gameObject.SetActive(false);
+        }
+    }
 }
