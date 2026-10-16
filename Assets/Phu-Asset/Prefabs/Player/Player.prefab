@@ -8504,16 +8504,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
+  m_Sprite: {fileID: 21300000, guid: 44e80bade19d4aeb94e6e78816baa9c9, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -9394,7 +9394,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4838459296623718151}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.012827206, y: -0.84162617, z: -0.020009205, w: 0.5395373}
+  m_LocalRotation: {x: 0.005033515, y: -0.99382144, z: 0.050742477, w: 0.09858437}
   m_LocalPosition: {x: -0.019, y: 1.867, z: 0.408}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -9480,7 +9480,7 @@ MonoBehaviour:
   ReferenceFrame: 0
   RecenterTarget: 0
   PanAxis:
-    Value: -114.67496
+    Value: -168.66989
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
@@ -9490,7 +9490,7 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   TiltAxis:
-    Value: -2.7238388
+    Value: 5.845733
     Center: 0
     Range: {x: -70, y: 70}
     Wrap: 0
@@ -12008,13 +12008,13 @@ MonoBehaviour:
     tabText: {fileID: 8027232536212485103}
     contentPanel: {fileID: 3300089161372902341}
     brushCanvasGroup: {fileID: 0}
-  - tabName: 
+  - tabName: Controls
     button: {fileID: 6101114803946076816}
     brushBackground: {fileID: 2788632984475880084}
     tabText: {fileID: 6596043613279525368}
     contentPanel: {fileID: 4015604836580831555}
     brushCanvasGroup: {fileID: 0}
-  - tabName: 
+  - tabName: Audio
     button: {fileID: 1851849008891839553}
     brushBackground: {fileID: 5689132795475338083}
     tabText: {fileID: 4905979935801302484}
@@ -12703,9 +12703,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TaskManager
   totalFencePoints: 6
   totalGenerators: 1
-  getEquipmentKey: 103
   skipToGateInspectionKey: 103
   alternativeSkipKey: 282
+  getEquipmentKey: 103
   teleportToBoothOnSkip: 0
   teleportToGateKey: 98
   alternativeTeleportKey: 283
@@ -16161,8 +16161,8 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.88, b: 0.35, a: 1}
-  m_Intensity: 35
-  m_Range: 35
+  m_Intensity: 90
+  m_Range: 50
   m_SpotAngle: 65
   m_InnerSpotAngle: 35
   m_CookieSize2D: {x: 0.5, y: 0.5}
@@ -16689,6 +16689,13 @@ MonoBehaviour:
   hasFlashlight: 1
   flashlight: {fileID: 4512714026935545704}
   onClip: {fileID: 8300000, guid: 087224dd7ec352f42a3b950a07009a88, type: 3}
+  autoApplyOptimalSettings: 1
+  intensity: 35
+  range: 35
+  spotAngle: 65
+  innerSpotAngle: 35
+  lightColor: {r: 1, g: 0.88, b: 0.35, a: 1}
+  shadows: 0
 --- !u!82 &3172410906648122122
 AudioSource:
   m_ObjectHideFlags: 0

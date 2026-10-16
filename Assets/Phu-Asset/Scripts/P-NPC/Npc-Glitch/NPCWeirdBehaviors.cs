@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
 
 public enum GlitchStyle
 {
@@ -9,26 +8,18 @@ public enum GlitchStyle
     ViolentShake        // Rung lắc dữ dội toàn thân
 }
 
-public class NPCWeirdBehaviors : MonoBehaviour
+/// <summary>
+/// Hành vi NPC Giật Lag (Glitch / Spasm Mutant):
+/// Kế thừa từ NPCBaseBehavior. Khi đến bốt gác kiểm tra, NPC sẽ có các biểu hiện co giật kì dị.
+/// </summary>
+public class NPCWeirdBehaviors : NPCBaseBehavior
 {
-    [Header("=== Cấu Hình Tự Đi Bộ ===")]
-    public Transform inspectionPoint;
-    public float walkSpeed = 2.5f;
-
-    [Header("=== Âm Thanh Bước Chân (Footsteps) ===")]
-    public AudioClip[] footstepSounds;
-    public float footstepInterval = 0.45f;
-    private float footstepTimer;
-
-    [Header("=== Trạng Thái NPC ===")]
+    [Header("=== Trạng Thái Dị Biệt ===")]
     public bool isAnomaly = true;
-    public bool isInspecting = false;
     public GlitchStyle currentGlitchStyle;
 
-    [Header("=== References ===")]
+    [Header("=== References Riêng ===")]
     public Transform headBone;
-    public Animator animator;
-    public AudioSource audioSource; // AudioSource dự phòng trên NPC
 
     [Header("=== Âm Thanh Cho Từng Kiểu Giật ===")]
     public AudioClip continuousGlitchSound;
@@ -42,33 +33,27 @@ public class NPCWeirdBehaviors : MonoBehaviour
     public float minSpasmInterval = 0.8f;
     public float maxSpasmInterval = 3f;
 
-    private NavMeshAgent agent;
     private Vector3 originalLocalPos;
     private Quaternion originalHeadRot;
     private float spasmTimer;
     private float soundTimer;
 
-    void Awake()
+    protected override void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
-        if (agent == null) agent = GetComponentInParent<NavMeshAgent>();
-        if (animator == null) animator = GetComponent<Animator>();
-        if (animator == null) animator = GetComponentInChildren<Animator>();
-        
-        // Nếu quên kéo AudioSource thì tự động tạo/gắn vào NPC
+        base.Awake();
+
         if (audioSource == null)
         {
             audioSource = GetComponent<AudioSource>();
             if (audioSource == null) audioSource = GetComponentInParent<AudioSource>();
-            if (audioSource == null)
-            {
-                audioSource = gameObject.AddComponent<AudioSource>();
-            }
+            if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         }
     }
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         originalLocalPos = transform.localPosition;
         if (headBone != null)
         {
@@ -81,48 +66,6 @@ public class NPCWeirdBehaviors : MonoBehaviour
         }
 
         spasmTimer = Random.Range(minSpasmInterval, maxSpasmInterval);
-
-        if (inspectionPoint == null)
-        {
-            GameObject zoneObj = GameObject.Find("InspectionZone");
-            if (zoneObj != null) inspectionPoint = zoneObj.transform;
-        }
-
-        if (NPCInspectionManager.instance == null && inspectionPoint != null)
-        {
-            MoveToInspectionPoint();
-        }
-    }
-
-    private void EnsureAgentOnNavMesh()
-    {
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
-        if (agent != null && !agent.isOnNavMesh)
-        {
-            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 20f, NavMesh.AllAreas))
-            {
-                agent.Warp(hit.position);
-            }
-        }
-    }
-
-    public void MoveToInspectionPoint()
-    {
-        isInspecting = false;
-        EnsureAgentOnNavMesh();
-        if (agent != null && agent.isOnNavMesh && inspectionPoint != null)
-        {
-            agent.isStopped = false;
-            agent.speed = walkSpeed;
-            Vector3 target = inspectionPoint.position;
-            if (NavMesh.SamplePosition(target, out NavMeshHit hit, 20f, NavMesh.AllAreas)) target = hit.position;
-            agent.SetDestination(target);
-        }
-
-        if (animator != null)
-        {
-            animator.SetBool("isWalk", true);
-        }
     }
 
     public void RandomizeGlitchStyle()
@@ -131,19 +74,9 @@ public class NPCWeirdBehaviors : MonoBehaviour
         currentGlitchStyle = (GlitchStyle)randomIndex;
     }
 
-    public void StartInspection()
+    protected override void OnInspectionStarted()
     {
-        isInspecting = true;
-        if (agent != null && agent.isOnNavMesh)
-        {
-            agent.isStopped = true;
-        }
-
-        if (animator != null)
-        {
-            animator.SetBool("isWalk", false);
-        }
-
+        base.OnInspectionStarted();
         originalLocalPos = transform.localPosition;
     }
 
@@ -154,29 +87,11 @@ public class NPCWeirdBehaviors : MonoBehaviour
         transform.localPosition = originalLocalPos;
     }
 
-    void Update()
+    protected override void Update()
     {
-        // 1. ÂM THANH BƯỚC CHÂN
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.velocity.magnitude > 0.1f)
-        {
-            footstepTimer -= Time.deltaTime;
-            if (footstepTimer <= 0)
-            {
-                PlayFootstepSound();
-                footstepTimer = footstepInterval;
-            }
-        }
+        base.Update();
 
-        // Kiểm tra tới vạch kiểm duyệt
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.enabled && !agent.pathPending && agent.hasPath)
-        {
-            if (agent.remainingDistance > 0.1f && agent.remainingDistance <= agent.stoppingDistance + 0.2f)
-            {
-                StartInspection();
-            }
-        }
-
-        // 2. GIẬT GIẶT & ÂM THANH GIẬT
+        // GIẬT GIẶT & ÂM THANH GIẬT
         if (!isAnomaly || !isInspecting) return;
 
         soundTimer -= Time.deltaTime;
@@ -231,9 +146,6 @@ public class NPCWeirdBehaviors : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Hàm phát Sound thông minh (Ưu tiên AudioManager, nếu không có sẽ tự phát qua AudioSource)
-    /// </summary>
     private void PlaySoundSmart(AudioClip clip, float volume = 1.0f)
     {
         if (clip == null) return;
@@ -247,16 +159,6 @@ public class NPCWeirdBehaviors : MonoBehaviour
             audioSource.pitch = Random.Range(0.85f, 1.25f);
             audioSource.PlayOneShot(clip, volume);
         }
-    }
-
-    private void PlayFootstepSound()
-    {
-        if (footstepSounds == null || footstepSounds.Length == 0) return;
-
-        int randomIndex = Random.Range(0, footstepSounds.Length);
-        AudioClip clip = footstepSounds[randomIndex];
-
-        PlaySoundSmart(clip, 0.6f);
     }
 
     private void PlayStyleSpecificSound()

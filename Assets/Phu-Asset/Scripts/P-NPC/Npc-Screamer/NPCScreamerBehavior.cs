@@ -1,19 +1,12 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
 
 /// <summary>
-/// The Screamer Mutant:
-/// Emits high-frequency ultrasonic screams and radio interference.
-/// Causes the guard booth's lights to flicker violently, triggers ear ringing,
-/// shakes the player's screen, and undergoes violent full-body spasms.
+/// Hành vi NPC La Hét (Screamer Mutant):
+/// Kế thừa từ NPCBaseBehavior. Phát ra sóng âm la hét chói tai, làm chập chờn đèn bốt gác, rung lắc camera và co giật thân thể.
 /// </summary>
-public class NPCScreamerBehavior : MonoBehaviour
+public class NPCScreamerBehavior : NPCBaseBehavior
 {
-    [Header("=== MOVEMENT CONFIGURATION ===")]
-    public Transform inspectionPoint;
-    public float walkSpeed = 2.2f;
-
     [Header("=== SCREAM SETTINGS ===")]
     public float initialScreamDelay = 1.8f;
     public float screamDuration = 3.2f;
@@ -40,22 +33,13 @@ public class NPCScreamerBehavior : MonoBehaviour
     public float cameraShakeIntensity = 0.25f;
 
     [Header("=== AUDIO EFFECTS ===")]
-    public AudioClip[] footstepSounds;
     public AudioClip screamShriekSound;
     public AudioClip radioStaticSound;
     public AudioClip earRingingSound;
-    public float footstepInterval = 0.5f;
 
     [Header("=== STATE ===")]
-    public bool isInspecting = false;
     public bool isScreaming = false;
 
-    [Header("=== REFERENCES ===")]
-    public Animator animator;
-    public AudioSource audioSource;
-
-    private NavMeshAgent agent;
-    private float footstepTimer;
     private Quaternion originalHeadRot;
     private Quaternion originalNeckRot;
     private Quaternion originalSpineRot;
@@ -64,14 +48,9 @@ public class NPCScreamerBehavior : MonoBehaviour
     private float defaultLightIntensity = 1f;
     private Coroutine screamLoopCoroutine;
 
-    void Awake()
+    protected override void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
-        if (agent == null) agent = GetComponentInParent<NavMeshAgent>();
-        if (animator == null) animator = GetComponent<Animator>();
-        if (animator == null) animator = GetComponentInChildren<Animator>();
-        if (audioSource == null) audioSource = GetComponent<AudioSource>();
-        if (audioSource == null) audioSource = GetComponentInParent<AudioSource>();
+        base.Awake();
 
         if (audioSource == null)
         {
@@ -168,57 +147,16 @@ public class NPCScreamerBehavior : MonoBehaviour
         }
     }
 
-    void Start()
+    public override void MoveToInspectionPoint()
     {
-        if (inspectionPoint == null)
-        {
-            GameObject zoneObj = GameObject.Find("InspectionZone") ?? GameObject.Find("InspectionPoint");
-            if (zoneObj != null) inspectionPoint = zoneObj.transform;
-        }
-
-        if (NPCInspectionManager.instance == null && inspectionPoint != null)
-        {
-            MoveToInspectionPoint();
-        }
-    }
-
-    private void EnsureAgentOnNavMesh()
-    {
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
-        if (agent != null && !agent.isOnNavMesh)
-        {
-            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 20f, NavMesh.AllAreas))
-            {
-                agent.Warp(hit.position);
-            }
-        }
-    }
-
-    public void MoveToInspectionPoint()
-    {
-        isInspecting = false;
+        base.MoveToInspectionPoint();
         isScreaming = false;
-
-        EnsureAgentOnNavMesh();
-        if (agent != null && agent.isOnNavMesh && inspectionPoint != null)
-        {
-            agent.isStopped = false;
-            agent.speed = walkSpeed;
-            Vector3 target = inspectionPoint.position;
-            if (NavMesh.SamplePosition(target, out NavMeshHit hit, 20f, NavMesh.AllAreas)) target = hit.position;
-            agent.SetDestination(target);
-        }
-        if (animator != null) animator.SetBool("isWalk", true);
     }
 
-    public void StartInspection()
+    protected override void OnInspectionStarted()
     {
-        if (isInspecting) return;
-        isInspecting = true;
+        base.OnInspectionStarted();
         baseInspectionPos = transform.position;
-
-        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
-        if (animator != null) animator.SetBool("isWalk", false);
 
         if (screamLoopCoroutine != null) StopCoroutine(screamLoopCoroutine);
         screamLoopCoroutine = StartCoroutine(ScreamLoopSequence());
@@ -293,27 +231,6 @@ public class NPCScreamerBehavior : MonoBehaviour
         isScreaming = false;
     }
 
-    void Update()
-    {
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.velocity.magnitude > 0.1f)
-        {
-            footstepTimer -= Time.deltaTime;
-            if (footstepTimer <= 0)
-            {
-                PlayFootstepSound();
-                footstepTimer = footstepInterval;
-            }
-        }
-
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.enabled && !agent.pathPending && agent.hasPath)
-        {
-            if (agent.remainingDistance > 0.1f && agent.remainingDistance <= agent.stoppingDistance + 0.2f)
-            {
-                StartInspection();
-            }
-        }
-    }
-
     void LateUpdate()
     {
         if (isScreaming)
@@ -345,13 +262,6 @@ public class NPCScreamerBehavior : MonoBehaviour
                 transform.localScale = originalLocalScale + Random.insideUnitSphere * 0.04f;
             }
         }
-    }
-
-    private void PlayFootstepSound()
-    {
-        if (footstepSounds == null || footstepSounds.Length == 0) return;
-        int randomIndex = Random.Range(0, footstepSounds.Length);
-        PlaySound(footstepSounds[randomIndex], 0.6f);
     }
 
     private void PlaySound(AudioClip clip, float volume = 1f)

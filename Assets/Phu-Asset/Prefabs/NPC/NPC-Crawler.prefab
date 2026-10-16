@@ -80,11 +80,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCCrawlerBehavior
   inspectionPoint: {fileID: 0}
   walkSpeed: 2.4
+  footstepSounds: []
+  footstepInterval: 0.45
+  isInspecting: 0
+  animator: {fileID: 0}
+  audioSource: {fileID: 0}
+  agent: {fileID: 0}
   talkDurationBeforeVanish: 1.2
   jumpscareModel: {fileID: 4440158785677964267, guid: d926b4145f4c5b44cb07b5d1615e0bcb, type: 3}
   customBehindPoint: {fileID: 5129640654776906714, guid: 54bc362efef34414b9fb8e22e820b891, type: 3}
   behindDistance: 2.4
   turnAroundAngleThreshold: 95
+  whisperOnlyOnce: 1
   audioReminderInterval: 4
   flyDuration: 0.22
   leapHeightArc: 0.35
@@ -92,15 +99,10 @@ MonoBehaviour:
   faceScareDuration: 0.9
   cameraShakeDuration: 0.6
   cameraShakeMagnitude: 0.5
-  footstepSounds: []
-  vanishSound: {fileID: 8300000, guid: f6967dfa537a8e443993626155359ba9, type: 3}
-  behindWhisperSound: {fileID: 8300000, guid: 4f631623903c900409fe1bf1a4542227, type: 3}
-  jumpscareRoarSound: {fileID: 8300000, guid: 534c6a88498e2034da2140adbb9e831c, type: 3}
-  footstepInterval: 0.45
+  vanishSound: {fileID: 0}
+  behindWhisperSound: {fileID: 8300000, guid: 43f0e274496304f07a72ea0e0797c460, type: 3}
+  jumpscareRoarSound: {fileID: 8300000, guid: bcc26eec8612d43e683ef3c58d4ab4d2, type: 3}
   advanceInspectionQueue: 1
-  isInspecting: 0
   hasVanishedFromWindow: 0
   isWaitingBehindPlayer: 0
   hasAttackedPlayer: 0
-  animator: {fileID: 0}
-  audioSource: {fileID: 0}

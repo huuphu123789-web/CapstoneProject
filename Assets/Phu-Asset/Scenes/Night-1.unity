@@ -469,6 +469,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3006886999898733406, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3006886999898733406, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3006886999898733406, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3006886999898733406, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4435470804544378220, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -481,15 +497,113 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6258292713998598884, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6258292713998598884, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6258292713998598884, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6258292713998598884, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6637442219687423418, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6637442219687423418, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6637442219687423418, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6637442219687423418, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6873226994149146907, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8681035432400070163, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8681035432400070163, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8681035432400070163, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8681035432400070163, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80354cd2790c14e369a5862e0b531e2f, type: 3}
+--- !u!1 &1565979557
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1565979558}
+  - component: {fileID: 1565979559}
+  m_Layer: 0
+  m_Name: PlayerCameraJumpscarePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1565979558
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565979557}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1382690796669156671}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1565979559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565979557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeeb3030a2404c80b6e5a581b577a92f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCameraJumpscarePoint
+  localOffset: {x: 0, y: 0, z: 0.4}
+  faceLatchDistance: 0.35
+  rotationOffset: {x: 0, y: 0, z: 0}
+  showGizmos: 1
+  gizmoColor: {r: 1, g: 0.1, b: 0.1, a: 0.85}
+  gizmoSphereRadius: 0.15
 --- !u!1001 &1848624747
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -709,6 +823,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5683683026331982589}
+  - {fileID: 1565979558}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1864494660678905637
@@ -963,7 +1078,8 @@ PrefabInstance:
       value: -0.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7425885895590439636, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2339909951102193981, guid: 49d00646296274ce5903d2511a8cbc01, type: 3}
       insertIndex: 20
@@ -1299,24 +1415,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCInspectionManager
   npcQueue:
-  - npcName: Subject C-02 (The Crawler)
+  - npcName: Subject J-01 (The Jumper)
     isMutant: 1
-    npcPrefab: {fileID: 6039426732363062861, guid: 0d3ad9f5d19b24d75adb8d4978d00d06, type: 3}
+    npcPrefab: {fileID: 6254132896306504086, guid: f57bf8835a7514295a52a60a3cd8c889, type: 3}
     cccdTexture: {fileID: 0}
     surrenderConfirmTexture: {fileID: 0}
-    dialogueOnArrive: Officer... down here... please help me... my legs...
+    dialogueOnArrive: Officer! Open the gate quickly, I can hear them breathing behind
+      me!
     defenseDialogues:
-    - I had to crawl through the mud... don't look at my joints...
-    - The documents are here... just look at them...
-    dialogueOnApproved: '*Chittering noise* ...Warm meat...'
-    dialogueOnDenied: '*HISSS* YOU WON''T ESCAPE THIS MIST!'
+    - Why are you taking so long?! Look at my papers, they are authentic!
+    - They are coming for me! Open the door right now! OPEN IT!!
+    - I am not one of them! Look at my hands! I'm shivering from the cold!
+    dialogueOnApproved: Hehehe... finally inside...
+    dialogueOnDenied: GRAAAHHH! YOU CANNOT LOCK ME OUT!
     voiceArriveClip: {fileID: 0}
     defenseVoiceClips: []
     voiceApproveClip: {fileID: 0}
     voiceDenyClip: {fileID: 0}
-  - npcName: Subject C-02 (The Jumper)
+  - npcName: Subject D-04 (Suspect with Dog)
     isMutant: 1
-    npcPrefab: {fileID: 6254132896306504086, guid: f57bf8835a7514295a52a60a3cd8c889, type: 3}
+    npcPrefab: {fileID: 6039426732363062861, guid: 8e5f1b2c4a9348d3902f5a6b7c8d9e1f, type: 3}
+    cccdTexture: {fileID: 0}
+    surrenderConfirmTexture: {fileID: 0}
+    dialogueOnArrive: Officer, please let me pass! Why is that dog barking like crazy
+      at me?!
+    defenseDialogues:
+    - Quiet that dog down! It's making me nervous... I'm a registered citizen!
+    - Dogs always bark at strangers in this thick mist, don't listen to it!
+    - Check my papers! Everything is legitimate! Just tell that mutt to shut up!
+    dialogueOnApproved: Heh... the mutt knew, but you didn't...
+    dialogueOnDenied: YOU SHOULD HAVE TRUSTED THE DOG! *ROAR*
+    voiceArriveClip: {fileID: 0}
+    defenseVoiceClips: []
+    voiceApproveClip: {fileID: 0}
+    voiceDenyClip: {fileID: 0}
+  - npcName: Subject C-02 (The Crawler)
+    isMutant: 1
+    npcPrefab: {fileID: 6039426732363062861, guid: 0d3ad9f5d19b24d75adb8d4978d00d06, type: 3}
     cccdTexture: {fileID: 0}
     surrenderConfirmTexture: {fileID: 0}
     dialogueOnArrive: Officer... down here... please help me... my legs...

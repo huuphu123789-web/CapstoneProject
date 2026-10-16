@@ -1,74 +1,70 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
 
 /// <summary>
-/// The Jumper Mutant:
-/// Approaches the inspection booth quietly. While being inspected, instead of physically
-/// jumping forward, it triggers a horrifying jumpscare model (auto-detected WindowJumpScare)
-/// right at the window or player's face, accompanied by violent screen shake and audio impact.
+/// Hành vi NPC Jumper (The Jumper Mutant):
+/// Kế thừa từ NPCBaseBehavior.
+/// - Khi NPC Jumper đến cửa sổ bốt gác để kiểm tra:
+/// - Sau 1 khoảng thời gian ngắn (1.0 - 1.8s) hoặc khi người chơi bấm nút duyệt/từ chối:
+///   Quái vật sẽ biến hình và PHÓNG THẲNG TỪ CỬA SỔ với tốc độ cực cao phi thẳng vào mặt/camera của người chơi!
+/// - Đích đến là điểm 'PlayerCameraJumpscarePoint' gắn trên Camera của Player.
+/// - Phát âm thanh jumpscare dữ dội, rung giật màn hình điên cuồng, cào cấu ngay trước mắt rồi biến mất!
 /// </summary>
-public class NPCJumperBehavior : MonoBehaviour
+public class NPCJumperBehavior : NPCBaseBehavior
 {
-    [Header("=== MOVEMENT CONFIGURATION ===")]
-    public Transform inspectionPoint;
-    public float walkSpeed = 2.4f;
-
     [Header("=== JUMPSCARE TRIGGER TIMING ===")]
-    [Tooltip("Min and Max seconds before triggering the jumpscare after arriving at the booth")]
-    public float minTriggerDelay = 2.0f;
-    public float maxTriggerDelay = 4.0f;
+    [Tooltip("Khoảng thời gian chờ ngắn trước khi quái vật nhảy bổ vào camera (giây)")]
+    public float minTriggerDelay = 1.0f;
+    public float maxTriggerDelay = 1.8f;
 
     [Header("=== JUMPSCARE MODEL SETTINGS ===")]
-    [Tooltip("Drag a jumpscare GameObject (e.g. WindowJumpScare) here. Auto-detects in scene if null.")]
+    [Tooltip("Kéo đối tượng GameObject có Mesh/Renderer vào đây (hoặc để trống để tự dùng JumpScare.prefab)")]
     public GameObject jumpscareModel;
 
-    [Tooltip("Drag a jumpscare Prefab here as fallback if no scene object is used.")]
+    [Tooltip("Prefab mô hình quái vật jumpscare (mặc định: JumpScare.prefab)")]
     public GameObject jumpscarePrefab;
 
-    [Tooltip("Target window or spawn point where the jumpscare model will appear. Auto-detects if null.")]
+    [Tooltip("Điểm xuất phát cú nhảy. Nếu để trống, sẽ nhảy trực tiếp từ vị trí đứng trước cửa sổ của NPC.")]
     public Transform jumpscareSpawnPoint;
 
-    [Tooltip("Distance in front of Camera if spawning directly in front of the player")]
-    public float cameraForwardOffset = 1.2f;
-
-    [Tooltip("How long the jumpscare model remains visible before disappearing (seconds)")]
-    public float jumpscareDuration = 1.8f;
-
-    [Tooltip("Temporarily hide the normal NPC visual renderers while the jumpscare model is active")]
+    [Tooltip("Tạm thời ẩn mô hình NPC bình thường trong khi mô hình jumpscare đang nhảy vồ")]
     public bool hideNormalModelDuringScare = true;
 
-    [Header("=== CAMERA SHAKE & IMPACT ===")]
-    public float cameraShakeDuration = 0.6f;
-    public float cameraShakeMagnitude = 0.5f;
+    [Header("=== THÔNG SỐ BAY & VỒ MẶT (AIRBORNE LUNGE) ===")]
+    [Tooltip("Thời gian bay thẳng từ cửa sổ vào ống kính camera của người chơi (giây)")]
+    public float flyDuration = 0.22f;
 
-    [Header("=== AUDIO EFFECTS ===")]
-    public AudioClip[] footstepSounds;
+    [Tooltip("Độ cong vòng cung nhào lộn qua bệ cửa sổ (mét)")]
+    public float leapHeightArc = 0.35f;
+
+    [Tooltip("Khoảng cách bám mặt sát ống kính camera (mét)")]
+    public float faceLatchDistance = 0.35f;
+
+    [Tooltip("Thời gian cào cấu / gầm thét rung giật ngay trước mắt người chơi (giây)")]
+    public float faceScareDuration = 1.0f;
+
+    [Header("=== RUNG LẮC CAMERA & VA CHẠM ===")]
+    public float cameraShakeDuration = 0.7f;
+    public float cameraShakeMagnitude = 0.6f;
+
+    [Header("=== HIỆU ỨNG ÂM THANH ===")]
     public AudioClip nervousBreathingSound;
     public AudioClip jumpscareSound;
-    public float footstepInterval = 0.45f;
 
-    [Header("=== STATE ===")]
-    public bool isInspecting = false;
+    [Header("=== TIẾN TRÌNH KIỂM TRA ===")]
+    [Tooltip("Tự động từ chối/bỏ chạy và chuyển lượt kiểm tra tiếp theo sau khi jumpscare")]
+    public bool advanceInspectionQueue = true;
+
+    [Header("=== TRẠNG THÁI ===")]
     public bool hasTriggeredScare = false;
+    public bool isAttackingPlayer = false;
 
-    [Header("=== REFERENCES ===")]
-    public Animator animator;
-    public AudioSource audioSource;
-
-    private NavMeshAgent agent;
-    private float footstepTimer;
     private Coroutine scareCoroutine;
     private Renderer[] normalRenderers;
 
-    void Awake()
+    protected override void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
-        if (agent == null) agent = GetComponentInParent<NavMeshAgent>();
-        if (animator == null) animator = GetComponent<Animator>();
-        if (animator == null) animator = GetComponentInChildren<Animator>();
-        if (audioSource == null) audioSource = GetComponent<AudioSource>();
-        if (audioSource == null) audioSource = GetComponentInParent<AudioSource>();
+        base.Awake();
 
         if (audioSource == null)
         {
@@ -81,7 +77,7 @@ public class NPCJumperBehavior : MonoBehaviour
         normalRenderers = GetComponentsInChildren<Renderer>(true);
 
 #if UNITY_EDITOR
-        if (jumpscarePrefab == null && jumpscareModel == null)
+        if (jumpscarePrefab == null)
         {
             jumpscarePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Phu-Asset/Prefabs/JumpScare/JumpScare.prefab");
         }
@@ -102,121 +98,89 @@ public class NPCJumperBehavior : MonoBehaviour
 #endif
     }
 
-    void Start()
+    protected override void Start()
     {
-        if (inspectionPoint == null)
+        base.Start();
+
+        // 1. Kiểm tra jumpscareModel: Phải có Renderer/Mesh thực tế, tránh các GameObject rỗng
+        if (jumpscareModel != null && !IsValidVisualObject(jumpscareModel))
         {
-            if (NPCInspectionManager.instance != null && NPCInspectionManager.instance.inspectionPoint != null)
-            {
-                inspectionPoint = NPCInspectionManager.instance.inspectionPoint;
-            }
-            else
-            {
-                GameObject zoneObj = FindSceneObject("InspectionZone", "InspectionPoint");
-                if (zoneObj != null) inspectionPoint = zoneObj.transform;
-            }
+            Debug.LogWarning($"[NPCJumperBehavior] '{jumpscareModel.name}' không có Renderer/Mesh. Chuyển sang dùng JumpScare.prefab.");
+            jumpscareModel = null;
         }
 
-        // Auto-detect user created WindowJumpScare (active or inactive)
-        if (jumpscareModel == null)
+        // 2. Tải JumpScare.prefab nếu chưa có model
+        if (jumpscareModel == null && jumpscarePrefab == null)
         {
-            jumpscareModel = FindSceneObject("windowjumpscare", "WindowJumpScare");
+#if UNITY_EDITOR
+            jumpscarePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Phu-Asset/Prefabs/JumpScare/JumpScare.prefab");
+#endif
         }
 
-        if (jumpscareSpawnPoint == null)
+        // 3. Nếu jumpscareSpawnPoint trỏ vào asset prefab không nằm trong Scene, reset về null để dùng vị trí NPC
+        if (jumpscareSpawnPoint != null && (!jumpscareSpawnPoint.gameObject.scene.IsValid()))
         {
-            if (jumpscareModel != null)
-            {
-                jumpscareSpawnPoint = jumpscareModel.transform;
-            }
-            else
-            {
-                GameObject winObj = FindSceneObject("windowjumpscare", "WindowJumpScare", "BoothWindow", "Glass");
-                if (winObj != null) jumpscareSpawnPoint = winObj.transform;
-            }
+            jumpscareSpawnPoint = null;
         }
 
-        // Initially deactivate jumpscare model in scene if assigned
+        // 4. Nếu jumpscareModel là Scene object hợp lệ, ẩn tạm ban đầu
         if (jumpscareModel != null && jumpscareModel.scene.IsValid())
         {
             jumpscareModel.SetActive(false);
         }
-
-        if (NPCInspectionManager.instance == null && inspectionPoint != null)
-        {
-            MoveToInspectionPoint();
-        }
     }
 
-    private GameObject FindSceneObject(params string[] possibleNames)
+    private bool IsValidVisualObject(GameObject obj)
     {
-        Transform[] all = FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        foreach (var targetName in possibleNames)
-        {
-            string cleanTarget = targetName.Replace(" ", "").Replace("_", "").ToLower();
-            foreach (var t in all)
-            {
-                if (t != null && t.gameObject.scene.IsValid())
-                {
-                    string cleanObjName = t.name.Replace(" ", "").Replace("_", "").ToLower();
-                    if (cleanObjName.Equals(cleanTarget) || cleanObjName.Contains(cleanTarget))
-                    {
-                        return t.gameObject;
-                    }
-                }
-            }
-        }
-        return null;
+        if (obj == null) return false;
+        Renderer rend = obj.GetComponentInChildren<Renderer>(true);
+        return (rend != null);
     }
 
-    private void EnsureAgentOnNavMesh()
+    public override void MoveToInspectionPoint()
     {
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
-        if (agent != null && !agent.isOnNavMesh)
-        {
-            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 20f, NavMesh.AllAreas))
-            {
-                agent.Warp(hit.position);
-            }
-        }
-    }
-
-    public void MoveToInspectionPoint()
-    {
-        isInspecting = false;
+        base.MoveToInspectionPoint();
         hasTriggeredScare = false;
-        EnsureAgentOnNavMesh();
-        if (agent != null && agent.isOnNavMesh && inspectionPoint != null)
-        {
-            agent.isStopped = false;
-            agent.speed = walkSpeed;
-            Vector3 target = inspectionPoint.position;
-            if (NavMesh.SamplePosition(target, out NavMeshHit hit, 20f, NavMesh.AllAreas)) target = hit.position;
-            agent.SetDestination(target);
-        }
-        if (animator != null) animator.SetBool("isWalk", true);
+        isAttackingPlayer = false;
     }
 
-    public void StartInspection()
+    public override void StartInspection()
     {
         if (isInspecting) return;
-        isInspecting = true;
-
-        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
-        if (animator != null) animator.SetBool("isWalk", false);
+        base.StartInspection();
 
         if (scareCoroutine != null) StopCoroutine(scareCoroutine);
         scareCoroutine = StartCoroutine(JumpscareModelSequence());
+    }
+
+    protected override void OnInspectionStarted()
+    {
+        base.OnInspectionStarted();
+
+        if (scareCoroutine == null)
+        {
+            scareCoroutine = StartCoroutine(JumpscareModelSequence());
+        }
+    }
+
+    /// <summary>
+    /// Kích hoạt jumpscare ngay lập tức (khi người chơi bấm Duyệt hoặc Từ chối trước khi hết thời gian chờ)
+    /// </summary>
+    public void TriggerImmediateJumpscare()
+    {
+        if (hasTriggeredScare) return;
+        if (scareCoroutine != null) StopCoroutine(scareCoroutine);
+        scareCoroutine = StartCoroutine(ExecuteJumpscareFlight());
     }
 
     private IEnumerator JumpscareModelSequence()
     {
         float delay = Random.Range(minTriggerDelay, maxTriggerDelay);
 
-        // Play subtle nervous anticipation audio
+        // Phát âm thanh thở dốc hồi hộp
         PlaySound(nervousBreathingSound, 0.7f);
 
-        // Subtle anxious jittering before jumpscare
+        // Hiệu ứng giật nhẹ người trước khi lao tới
         float elapsed = 0f;
         Vector3 initialPos = transform.position;
         while (elapsed < delay)
@@ -227,72 +191,90 @@ public class NPCJumperBehavior : MonoBehaviour
         }
         transform.position = initialPos;
 
-        // --- TRIGGER JUMPSCARE MODEL ---
-        hasTriggeredScare = true;
+        // Tiến hành bay vồ
+        yield return StartCoroutine(ExecuteJumpscareFlight());
+    }
 
-        // Hide normal NPC model if requested
-        if (hideNormalModelDuringScare)
+    private IEnumerator ExecuteJumpscareFlight()
+    {
+        if (hasTriggeredScare) yield break;
+
+        hasTriggeredScare = true;
+        isAttackingPlayer = true;
+
+        // 1. Xác định vị trí xuất phát cú nhảy: Mặc định là ngay tại vị trí đứng trước cửa sổ của NPC!
+        Vector3 startFlyPos;
+        if (jumpscareSpawnPoint != null && jumpscareSpawnPoint.gameObject.scene.IsValid())
+        {
+            startFlyPos = jumpscareSpawnPoint.position;
+        }
+        else
+        {
+            startFlyPos = transform.position + Vector3.up * 1.0f;
+        }
+
+        // 2. Tìm model hoặc prefab jumpscare trực quan
+        GameObject modelToUse = null;
+        if (jumpscareModel != null && IsValidVisualObject(jumpscareModel))
+        {
+            modelToUse = jumpscareModel;
+        }
+        else if (jumpscarePrefab != null && IsValidVisualObject(jumpscarePrefab))
+        {
+            modelToUse = jumpscarePrefab;
+        }
+        else
+        {
+#if UNITY_EDITOR
+            modelToUse = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Phu-Asset/Prefabs/JumpScare/JumpScare.prefab");
+#endif
+        }
+
+        // 3. Chuẩn bị đối tượng jumpscare model
+        GameObject activeScareInstance = null;
+        if (modelToUse != null)
+        {
+            if (modelToUse.scene.IsValid())
+            {
+                activeScareInstance = modelToUse;
+                activeScareInstance.transform.position = startFlyPos;
+                activeScareInstance.SetActive(true);
+            }
+            else
+            {
+                // Khởi tạo prefab quái vật tại đúng vị trí cửa sổ
+                activeScareInstance = Instantiate(modelToUse, startFlyPos, transform.rotation);
+                activeScareInstance.SetActive(true);
+            }
+
+            // Đảm bảo bật tất cả Renderer trên mô hình jumpscare
+            Renderer[] allRends = activeScareInstance.GetComponentsInChildren<Renderer>(true);
+            foreach (var r in allRends)
+            {
+                r.enabled = true;
+            }
+        }
+
+        // 4. Nếu có mô hình jumpscare riêng, ẩn mô hình NPC người thường
+        if (hideNormalModelDuringScare && activeScareInstance != null && activeScareInstance != gameObject)
         {
             SetRenderersVisibility(false);
         }
 
-        GameObject activeScareInstance = null;
-
-        // 1. If user provided a scene object (e.g. WindowJumpScare), activate it
-        if (jumpscareModel != null && jumpscareModel.scene.IsValid())
+        // 5. Nếu không tìm thấy mô hình nào, dùng chính NPC này để vồ tới camera (fallback an toàn tuyệt đối)
+        if (activeScareInstance == null)
         {
-            jumpscareModel.SetActive(true);
-            activeScareInstance = jumpscareModel;
-        }
-        // 2. Otherwise instantiate prefab (assigned by user or auto-fallback)
-        else
-        {
-            GameObject prefabToSpawn = (jumpscareModel != null && !jumpscareModel.scene.IsValid()) 
-                ? jumpscareModel 
-                : jumpscarePrefab;
-
-            if (prefabToSpawn != null)
-            {
-                Camera mainCam = Camera.main;
-                Vector3 targetPos;
-                Quaternion targetRot;
-
-                if (jumpscareSpawnPoint != null)
-                {
-                    targetPos = jumpscareSpawnPoint.position;
-                    Vector3 lookDir = (mainCam != null) ? (mainCam.transform.position - targetPos) : jumpscareSpawnPoint.forward;
-                    lookDir.y = 0f;
-                    targetRot = (lookDir.sqrMagnitude > 0.01f) ? Quaternion.LookRotation(lookDir) : jumpscareSpawnPoint.rotation;
-                }
-                else if (mainCam != null)
-                {
-                    targetPos = mainCam.transform.position + mainCam.transform.forward * cameraForwardOffset;
-                    targetRot = Quaternion.LookRotation(-mainCam.transform.forward);
-                }
-                else
-                {
-                    targetPos = transform.position + transform.forward * 2.0f;
-                    targetRot = Quaternion.LookRotation(-transform.forward);
-                }
-
-                activeScareInstance = Instantiate(prefabToSpawn, targetPos, targetRot);
-                activeScareInstance.SetActive(true);
-            }
+            activeScareInstance = gameObject;
+            startFlyPos = transform.position;
         }
 
-        // Play loud jumpscare sound
-        PlaySound(jumpscareSound, 1.0f);
+        // 6. BAY TỪ CỬA SỔ VỒ THẲNG VÀO CAMERA CỦA PLAYER
+        yield return StartCoroutine(FlyAndLatchOnPlayerFace(activeScareInstance, startFlyPos));
 
-        // Trigger heavy camera shake (with Cinemachine 3.x integration)
-        TriggerCameraShake();
-
-        // Keep jumpscare model on screen for duration
-        yield return new WaitForSeconds(jumpscareDuration);
-
-        // Deactivate or destroy jumpscare model
-        if (activeScareInstance != null)
+        // 7. KẾT THÚC & BIẾN MẤT
+        if (activeScareInstance != null && activeScareInstance != gameObject)
         {
-            if (activeScareInstance == jumpscareModel && jumpscareModel.scene.IsValid())
+            if (activeScareInstance.scene.IsValid() && activeScareInstance == jumpscareModel)
             {
                 activeScareInstance.SetActive(false);
             }
@@ -302,11 +284,121 @@ public class NPCJumperBehavior : MonoBehaviour
             }
         }
 
-        // Restore normal NPC renderers
-        if (hideNormalModelDuringScare)
+        isAttackingPlayer = false;
+
+        // Chuyển lượt kiểm tra tiếp theo
+        if (advanceInspectionQueue && NPCInspectionManager.instance != null)
+        {
+            if (InspectionDeskInteractable.instance != null)
+            {
+                InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
+            }
+
+            if (!NPCInspectionManager.instance.hasDecisionBeenMade)
+            {
+                NPCInspectionManager.instance.RejectCurrentNPC();
+            }
+
+            Destroy(gameObject, 0.2f);
+        }
+        else if (hideNormalModelDuringScare)
         {
             SetRenderersVisibility(true);
         }
+    }
+
+    private IEnumerator FlyAndLatchOnPlayerFace(GameObject scareObject, Vector3 startFlyPos)
+    {
+        if (scareObject == null) yield break;
+
+        scareObject.SetActive(true);
+        Transform scareTransform = scareObject.transform;
+        scareTransform.position = startFlyPos;
+
+        // Kích hoạt Animator nếu có
+        Animator anim = scareObject.GetComponentInChildren<Animator>();
+        if (anim != null)
+        {
+            anim.enabled = true;
+            anim.Play(0, 0, 0f);
+        }
+
+        // Tạm khóa di chuyển người chơi trong tích tắc để không bị né
+        PlayerController pc = FindFirstObjectByType<PlayerController>();
+        bool wasPcEnabled = (pc != null && pc.enabled);
+        if (pc != null) pc.enabled = false;
+
+        // Tìm đầu quái vật (HeadTarget, frontface, head, Head)
+        Transform monsterFace = FindDeepChild(scareTransform, "HeadTarget");
+        if (monsterFace == null) monsterFace = FindDeepChild(scareTransform, "frontface");
+        if (monsterFace == null) monsterFace = FindDeepChild(scareTransform, "head");
+        if (monsterFace == null) monsterFace = FindDeepChild(scareTransform, "Head");
+
+        // Phát tiếng gầm jumpscare
+        PlaySound(jumpscareSound, 1.0f);
+
+        // Tính khoảng cách offset của đầu quái
+        Vector3 initialHeadOffset = (monsterFace != null)
+            ? (monsterFace.position - scareTransform.position)
+            : (scareTransform.up * 1.5f);
+        Vector3 startHeadPos = startFlyPos + initialHeadOffset;
+
+        float elapsed = 0f;
+
+        // 1. LAO VỚI TỐC ĐỘ CỰC CAO TỪ CỬA SỔ PHI THẲNG VÀO ỐNG KÍNH CAMERA / JUMPSCARE POINT
+        while (elapsed < flyDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / flyDuration);
+
+            // Tọa độ đích: lấy từ PlayerCameraJumpscarePoint gắn trên camera
+            Vector3 targetFacePos = PlayerCameraJumpscarePoint.GetJumpscarePosition(faceLatchDistance);
+            GetPlayerCameraOrHead(out Vector3 eyePos, out Vector3 camFwd);
+
+            // Đường cong vòng cung bay qua cửa sổ
+            float arc = Mathf.Sin(t * Mathf.PI) * leapHeightArc;
+            Vector3 currentFacePos = Vector3.Lerp(startHeadPos, targetFacePos, t) + Vector3.up * arc;
+
+            // Xoay mặt quái vật hướng thẳng vào mắt người chơi
+            Vector3 toCamera = (eyePos - currentFacePos);
+            if (toCamera.sqrMagnitude > 0.0001f)
+            {
+                scareTransform.rotation = Quaternion.LookRotation(toCamera.normalized);
+            }
+
+            // Đồng bộ vị trí root để mặt quái khớp chính xác tại currentFacePos
+            Vector3 headOffset = (monsterFace != null)
+                ? (monsterFace.position - scareTransform.position)
+                : (scareTransform.up * 1.5f);
+            scareTransform.position = currentFacePos - headOffset;
+
+            yield return null;
+        }
+
+        // 2. VA CHẠM: Kích hoạt rung lắc màn hình cực mạnh
+        TriggerCameraShake(cameraShakeDuration, cameraShakeMagnitude);
+
+        // 3. BÁM MÀN HÌNH: Cào cấu và gào thét ngay sát mặt người chơi
+        float scareElapsed = 0f;
+        while (scareElapsed < faceScareDuration)
+        {
+            scareElapsed += Time.deltaTime;
+
+            Vector3 jitter = Random.insideUnitSphere * 0.025f;
+            Vector3 targetFacePos = PlayerCameraJumpscarePoint.GetJumpscarePosition(faceLatchDistance) + jitter;
+
+            scareTransform.rotation = PlayerCameraJumpscarePoint.GetJumpscareRotation();
+
+            Vector3 headOffset = (monsterFace != null)
+                ? (monsterFace.position - scareTransform.position)
+                : (scareTransform.up * 1.5f);
+            scareTransform.position = targetFacePos - headOffset;
+
+            yield return null;
+        }
+
+        // Khôi phục di chuyển người chơi
+        if (pc != null && wasPcEnabled) pc.enabled = true;
     }
 
     private void SetRenderersVisibility(bool visible)
@@ -322,56 +414,6 @@ public class NPCJumperBehavior : MonoBehaviour
         }
     }
 
-    private void TriggerCameraShake()
-    {
-        if (CameraShake.instance != null)
-        {
-            CameraShake.instance.Shake(cameraShakeDuration, cameraShakeMagnitude);
-            return;
-        }
-
-        CameraShake shaker = FindFirstObjectByType<CameraShake>();
-        if (shaker == null)
-        {
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player != null) shaker = player.AddComponent<CameraShake>();
-            else if (Camera.main != null) shaker = Camera.main.gameObject.AddComponent<CameraShake>();
-        }
-
-        if (shaker != null)
-        {
-            shaker.Shake(cameraShakeDuration, cameraShakeMagnitude);
-        }
-    }
-
-    void Update()
-    {
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.velocity.magnitude > 0.1f)
-        {
-            footstepTimer -= Time.deltaTime;
-            if (footstepTimer <= 0)
-            {
-                PlayFootstepSound();
-                footstepTimer = footstepInterval;
-            }
-        }
-
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.enabled && !agent.pathPending && agent.hasPath)
-        {
-            if (agent.remainingDistance > 0.1f && agent.remainingDistance <= agent.stoppingDistance + 0.2f)
-            {
-                StartInspection();
-            }
-        }
-    }
-
-    private void PlayFootstepSound()
-    {
-        if (footstepSounds == null || footstepSounds.Length == 0) return;
-        int randomIndex = Random.Range(0, footstepSounds.Length);
-        PlaySound(footstepSounds[randomIndex], 0.6f);
-    }
-
     private void PlaySound(AudioClip clip, float volume = 1f)
     {
         if (clip == null) return;
@@ -379,23 +421,12 @@ public class NPCJumperBehavior : MonoBehaviour
         else if (audioSource != null) audioSource.PlayOneShot(clip, volume);
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         if (scareCoroutine != null)
         {
             StopCoroutine(scareCoroutine);
             scareCoroutine = null;
-        }
-        SetRenderersVisibility(true);
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        if (jumpscareSpawnPoint != null)
-        {
-            Gizmos.DrawWireSphere(jumpscareSpawnPoint.position, 0.4f);
-            Gizmos.DrawLine(transform.position, jumpscareSpawnPoint.position);
         }
     }
 }

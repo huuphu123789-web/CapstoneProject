@@ -80,21 +80,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCJumperBehavior
   inspectionPoint: {fileID: 0}
   walkSpeed: 2.4
-  minTriggerDelay: 2
-  maxTriggerDelay: 4
-  jumpscareModel: {fileID: 0}
-  jumpscarePrefab: {fileID: 4440158785677964267, guid: d926b4145f4c5b44cb07b5d1615e0bcb, type: 3}
-  jumpscareSpawnPoint: {fileID: 0}
-  cameraForwardOffset: 1.2
-  jumpscareDuration: 1.8
-  hideNormalModelDuringScare: 1
-  cameraShakeDuration: 0.6
-  cameraShakeMagnitude: 0.4
   footstepSounds: []
-  nervousBreathingSound: {fileID: 8300000, guid: f6967dfa537a8e443993626155359ba9, type: 3}
-  jumpscareSound: {fileID: 8300000, guid: 534c6a88498e2034da2140adbb9e831c, type: 3}
   footstepInterval: 0.45
   isInspecting: 0
-  hasTriggeredScare: 0
   animator: {fileID: 0}
   audioSource: {fileID: 0}
+  agent: {fileID: 0}
+  minTriggerDelay: 1
+  maxTriggerDelay: 2
+  jumpscareModel: {fileID: 4440158785677964267, guid: d926b4145f4c5b44cb07b5d1615e0bcb, type: 3}
+  jumpscarePrefab: {fileID: 4440158785677964267, guid: d926b4145f4c5b44cb07b5d1615e0bcb, type: 3}
+  jumpscareSpawnPoint: {fileID: 0}
+  hideNormalModelDuringScare: 1
+  flyDuration: 0.22
+  leapHeightArc: 0.35
+  faceLatchDistance: 1
+  faceScareDuration: 1
+  cameraShakeDuration: 0.7
+  cameraShakeMagnitude: 0.6
+  nervousBreathingSound: {fileID: 8300000, guid: 3a0bf82a2a6b743ad976913c33584e92, type: 3}
+  jumpscareSound: {fileID: 8300000, guid: 534c6a88498e2034da2140adbb9e831c, type: 3}
+  advanceInspectionQueue: 1
+  hasTriggeredScare: 0
+  isAttackingPlayer: 0
