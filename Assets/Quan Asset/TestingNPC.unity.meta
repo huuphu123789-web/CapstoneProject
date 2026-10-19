@@ -1,5 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Quan Asset/TestingNPC.unity.meta
 guid: 3f0783ab06fb6724b8f913dc8457b6ac
+========
+guid: b847bc10df5ca7b429f391588e84a61f
+folderAsset: yes
+>>>>>>>> Stashed changes:Assets/StarterAssets.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

@@ -1,6 +1,11 @@
 fileFormatVersion: 2
-guid: b60cd6042d04ae143a9e2013af509712
+<<<<<<<< Updated upstream:Assets/Loc asset/Prefabs/gun.prefab.meta
+guid: dbfd5e67852bbbb45b0c9f7277a67ee0
 PrefabImporter:
+========
+guid: 8bcc4d6bfc5361745b00c67d3affbbaa
+DefaultImporter:
+>>>>>>>> Stashed changes:Assets/_Recovery/0 (1).unity.meta
   externalObjects: {}
   userData: 
   assetBundleName: 
