@@ -6,9 +6,9 @@ using TMPro;
 /// Quan ly danh sach nhiem vu don gian.
 /// Singleton - dat script nay len bat ky GameObject nao trong scene.
 /// </summary>
-public class TaskManager : MonoBehaviour
+public class TaskManager_Old : MonoBehaviour
 {
-    public static TaskManager instance;
+    public static TaskManager_Old instance;
 
     [Header("=== NHIEM VU ===")]
     [Tooltip("Bat buoc doc bao truoc khi hoan thanh nhiem vu?")]

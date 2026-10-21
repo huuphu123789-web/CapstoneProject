@@ -167,17 +167,15 @@ public class EquipmentPickup : Interactable
         if (equipmentType == EquipmentPickupType.Flashlight)
         {
             // 1. Mở khóa Đèn Pin cho người chơi
-            FlashlightController fController = FindObjectOfType<FlashlightController>();
-            if (fController == null)
-            {
-                GameObject player = GameObject.FindWithTag("Player");
-                if (player != null) fController = player.GetComponentInChildren<FlashlightController>(true);
-            }
+            FlashlightController fController = null;
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null) fController = player.GetComponentInChildren<FlashlightController>(true);
+            if (fController == null) fController = FindObjectOfType<FlashlightController>();
 
             if (fController != null)
             {
-                fController.EquipFlashlight(turnOnImmediately: false);
-                Debug.Log("[EquipmentPickup] Đã nhặt ĐÈN PIN! Nhấn phím F để bật/tắt.");
+                fController.EquipFlashlight(turnOnImmediately: true);
+                Debug.Log("[EquipmentPickup] Đã nhặt ĐÈN PIN! Đèn đã bật sáng. Nhấn phím F để bật/tắt.");
             }
             else
             {
@@ -193,6 +191,7 @@ public class EquipmentPickup : Interactable
         else if (equipmentType == EquipmentPickupType.Gun)
         {
             // 1. Rút Súng trên Camera người chơi
+            PlayerGun gun = PlayerGun.GetPlayerGun();
             Camera cam = Camera.main;
             if (cam == null)
             {
@@ -200,12 +199,6 @@ public class EquipmentPickup : Interactable
                 if (player != null) cam = player.GetComponentInChildren<Camera>(true);
             }
             if (cam == null) cam = FindObjectOfType<Camera>();
-
-            PlayerGun gun = null;
-            if (cam != null)
-            {
-                gun = cam.GetComponentInChildren<PlayerGun>(true);
-            }
 
             // Kiểm tra nếu khẩu súng hiện tại là súng cũ (không có mesh Cube.000 của Pistol 92) thì hủy ngay để thay mới
             if (gun != null && gun.transform.Find("Cube.000") == null)

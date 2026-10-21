@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -20,6 +20,9 @@ public class TaskManager : MonoBehaviour
     public int totalGenerators = 1;
 
     [Header("=== PHÍM TẮT TEST (DEBUG HOTKEY) ===")]
+    [Tooltip("Phím tắt để nhận ngay Súng & Đèn Pin và hoàn thành nhiệm vụ trang bị (Mặc định: Phím G)")]
+    public KeyCode getEquipmentKey = KeyCode.G;
+
     [Tooltip("Phím tắt chính để hoàn thành ngay các việc ban đầu và chuyển sang kiểm soát bốt gác (Mặc định: Phím K)")]
     public KeyCode skipToGateInspectionKey = KeyCode.K;
 
@@ -107,12 +110,29 @@ public class TaskManager : MonoBehaviour
 
     private void CheckDebugHotkeys()
     {
-        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.ToLower();
-        if (currentScene.Contains("menu")) return;
-
         bool isPaused = (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
                      || (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused);
         if (isPaused) return;
+
+        // Phím tắt G: Nhận Súng & Đèn pin và hoàn thành nhiệm vụ trang bị ban đầu (hoặc Toggle cất/rút súng nếu đã có)
+        bool getEquipPressed = Input.GetKeyDown(getEquipmentKey);
+        if (!getEquipPressed)
+        {
+            try
+            {
+                var kb = Keyboard.current;
+                if (kb != null && (getEquipmentKey == KeyCode.G && kb.gKey.wasPressedThisFrame))
+                {
+                    getEquipPressed = true;
+                }
+            }
+            catch { }
+        }
+
+        if (getEquipPressed)
+        {
+            GiveGunAndFlashlight();
+        }
 
         // Phím tắt: Hoàn thành các việc ban đầu -> Nhảy sang nhiệm vụ kiểm soát bốt gác (Mặc định: Phím K hoặc F1)
         bool skipPressed = Input.GetKeyDown(skipToGateInspectionKey) || Input.GetKeyDown(alternativeSkipKey);
@@ -164,6 +184,105 @@ public class TaskManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Phím tắt G: Nhận Súng & Đèn pin và hoàn thành nhiệm vụ trang bị ban đầu
+    /// </summary>
+    public void GiveGunAndFlashlight()
+    {
+        PlayerGun gun = PlayerGun.GetPlayerGun();
+
+        // Nếu người chơi ĐÃ CÓ súng & đèn pin rồi, bấm G tiếp theo sẽ là Toggle Cất / Rút súng!
+        if (hasEquipment && gun != null)
+        {
+            gun.ToggleGun();
+            return;
+        }
+
+        // 1. Cập nhật trạng thái nhiệm vụ trang bị
+        hasFlashlight = true;
+        hasGun = true;
+
+        // 2. Mở khóa và trang bị Đèn pin (bật sáng ngay để người chơi thấy rõ)
+        FlashlightController fController = GetComponent<FlashlightController>() 
+                                        ?? GetComponentInChildren<FlashlightController>(true);
+        if (fController == null)
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null) fController = player.GetComponentInChildren<FlashlightController>(true);
+        }
+        if (fController == null)
+        {
+            fController = FindObjectOfType<FlashlightController>(true);
+        }
+        if (fController != null)
+        {
+            fController.EquipFlashlight(turnOnImmediately: true);
+        }
+
+        // 3. Mở khóa và trang bị Súng Pistol 92 trên Camera người chơi
+        if (gun == null) gun = PlayerGun.GetPlayerGun();
+        if (gun != null)
+        {
+            gun.gameObject.SetActive(true);
+            gun.HasGun = true;
+            if (PlayerGun.storedAmmo < 6) PlayerGun.storedAmmo = 6;
+            gun.SetAmmo(Mathf.Max(gun.CurrentAmmo, 6));
+            gun.DrawGun();
+        }
+        else
+        {
+            Camera cam = Camera.main;
+            if (cam == null)
+            {
+                GameObject player = GameObject.FindWithTag("Player");
+                if (player != null) cam = player.GetComponentInChildren<Camera>(true);
+            }
+            if (cam != null)
+            {
+                GameObject gunPrefab = BedInteractable.LoadGunPrefab();
+                if (gunPrefab != null)
+                {
+                    GameObject gunObj = Instantiate(gunPrefab, cam.transform);
+                    gunObj.name = "gun";
+                    gunObj.transform.localPosition = new Vector3(0.16f, -0.12f, 0.32f);
+                    gunObj.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
+                    gunObj.transform.localScale = Vector3.one * 0.28f;
+
+                    gun = gunObj.GetComponentInChildren<PlayerGun>(true) ?? gunObj.AddComponent<PlayerGun>();
+                    gun.DisableGunColliders();
+                    gun.gameObject.SetActive(true);
+                    gun.HasGun = true;
+                    PlayerGun.storedAmmo = 6;
+                    gun.SetAmmo(6);
+                    gun.DrawGun();
+                }
+            }
+        }
+
+        // 4. Đồng bộ HUD nếu có
+        if (PlayerHUDManager.instance != null)
+        {
+            if (gun != null) PlayerHUDManager.instance.UpdateAmmoUI(gun.CurrentAmmo, gun.MaxAmmo);
+            PlayerHUDManager.instance.UpdateFlashlightUI();
+            PlayerHUDManager.instance.UpdateControlsHintUI();
+        }
+
+        // 5. Ẩn các vật phẩm trên tủ (đèn pin/súng) trong phòng
+        EquipmentPickup[] pickups = FindObjectsOfType<EquipmentPickup>(true);
+        foreach (var p in pickups)
+        {
+            if (p.equipmentType == EquipmentPickupType.Flashlight || 
+                p.equipmentType == EquipmentPickupType.Gun)
+            {
+                p.gameObject.SetActive(false);
+            }
+        }
+
+        PlayTaskCompleteSound();
+        UpdateTaskUI();
+        CheckAllTasksDone();
+    }
+
+    /// <summary>
     /// Phím tắt Test: Hoàn thành ngay các nhiệm vụ mở đầu (Trang bị súng/đèn, Tuần tra hàng rào, Kiểm tra máy phát điện)
     /// và mở khóa ngay nhiệm vụ Kiểm tra cổng gác (Gate Inspection).
     /// </summary>
@@ -178,14 +297,21 @@ public class TaskManager : MonoBehaviour
         generatorsChecked = totalGenerators;
 
         // 2. Tự động trang bị Đèn pin cho người chơi
-        FlashlightController fController = FindObjectOfType<FlashlightController>();
+        FlashlightController fController = GetComponent<FlashlightController>() 
+                                        ?? GetComponentInChildren<FlashlightController>(true);
+        if (fController == null)
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null) fController = player.GetComponentInChildren<FlashlightController>(true);
+        }
+        if (fController == null) fController = FindObjectOfType<FlashlightController>(true);
         if (fController != null)
         {
-            fController.EquipFlashlight();
+            fController.EquipFlashlight(turnOnImmediately: true);
         }
 
         // 3. Tự động trang bị Súng Pistol 92 cho người chơi và nạp sẵn đạn
-        PlayerGun gun = FindObjectOfType<PlayerGun>(true);
+        PlayerGun gun = PlayerGun.GetPlayerGun();
         if (gun != null)
         {
             gun.gameObject.SetActive(true);
@@ -197,6 +323,11 @@ public class TaskManager : MonoBehaviour
         else
         {
             Camera cam = Camera.main;
+            if (cam == null)
+            {
+                GameObject player = GameObject.FindWithTag("Player");
+                if (player != null) cam = player.GetComponentInChildren<Camera>(true);
+            }
             if (cam != null)
             {
                 GameObject gunPrefab = BedInteractable.LoadGunPrefab();
@@ -312,13 +443,30 @@ public class TaskManager : MonoBehaviour
 
             if (player != null)
             {
-                CharacterController cc = player.GetComponent<CharacterController>();
-                if (cc != null) cc.enabled = false;
+                PlayerController pc = player.GetComponentInChildren<PlayerController>();
+                if (pc == null) pc = player.GetComponentInParent<PlayerController>();
 
-                player.transform.position = targetPos;
-                player.transform.rotation = targetRot;
+                if (pc != null)
+                {
+                    pc.TeleportTo(targetPos, targetRot);
+                }
+                else
+                {
+                    CharacterController cc = player.GetComponent<CharacterController>();
+                    if (cc != null) cc.enabled = false;
 
-                if (cc != null) cc.enabled = true;
+                    player.transform.position = targetPos;
+                    player.transform.rotation = targetRot;
+
+                    if (cc != null) cc.enabled = true;
+                }
+
+                if (Camera.main != null)
+                {
+                    Camera.main.transform.position = targetPos + Vector3.up * 1.6f;
+                    Camera.main.transform.rotation = targetRot;
+                }
+
                 Debug.Log($"[TaskManager] Đã dịch chuyển người chơi đến Bốt Gác tại toạ độ {targetPos}!");
             }
         }
@@ -326,6 +474,21 @@ public class TaskManager : MonoBehaviour
         {
             Debug.LogWarning("[TaskManager] Chưa gán điểm dịch chuyển 'Player Booth Teleport Point' trong Inspector!");
         }
+    }
+
+    // ================= XU LY NHIEM VU DOC BAO (NEWSPAPER) =================
+    [HideInInspector] public bool newspaperRead = false;
+    public void CompleteNewspaper()
+    {
+        if (newspaperRead) return;
+        newspaperRead = true;
+        Debug.Log("[TaskManager] Da doc bao!");
+        UpdateTaskUI();
+    }
+
+    public bool AreAllTasksDone()
+    {
+        return true;
     }
 
     public void SetTaskUIVisible(bool visible)
@@ -658,7 +821,7 @@ public class TaskManager : MonoBehaviour
         FlashlightController fController = FindObjectOfType<FlashlightController>();
         if (fController == null) yield break;
 
-        Light flLight = fController.GetComponentInChildren<Light>();
+        Light flLight = fController.FlashlightLight;
         if (flLight == null || !flLight.enabled) yield break;
 
         bool originalState = flLight.enabled;

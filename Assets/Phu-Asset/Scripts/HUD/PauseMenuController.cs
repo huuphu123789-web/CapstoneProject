@@ -9,9 +9,10 @@ public class PauseMenuController : MonoBehaviour
     public static PauseMenuController instance;
 
     [Header("=== PANEL CHINH ===")]
+    [Tooltip("Kéo SettingPanel hoặc PauseMenuPanel vào đây")]
     public GameObject pauseMenuPanel;
 
-    [Header("=== AM THANH ===")]
+    [Header("=== AM THANH (Tuy chon neu khong dung SettingManager) ===")]
     public Slider masterVolumeSlider;
     public Slider sfxVolumeSlider;
     public Slider musicVolumeSlider;
@@ -26,15 +27,25 @@ public class PauseMenuController : MonoBehaviour
 
     [Header("=== TEN SCENE ===")]
     [Tooltip("Ten scene Main Menu chinh xac")]
-    public string mainMenuSceneName = "MainMenu";
+    public string mainMenuSceneName = "NewMainMenu";
 
     public bool isPaused = false;
     private Resolution[] resolutions;
 
-    void Awake() { instance = this; }
+    void Awake() 
+    { 
+        instance = this; 
+    }
 
     void Start()
     {
+        // Tu dong tim SettingPanel neu de trong
+        if (pauseMenuPanel == null)
+        {
+            SettingManager sm = FindAnyObjectByType<SettingManager>(FindObjectsInactive.Include);
+            if (sm != null) pauseMenuPanel = sm.gameObject;
+        }
+
         if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
        
         SetupResolutionDropdown();
@@ -225,7 +236,22 @@ public class PauseMenuController : MonoBehaviour
         }
 
         Time.timeScale = 1f;
-        SceneManager.LoadScene(mainMenuSceneName);
+
+        // Xóa player DontDestroyOnLoad nếu có để không bị đè menu
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null && player.scene.name == "DontDestroyOnLoad") Destroy(player);
+
+        string targetScene = GetValidMainMenuScene();
+        SceneManager.LoadScene(targetScene);
+    }
+
+    private string GetValidMainMenuScene()
+    {
+        if (Application.CanStreamedLevelBeLoaded(mainMenuSceneName)) return mainMenuSceneName;
+        if (Application.CanStreamedLevelBeLoaded("NewMainMenu")) return "NewMainMenu";
+        if (Application.CanStreamedLevelBeLoaded("P-MainMenu")) return "P-MainMenu";
+        if (Application.CanStreamedLevelBeLoaded("MainMenu")) return "MainMenu";
+        return mainMenuSceneName;
     }
 
     public void OpenPauseMenu()
@@ -250,6 +276,9 @@ public class PauseMenuController : MonoBehaviour
 
     private void SetPlayerLookEnabled(bool enabled)
     {
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
+        if (pc != null) pc.enabled = enabled;
+
         PlayerBodyRotator bRotator = FindAnyObjectByType<PlayerBodyRotator>();
         if (bRotator != null) bRotator.enabled = enabled;
     }

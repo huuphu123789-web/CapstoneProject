@@ -16,6 +16,11 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Slider sfxSlider;
     [SerializeField] private Slider musicSlider;
 
+    [Header("=== TEXT HIỂN THỊ ÂM LƯỢNG (TÙY CHỌN) ===")]
+    [SerializeField] private TextMeshProUGUI masterValueText;
+    [SerializeField] private TextMeshProUGUI sfxValueText;
+    [SerializeField] private TextMeshProUGUI musicValueText;
+
     [Header("=== NÚT MUTE MASTER (TÙY CHỌN) ===")]
     [SerializeField] private Image masterMuteImage;
     [SerializeField] private Sprite masterSoundOnSprite;
@@ -34,6 +39,38 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown qualityDropdown;
     [SerializeField] private Dropdown legacyQualityDropdown;
 
+    [Header("=== CHẾ ĐỘ MÀN HÌNH (WINDOW MODE) ===")]
+    [SerializeField] private TMP_Dropdown windowModeDropdown;
+
+    [Header("=== ĐỒNG BỘ DỌC (V-SYNC) ===")]
+    [SerializeField] private Toggle vsyncToggle;
+
+    [Header("=== ĐỘ SÁNG MÀN HÌNH (BRIGHTNESS) ===")]
+    [SerializeField] private Slider brightnessSlider;
+    [SerializeField] private TextMeshProUGUI brightnessValueText;
+    [SerializeField] private Image brightnessOverlay; // Panel đen phủ màn hình điều chỉnh độ sáng (tùy chọn)
+
+    [Header("=== GÓC NHÌN CAMERA (FIELD OF VIEW) ===")]
+    [SerializeField] private Slider fovSlider;
+    [SerializeField] private TextMeshProUGUI fovValueText;
+
+    [Header("=== GIỚI HẠN KHUNG HÌNH (FPS LIMIT) ===")]
+    [SerializeField] private TMP_Dropdown fpsLimitDropdown;
+
+    [Header("=== GAMEPLAY SETTINGS ===")]
+    [SerializeField] private Toggle headBobbingToggle;
+    [SerializeField] private Toggle interactHintsToggle;
+    [SerializeField] private TMP_Dropdown sprintModeDropdown;
+    [SerializeField] private Toggle crosshairToggle;
+
+    [Header("=== UI SCALE ===")]
+    [SerializeField] private TMP_Dropdown uiScaleDropdown;
+    [SerializeField] private Slider uiScaleSlider;
+    [SerializeField] private TextMeshProUGUI uiScaleValueText;
+
+    [Header("=== LANGUAGE ===")]
+    [SerializeField] private TMP_Dropdown languageDropdown;
+
     private Resolution[] resolutions;
     private bool isMasterMuted = false;
     private bool isSFXMuted = false;
@@ -48,11 +85,22 @@ public class SettingManager : MonoBehaviour
         SetupAudioUI();
         SetupResolutionDropdown();
         SetupQualityDropdown();
+        SetupWindowModeDropdown();
+        SetupVSyncToggle();
+        SetupBrightnessSlider();
+        SetupFOVSlider();
+        SetupFPSLimitDropdown();
+        SetupGameplaySettings();
+        SetupUIScale();
+        SetupLanguage();
     }
 
     void OnEnable()
     {
         SetupAudioUI();
+        SetupGameplaySettings();
+        SetupUIScale();
+        SetupLanguage();
     }
 
     // ================= 1. XỬ LÝ ÂM THANH =================
@@ -89,6 +137,10 @@ public class SettingManager : MonoBehaviour
         UpdateMasterMuteUI();
         UpdateSFXMuteUI();
 
+        if (masterValueText != null) masterValueText.text = Mathf.RoundToInt(savedMaster * 100) + "%";
+        if (sfxValueText != null) sfxValueText.text = Mathf.RoundToInt(savedSFX * 100) + "%";
+        if (musicValueText != null) musicValueText.text = Mathf.RoundToInt(savedMusic * 100) + "%";
+
         // Áp dụng âm thanh vào AudioManager ngay lập tức
         if (AudioManager.instance != null)
         {
@@ -101,6 +153,7 @@ public class SettingManager : MonoBehaviour
     public void OnMasterSliderChanged(float value)
     {
         PlayerPrefs.SetFloat("MasterVolume", value);
+        if (masterValueText != null) masterValueText.text = Mathf.RoundToInt(value * 100) + "%";
         if (!isMasterMuted && AudioManager.instance != null)
         {
             AudioManager.instance.SetMasterVolume(value);
@@ -110,6 +163,7 @@ public class SettingManager : MonoBehaviour
     public void OnSFXSliderChanged(float value)
     {
         PlayerPrefs.SetFloat("SFXVolume", value);
+        if (sfxValueText != null) sfxValueText.text = Mathf.RoundToInt(value * 100) + "%";
         if (!isSFXMuted && AudioManager.instance != null)
         {
             AudioManager.instance.SetSFXVolume(value);
@@ -119,6 +173,7 @@ public class SettingManager : MonoBehaviour
     public void OnMusicSliderChanged(float value)
     {
         PlayerPrefs.SetFloat("MusicVolume", value);
+        if (musicValueText != null) musicValueText.text = Mathf.RoundToInt(value * 100) + "%";
         if (AudioManager.instance != null)
         {
             AudioManager.instance.SetMusicVolume(value);
@@ -244,5 +299,380 @@ public class SettingManager : MonoBehaviour
     {
         QualitySettings.SetQualityLevel(qualityIndex);
         PlayerPrefs.SetInt("QualityLevel", qualityIndex);
+    }
+
+    // ================= 4. XỬ LÝ CHẾ ĐỘ MÀN HÌNH (WINDOW MODE) =================
+    private void SetupWindowModeDropdown()
+    {
+        if (windowModeDropdown == null) return;
+
+        List<string> modes = new List<string>() { "Fullscreen", "Borderless", "Windowed" };
+        windowModeDropdown.ClearOptions();
+        windowModeDropdown.AddOptions(modes);
+
+        int savedMode = PlayerPrefs.GetInt("WindowMode", 0);
+        windowModeDropdown.value = savedMode;
+        windowModeDropdown.RefreshShownValue();
+        windowModeDropdown.onValueChanged.AddListener(SetWindowMode);
+        SetWindowMode(savedMode);
+    }
+
+    public void SetWindowMode(int index)
+    {
+        FullScreenMode mode = FullScreenMode.ExclusiveFullScreen;
+        if (index == 0) mode = FullScreenMode.ExclusiveFullScreen;
+        else if (index == 1) mode = FullScreenMode.FullScreenWindow;
+        else if (index == 2) mode = FullScreenMode.Windowed;
+
+        Screen.fullScreenMode = mode;
+        PlayerPrefs.SetInt("WindowMode", index);
+    }
+
+    // ================= 5. XỬ LÝ V-SYNC =================
+    private void SetupVSyncToggle()
+    {
+        if (vsyncToggle == null) return;
+
+        bool savedVSync = PlayerPrefs.GetInt("VSync", 1) == 1;
+        vsyncToggle.isOn = savedVSync;
+        vsyncToggle.onValueChanged.AddListener(SetVSync);
+        SetVSync(savedVSync);
+    }
+
+    public void SetVSync(bool isEnabled)
+    {
+        QualitySettings.vSyncCount = isEnabled ? 1 : 0;
+        PlayerPrefs.SetInt("VSync", isEnabled ? 1 : 0);
+    }
+
+    // ================= 6. XỬ LÝ ĐỘ SÁNG (BRIGHTNESS) =================
+    private void SetupBrightnessSlider()
+    {
+        if (brightnessSlider == null) return;
+
+        float savedBrightness = PlayerPrefs.GetFloat("Brightness", 0.5f);
+        brightnessSlider.onValueChanged.RemoveListener(OnBrightnessChanged);
+        brightnessSlider.value = savedBrightness;
+        brightnessSlider.onValueChanged.AddListener(OnBrightnessChanged);
+        OnBrightnessChanged(savedBrightness);
+    }
+
+    public void OnBrightnessChanged(float val)
+    {
+        PlayerPrefs.SetFloat("Brightness", val);
+        if (brightnessValueText != null)
+        {
+            brightnessValueText.text = val.ToString("0.0");
+        }
+
+        if (brightnessOverlay != null)
+        {
+            float alpha = Mathf.Abs(val - 0.5f) * 1.5f;
+            Color c = val < 0.5f ? Color.black : Color.white;
+            c.a = Mathf.Clamp(alpha, 0f, 0.7f);
+            brightnessOverlay.color = c;
+        }
+
+        RenderSettings.ambientLight = Color.white * val;
+    }
+
+    // ================= 7. XỬ LÝ GÓC NHÌN (FIELD OF VIEW) =================
+    private void SetupFOVSlider()
+    {
+        if (fovSlider == null) return;
+
+        float savedFOV = PlayerPrefs.GetFloat("FOV", 75f);
+        fovSlider.onValueChanged.RemoveListener(OnFOVChanged);
+        fovSlider.value = savedFOV;
+        fovSlider.onValueChanged.AddListener(OnFOVChanged);
+        OnFOVChanged(savedFOV);
+    }
+
+    public void OnFOVChanged(float val)
+    {
+        PlayerPrefs.SetFloat("FOV", val);
+        if (fovValueText != null)
+        {
+            fovValueText.text = Mathf.RoundToInt(val).ToString();
+        }
+
+        if (Camera.main != null)
+        {
+            Camera.main.fieldOfView = val;
+        }
+    }
+
+    // ================= 8. XỬ LÝ GIỚI HẠN FPS =================
+    private void SetupFPSLimitDropdown()
+    {
+        if (fpsLimitDropdown == null) return;
+
+        List<string> fpsOptions = new List<string>() { "Unlimited", "60 FPS", "120 FPS", "144 FPS" };
+        fpsLimitDropdown.ClearOptions();
+        fpsLimitDropdown.AddOptions(fpsOptions);
+
+        int savedIndex = PlayerPrefs.GetInt("FPSLimitIndex", 0);
+        fpsLimitDropdown.value = savedIndex;
+        fpsLimitDropdown.RefreshShownValue();
+        fpsLimitDropdown.onValueChanged.AddListener(SetFPSLimit);
+        SetFPSLimit(savedIndex);
+    }
+
+    public void SetFPSLimit(int index)
+    {
+        int targetFPS = -1;
+        switch (index)
+        {
+            case 1: targetFPS = 60; break;
+            case 2: targetFPS = 120; break;
+            case 3: targetFPS = 144; break;
+            default: targetFPS = -1; break;
+        }
+        Application.targetFrameRate = targetFPS;
+        PlayerPrefs.SetInt("FPSLimitIndex", index);
+    }
+
+    // ================= 9. GAMEPLAY SETTINGS =================
+    private void SetupGameplaySettings()
+    {
+        // 1. Head Bobbing
+        if (headBobbingToggle != null)
+        {
+            bool isHeadBobOn = PlayerPrefs.GetInt("HeadBobbing", 1) == 1;
+            headBobbingToggle.onValueChanged.RemoveListener(SetHeadBobbing);
+            headBobbingToggle.isOn = isHeadBobOn;
+            headBobbingToggle.onValueChanged.AddListener(SetHeadBobbing);
+        }
+
+        // 2. Interaction Hints
+        if (interactHintsToggle != null)
+        {
+            bool isHintsOn = PlayerPrefs.GetInt("InteractHints", 1) == 1;
+            interactHintsToggle.onValueChanged.RemoveListener(SetInteractHints);
+            interactHintsToggle.isOn = isHintsOn;
+            interactHintsToggle.onValueChanged.AddListener(SetInteractHints);
+        }
+
+        // 3. Sprint Mode (Hold = 0, Toggle = 1)
+        if (sprintModeDropdown != null)
+        {
+            List<string> sprintOptions = new List<string>() { "Hold", "Toggle" };
+            sprintModeDropdown.ClearOptions();
+            sprintModeDropdown.AddOptions(sprintOptions);
+
+            int savedSprintMode = PlayerPrefs.GetInt("SprintMode", 0);
+            sprintModeDropdown.onValueChanged.RemoveListener(SetSprintMode);
+            sprintModeDropdown.value = savedSprintMode;
+            sprintModeDropdown.RefreshShownValue();
+            sprintModeDropdown.onValueChanged.AddListener(SetSprintMode);
+        }
+
+        // 4. Crosshair
+        if (crosshairToggle != null)
+        {
+            bool isCrosshairOn = PlayerPrefs.GetInt("Crosshair", 1) == 1;
+            crosshairToggle.onValueChanged.RemoveListener(SetCrosshair);
+            crosshairToggle.isOn = isCrosshairOn;
+            crosshairToggle.onValueChanged.AddListener(SetCrosshair);
+        }
+    }
+
+    public void SetHeadBobbing(bool isEnabled)
+    {
+        PlayerPrefs.SetInt("HeadBobbing", isEnabled ? 1 : 0);
+    }
+
+    public void SetInteractHints(bool isEnabled)
+    {
+        PlayerPrefs.SetInt("InteractHints", isEnabled ? 1 : 0);
+    }
+
+    public void SetSprintMode(int modeIndex)
+    {
+        PlayerPrefs.SetInt("SprintMode", modeIndex);
+    }
+
+    public void SetCrosshair(bool isEnabled)
+    {
+        PlayerPrefs.SetInt("Crosshair", isEnabled ? 1 : 0);
+        if (PlayerHUDManager.instance != null)
+        {
+            PlayerHUDManager.instance.showCrosshair = isEnabled;
+        }
+    }
+
+    // ================= 10. UI SCALE =================
+    private readonly float[] scaleValues = new float[] { 0.8f, 0.9f, 1.0f, 1.1f, 1.2f };
+
+    private void SetupUIScale()
+    {
+        float savedScale = PlayerPrefs.GetFloat("UIScale", 1.0f);
+
+        if (uiScaleDropdown != null)
+        {
+            List<string> options = new List<string>() { "80%", "90%", "100%", "110%", "120%" };
+            uiScaleDropdown.ClearOptions();
+            uiScaleDropdown.AddOptions(options);
+
+            int index = 2; // Default 100%
+            float minDiff = float.MaxValue;
+            for (int i = 0; i < scaleValues.Length; i++)
+            {
+                float diff = Mathf.Abs(scaleValues[i] - savedScale);
+                if (diff < minDiff)
+                {
+                    minDiff = diff;
+                    index = i;
+                }
+            }
+
+            uiScaleDropdown.onValueChanged.RemoveListener(SetUIScaleFromDropdown);
+            uiScaleDropdown.value = index;
+            uiScaleDropdown.RefreshShownValue();
+            uiScaleDropdown.onValueChanged.AddListener(SetUIScaleFromDropdown);
+        }
+
+        if (uiScaleSlider != null)
+        {
+            uiScaleSlider.minValue = 0.8f;
+            uiScaleSlider.maxValue = 1.2f;
+            uiScaleSlider.onValueChanged.RemoveListener(SetUIScaleFromSlider);
+            uiScaleSlider.value = savedScale;
+            uiScaleSlider.onValueChanged.AddListener(SetUIScaleFromSlider);
+        }
+
+        if (uiScaleValueText != null)
+        {
+            uiScaleValueText.text = Mathf.RoundToInt(savedScale * 100f) + "%";
+        }
+
+        ApplyUIScale(savedScale);
+    }
+
+    public void SetUIScaleFromDropdown(int index)
+    {
+        if (index >= 0 && index < scaleValues.Length)
+        {
+            float scale = scaleValues[index];
+            ApplyUIScale(scale);
+            if (uiScaleSlider != null) uiScaleSlider.value = scale;
+            if (uiScaleValueText != null) uiScaleValueText.text = Mathf.RoundToInt(scale * 100f) + "%";
+        }
+    }
+
+    public void SetUIScaleFromSlider(float scale)
+    {
+        ApplyUIScale(scale);
+        if (uiScaleValueText != null) uiScaleValueText.text = Mathf.RoundToInt(scale * 100f) + "%";
+    }
+
+    public static void ApplyUIScale(float scale)
+    {
+        PlayerPrefs.SetFloat("UIScale", scale);
+
+        CanvasScaler[] scalers = FindObjectsByType<CanvasScaler>(FindObjectsSortMode.None);
+        foreach (var scaler in scalers)
+        {
+            if (scaler == null) continue;
+            if (scaler.uiScaleMode == CanvasScaler.ScaleMode.ScaleWithScreenSize)
+            {
+                scaler.referenceResolution = new Vector2(1920f / scale, 1080f / scale);
+            }
+            else if (scaler.uiScaleMode == CanvasScaler.ScaleMode.ConstantPixelSize)
+            {
+                scaler.scaleFactor = scale;
+            }
+        }
+    }
+
+    // ================= 11. LANGUAGE =================
+    private void SetupLanguage()
+    {
+        if (languageDropdown == null) return;
+
+        List<string> languages = new List<string>() { "English", "Vietnamese" };
+        languageDropdown.ClearOptions();
+        languageDropdown.AddOptions(languages);
+
+        int savedLangIndex = PlayerPrefs.GetInt("LanguageIndex", 0);
+        languageDropdown.onValueChanged.RemoveListener(SetLanguage);
+        languageDropdown.value = savedLangIndex;
+        languageDropdown.RefreshShownValue();
+        languageDropdown.onValueChanged.AddListener(SetLanguage);
+        SetLanguage(savedLangIndex);
+    }
+
+    public void SetLanguage(int index)
+    {
+        PlayerPrefs.SetInt("LanguageIndex", index);
+        string lang = index == 1 ? "Vietnamese" : "English";
+        PlayerPrefs.SetString("Language", lang);
+
+        if (LocalizationManager.Instance != null)
+        {
+            LocalizationManager.Instance.ChangeLanguage(lang);
+        }
+    }
+
+    // ================= 12. PAUSE MENU & IN-GAME ACTIONS =================
+    /// <summary>
+    /// Gán trực tiếp vào nút "Setting Exit" (hoặc nút X / Quay lại).
+    /// - Khi đang chơi game (Pause): Tự động mở lại game (Resume/Unpause).
+    /// - Khi đang ở Main Menu: Tự động đóng Setting và hiện lại Main Menu.
+    /// </summary>
+    public void OnExitButtonClicked()
+    {
+        if (PauseMenuController.instance != null && PauseMenuController.instance.isPaused)
+        {
+            PauseMenuController.instance.BackToGame();
+            return;
+        }
+
+        // Nếu ở Main Menu
+        ButtonManager bm = FindAnyObjectByType<ButtonManager>();
+        if (bm != null)
+        {
+            bm.CloseSetting();
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Gán vào nút "Về Menu Chính" (Quit to Main Menu) trên SettingPanel
+    /// </summary>
+    public void QuitToMainMenu()
+    {
+        if (PauseMenuController.instance != null)
+        {
+            PauseMenuController.instance.SaveAndQuitToMainMenu();
+        }
+        else
+        {
+            PlayerPrefs.Save();
+            Time.timeScale = 1f;
+            string sceneName = Application.CanStreamedLevelBeLoaded("NewMainMenu") ? "NewMainMenu" : "P-MainMenu";
+            UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        }
+    }
+
+    /// <summary>
+    /// Gán vào nút "Tiếp Tục / Resume" trên SettingPanel
+    /// </summary>
+    public void ResumeGame()
+    {
+        if (PauseMenuController.instance != null)
+        {
+            PauseMenuController.instance.BackToGame();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            gameObject.SetActive(false);
+        }
     }
 }
