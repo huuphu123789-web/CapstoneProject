@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -107,6 +107,8 @@ public class NewspaperInteractable : MonoBehaviour, IInteractable
             _prompt = "";
             if (LocAsset.TaskManager.instance != null)
                 LocAsset.TaskManager.instance.CompleteNewspaper();
+            else if (TaskManager.instance != null)
+                TaskManager.instance.CompleteNewspaper();
         }
     }
 
