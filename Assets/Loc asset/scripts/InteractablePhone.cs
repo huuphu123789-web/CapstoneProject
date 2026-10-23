@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System;
 using UnityEngine.UI;
@@ -9,7 +9,7 @@ using TMPro;
 /// Implement IInteractable de hoat dong voi PlayerInteraction co san.
 /// </summary>
 [RequireComponent(typeof(BoxCollider))]
-[RequireComponent(typeof(AudioSource))]
+// [RequireComponent(typeof(AudioSource))]
 public class InteractablePhone : MonoBehaviour, IInteractable
 {
     [Header("=== Am thanh ===")]
@@ -45,10 +45,10 @@ public class InteractablePhone : MonoBehaviour, IInteractable
     [Tooltip("Cho phep tuong tac lai sau khi da nhac may?")]
     [SerializeField] private bool allowReplay = false;
 
-    // ── IInteractable ──
+    // â”€â”€ IInteractable â”€â”€
     public string InteractPrompt => isRinging ? "Nhac may" : (hasAnswered ? "" : "");
 
-    // ── Internal ──
+    // â”€â”€ Internal â”€â”€
     private AudioSource audioSource;
     private bool isRinging = false;
     private bool hasAnswered = false;
@@ -59,7 +59,7 @@ public class InteractablePhone : MonoBehaviour, IInteractable
     private Renderer _renderer;
     private Color _originalColor;
 
-    // ── Dynamic Subtitle UI Fallback (neu khong co DialogueUI) ──
+    // â”€â”€ Dynamic Subtitle UI Fallback (neu khong co DialogueUI) â”€â”€
     private GameObject _fallbackCanvasGo;
     private GameObject _fallbackPanelGo;
     private TextMeshProUGUI _fallbackText;
@@ -90,7 +90,7 @@ public class InteractablePhone : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
+        AudioSource[] sources = GetComponents<AudioSource>(); audioSource = sources.Length > 0 ? sources[0] : gameObject.AddComponent<AudioSource>(); for (int si = 1; si < sources.Length; si++) Destroy(sources[si]);
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
 
@@ -151,7 +151,7 @@ public class InteractablePhone : MonoBehaviour, IInteractable
     {
         if (ringSound == null)
         {
-            Debug.LogWarning("[InteractablePhone] Chua gan Ring Sound!", this);
+            Debug.LogWarning("[InteractablePhone] Chua gan Ring Sound!", this); isRinging = true;
             return;
         }
 
