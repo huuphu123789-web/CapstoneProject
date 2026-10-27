@@ -20,24 +20,24 @@ public class TaskManager : MonoBehaviour
     public int totalGenerators = 1;
 
     [Header("=== PHÍM TẮT TEST (DEBUG HOTKEY) ===")]
-    [Tooltip("Phím tắt để nhận ngay Súng & Đèn Pin và hoàn thành nhiệm vụ trang bị (Mặc định: Phím G)")]
+    [Tooltip("Phím tắt để hoàn thành tất cả nhiệm vụ và chuyển sang kiểm soát bốt gác (Mặc định: Phím G)")]
+    public KeyCode skipToGateInspectionKey = KeyCode.G;
+
+    [Tooltip("Phím tắt dự phòng để hoàn thành tất cả nhiệm vụ (Mặc định: Phím K hoặc F1)")]
+    public KeyCode alternativeSkipKey = KeyCode.K;
+
+    [Tooltip("Phím tắt nhận/cất súng riêng nếu cần (Mặc định: Phím G)")]
     public KeyCode getEquipmentKey = KeyCode.G;
-
-    [Tooltip("Phím tắt chính để hoàn thành ngay các việc ban đầu và chuyển sang kiểm soát bốt gác (Mặc định: Phím K)")]
-    public KeyCode skipToGateInspectionKey = KeyCode.K;
-
-    [Tooltip("Phím tắt phụ dự phòng (Mặc định: Phím F1)")]
-    public KeyCode alternativeSkipKey = KeyCode.F1;
 
     [Tooltip("Tự động dịch chuyển người chơi đến bốt gác khi bấm phím tắt Test")]
     public bool teleportToBoothOnSkip = false;
 
-    [Tooltip("Phím tắt dịch chuyển nhanh người chơi đến bốt gác kiểm tra NPC bất kỳ lúc nào (Mặc định: Phím L hoặc F2)")]
-    public KeyCode teleportToGateKey = KeyCode.L;
+    [Tooltip("Phím tắt dịch chuyển nhanh người chơi đến bốt gác kiểm tra NPC (Mặc định: Phím B)")]
+    public KeyCode teleportToGateKey = KeyCode.B;
     public KeyCode alternativeTeleportKey = KeyCode.F2;
 
     [Header("=== ĐIỂM DỊCH CHUYỂN BỐT GÁC (TỰ ĐẶT) ===")]
-    [Tooltip("Tạo một Empty GameObject đặt tại vị trí đứng bên trong bốt gác và kéo vào đây")]
+    [Tooltip("Tạo một Empty GameObject đặt tại vị trí đứng bên trong bốt gác (hoặc tự động tìm PlayerBoothTeleportPoint)")]
     public Transform playerBoothTeleportPoint;
 
     [Header("=== CHẾ ĐỘ TEST NHANH KHI BẮT ĐẦU ===")]
@@ -78,6 +78,15 @@ public class TaskManager : MonoBehaviour
     {
         EnsureTaskUI();
 
+        if (playerBoothTeleportPoint == null)
+        {
+            GameObject tpObj = GameObject.Find("PlayerBoothTeleportPoint");
+            if (tpObj != null)
+            {
+                playerBoothTeleportPoint = tpObj.transform;
+            }
+        }
+
         if (quickTestGateInspection)
         {
             SkipToGateInspection(teleportToBoothOnSkip);
@@ -114,28 +123,13 @@ public class TaskManager : MonoBehaviour
                      || (PlayerHUDManager.instance != null && PlayerHUDManager.instance.isPaused);
         if (isPaused) return;
 
-        // Phím tắt G: Nhận Súng & Đèn pin và hoàn thành nhiệm vụ trang bị ban đầu (hoặc Toggle cất/rút súng nếu đã có)
-        bool getEquipPressed = Input.GetKeyDown(getEquipmentKey);
-        if (!getEquipPressed)
-        {
-            try
-            {
-                var kb = Keyboard.current;
-                if (kb != null && (getEquipmentKey == KeyCode.G && kb.gKey.wasPressedThisFrame))
-                {
-                    getEquipPressed = true;
-                }
-            }
-            catch { }
-        }
+        // Phím tắt G (hoặc skipToGateInspectionKey / alternativeSkipKey / F1):
+        // Hoàn thành tất cả nhiệm vụ ban đầu (hoặc Toggle cất/rút súng nếu đã hoàn thành tất cả việc)
+        bool skipPressed = Input.GetKeyDown(KeyCode.G)
+                        || Input.GetKeyDown(skipToGateInspectionKey)
+                        || Input.GetKeyDown(alternativeSkipKey)
+                        || Input.GetKeyDown(KeyCode.F1);
 
-        if (getEquipPressed)
-        {
-            GiveGunAndFlashlight();
-        }
-
-        // Phím tắt: Hoàn thành các việc ban đầu -> Nhảy sang nhiệm vụ kiểm soát bốt gác (Mặc định: Phím K hoặc F1)
-        bool skipPressed = Input.GetKeyDown(skipToGateInspectionKey) || Input.GetKeyDown(alternativeSkipKey);
         if (!skipPressed)
         {
             try
@@ -143,8 +137,12 @@ public class TaskManager : MonoBehaviour
                 var kb = Keyboard.current;
                 if (kb != null)
                 {
-                    if ((skipToGateInspectionKey == KeyCode.K && kb.kKey.wasPressedThisFrame) ||
-                        (alternativeSkipKey == KeyCode.F1 && kb.f1Key.wasPressedThisFrame))
+                    if (kb.gKey.wasPressedThisFrame ||
+                        (skipToGateInspectionKey == KeyCode.G && kb.gKey.wasPressedThisFrame) ||
+                        (skipToGateInspectionKey == KeyCode.K && kb.kKey.wasPressedThisFrame) ||
+                        (alternativeSkipKey == KeyCode.K && kb.kKey.wasPressedThisFrame) ||
+                        (alternativeSkipKey == KeyCode.F1 && kb.f1Key.wasPressedThisFrame) ||
+                        kb.f1Key.wasPressedThisFrame)
                     {
                         skipPressed = true;
                     }
@@ -155,11 +153,34 @@ public class TaskManager : MonoBehaviour
 
         if (skipPressed)
         {
-            SkipToGateInspection(teleportToBoothOnSkip);
+            // Kiểm tra xem tất cả nhiệm vụ ban đầu đã xong chưa
+            bool allDone = (fencePointsChecked >= totalFencePoints && generatorsChecked >= totalGenerators && hasGun && hasFlashlight);
+            if (allDone)
+            {
+                // Nếu đã hoàn thành hết rồi thì bấm G sẽ cất/rút súng
+                PlayerGun gun = PlayerGun.GetPlayerGun();
+                if (gun != null)
+                {
+                    gun.ToggleGun();
+                }
+                else
+                {
+                    SkipToGateInspection(teleportToBoothOnSkip);
+                }
+            }
+            else
+            {
+                // Hoàn thành toàn bộ nhiệm vụ: trang bị súng/đèn, tuần tra hàng rào, máy phát điện, bật đèn rào, kích hoạt bốt gác
+                SkipToGateInspection(teleportToBoothOnSkip);
+            }
         }
 
-        // Phím tắt phụ: Dịch chuyển ngay đến bốt gác kiểm tra NPC (Mặc định: Phím L hoặc F2)
-        bool tpPressed = Input.GetKeyDown(teleportToGateKey) || Input.GetKeyDown(alternativeTeleportKey);
+        // Phím tắt B (hoặc teleportToGateKey / alternativeTeleportKey / F2): Dịch chuyển ngay đến bốt gác kiểm tra NPC
+        bool tpPressed = Input.GetKeyDown(KeyCode.B)
+                      || Input.GetKeyDown(teleportToGateKey)
+                      || Input.GetKeyDown(alternativeTeleportKey)
+                      || Input.GetKeyDown(KeyCode.F2);
+
         if (!tpPressed)
         {
             try
@@ -167,8 +188,11 @@ public class TaskManager : MonoBehaviour
                 var kb = Keyboard.current;
                 if (kb != null)
                 {
-                    if ((teleportToGateKey == KeyCode.L && kb.lKey.wasPressedThisFrame) ||
-                        (alternativeTeleportKey == KeyCode.F2 && kb.f2Key.wasPressedThisFrame))
+                    if (kb.bKey.wasPressedThisFrame ||
+                        (teleportToGateKey == KeyCode.B && kb.bKey.wasPressedThisFrame) ||
+                        (teleportToGateKey == KeyCode.L && kb.lKey.wasPressedThisFrame) ||
+                        (alternativeTeleportKey == KeyCode.F2 && kb.f2Key.wasPressedThisFrame) ||
+                        kb.f2Key.wasPressedThisFrame)
                     {
                         tpPressed = true;
                     }
@@ -411,7 +435,32 @@ public class TaskManager : MonoBehaviour
         Quaternion targetRot = Quaternion.identity;
         bool foundDestination = false;
 
-        // 1. Ưu tiên số 1: Điểm do người dùng tự đặt trong Inspector
+        // 1. Tự động tìm điểm dịch chuyển nếu chưa gán
+        if (playerBoothTeleportPoint == null)
+        {
+            GameObject tpObj = GameObject.Find("PlayerBoothTeleportPoint");
+            if (tpObj == null)
+            {
+                GameObject[] allObjs = FindObjectsOfType<GameObject>();
+                foreach (var obj in allObjs)
+                {
+                    if (obj != null && (obj.name.IndexOf("BoothTeleport", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                        obj.name.IndexOf("Booth_Teleport", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                        obj.name.IndexOf("PlayerBooth", System.StringComparison.OrdinalIgnoreCase) >= 0))
+                    {
+                        tpObj = obj;
+                        break;
+                    }
+                }
+            }
+
+            if (tpObj != null)
+            {
+                playerBoothTeleportPoint = tpObj.transform;
+            }
+        }
+
+        // 2. Ưu tiên số 1: Điểm do người dùng tự đặt trong Inspector hoặc tự động tìm thấy
         if (playerBoothTeleportPoint != null)
         {
             targetPos = playerBoothTeleportPoint.position;

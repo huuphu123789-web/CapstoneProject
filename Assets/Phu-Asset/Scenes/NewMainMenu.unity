@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 5
   m_ReflectionIntensity: 0
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
+  m_Sun: {fileID: 93388236}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1770,7 +1770,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 0.015686275, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -120468,6 +120468,7 @@ MonoBehaviour:
   muzzlePoint: {fileID: 0}
   muzzleLight: {fileID: 0}
   muzzleFlashDuration: 0.05
+  muzzleFlashPrefab: {fileID: 0}
   muzzleFlashParticles: {fileID: 0}
   muzzleLocalOffset: {x: 0, y: 0.114, z: 0.275}
   gunshotClip: {fileID: 0}
@@ -162751,11 +162752,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 962281829985903441, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 962281829985903441, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2443685143016955828, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -162763,31 +162764,31 @@ PrefabInstance:
       objectReference: {fileID: 1375242802}
     - target: {fileID: 3319937576113823878, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3319937576113823878, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3319937576113823878, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4189939039709925044, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4189939039709925044, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4189939039709925044, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 480
       objectReference: {fileID: 0}
     - target: {fileID: 4189939039709925044, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 4846738573813781624, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -162803,23 +162804,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4991906485942023950, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4991906485942023950, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4991906485942023950, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 1140
       objectReference: {fileID: 0}
     - target: {fileID: 4991906485942023950, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 5266771121538332157, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_Name
       value: SettingPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 5266771121538332157, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5544223806328717286, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_Pivot.x
@@ -162903,35 +162908,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5729654154979285072, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5729654154979285072, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5729654154979285072, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 5729654154979285072, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 7774909690752701433, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7774909690752701433, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7774909690752701433, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 810
       objectReference: {fileID: 0}
     - target: {fileID: 7774909690752701433, guid: b9ecb44eea0fa499799c4c5aa79421fa, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -14,17 +14,24 @@ public class CCTVInteract : MonoBehaviour
 
     private void Start()
     {
-        cctvPanel.SetActive(false);
-        cctvCamera.enabled = true;
+        if (cctvPanel != null) cctvPanel.SetActive(false);
+        if (cctvCamera != null) cctvCamera.enabled = true;
     }
 
     private void Update()
     {
-        if (playerInside && Keyboard.current.eKey.wasPressedThisFrame)
+        bool ePressed = Input.GetKeyDown(KeyCode.E);
+        if (!ePressed && Keyboard.current != null)
+        {
+            try { ePressed = Keyboard.current.eKey.wasPressedThisFrame; } catch { }
+        }
+
+        if (playerInside && ePressed)
         {
             cctvActive = !cctvActive;
 
-            cctvPanel.SetActive(cctvActive);
+            if (cctvPanel != null)
+                cctvPanel.SetActive(cctvActive);
         }
     }
 
@@ -45,7 +52,8 @@ public class CCTVInteract : MonoBehaviour
             if (cctvActive)
             {
                 cctvActive = false;
-                cctvPanel.SetActive(false);
+                if (cctvPanel != null)
+                    cctvPanel.SetActive(false);
             }
         }
     }

@@ -310,6 +310,7 @@ Transform:
   - {fileID: 4592817140813567421}
   - {fileID: 4725125605356323367}
   - {fileID: 1571873486410228204}
+  - {fileID: 4918121839512621844}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &1571873486410228200
@@ -423,9 +424,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGun
   fireRate: 0.5
   shootRange: 50
-  muzzlePoint: {fileID: 0}
+  muzzlePoint: {fileID: 4918121839512621844}
   muzzleLight: {fileID: 0}
   muzzleFlashDuration: 0.05
+  muzzleFlashPrefab: {fileID: 100006, guid: 2f7910242354c78419d50ac9e64b496f, type: 3}
   muzzleFlashParticles: {fileID: 0}
   muzzleLocalOffset: {x: 0, y: 0.114, z: 0.275}
   gunshotClip: {fileID: 8300000, guid: d279048d5fd5043dd96961ce55039d8d, type: 3}
@@ -437,6 +439,7 @@ MonoBehaviour:
   gunAnimator: {fileID: 2973075543015388798}
   shootAnimTrigger: Shoot
   holsterAnimTrigger: Holster
+  drawAnimTrigger: Draw
   gunModelObject: {fileID: 0}
   useProceduralRecoil: 1
   recoilKickBack: 0.025
@@ -448,6 +451,7 @@ MonoBehaviour:
   npcTag: NPC
   debugAiming: 0
   startHolstered: 1
+  hasGun: 0
 --- !u!95 &2973075543015388798
 Animator:
   serializedVersion: 7
@@ -654,6 +658,37 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &4877160666927865210
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4918121839512621844}
+  m_Layer: 0
+  m_Name: Muzzle Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4918121839512621844
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4877160666927865210}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.591, y: 0.157, z: -0.046}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1571873486410228196}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &7852862300063662753
 GameObject:
   m_ObjectHideFlags: 0

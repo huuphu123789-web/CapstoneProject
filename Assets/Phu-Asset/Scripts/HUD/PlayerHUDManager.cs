@@ -44,7 +44,7 @@ public class PlayerHUDManager : MonoBehaviour
     [Tooltip("Panel nền của bảng hướng dẫn phím")]
     public GameObject controlsHintPanel;
     [Tooltip("Bật/Tắt bảng hướng dẫn phím")]
-    public bool showControlsHint = true;
+    public bool showControlsHint = false;
 
     [Header("=== TÂM NGẮM / CHẤM TƯƠNG TÁC (CROSSHAIR DOT) ===")]
     [Tooltip("Image hiển thị chấm nhỏ giữa màn hình (nếu để trống script tự động tạo)")]
@@ -120,8 +120,15 @@ public class PlayerHUDManager : MonoBehaviour
         }
 
         UpdateFlashlightUI();
-        EnsureControlsHintUI();
-        UpdateControlsHintUI();
+        if (showControlsHint)
+        {
+            EnsureControlsHintUI();
+            UpdateControlsHintUI();
+        }
+        else
+        {
+            HideControlsHintUI();
+        }
         EnsureCrosshairUI();
         if (playerInteract == null) playerInteract = FindObjectOfType<PlayerInteract>();
     }
@@ -489,8 +496,24 @@ public class PlayerHUDManager : MonoBehaviour
     }
 
     // ===== HƯỚNG DẪN PHÍM (CONTROLS HINT UI) =====
+    public void HideControlsHintUI()
+    {
+        if (controlsHintPanel != null) controlsHintPanel.SetActive(false);
+        if (controlsHintText != null) controlsHintText.gameObject.SetActive(false);
+
+        // Đảm bảo các đối tượng có sẵn trong Scene cũng bị ẩn đi
+        GameObject panelObj = GameObject.Find("ControlsHintPanel");
+        if (panelObj != null) panelObj.SetActive(false);
+    }
+
     public void EnsureControlsHintUI()
     {
+        if (!showControlsHint)
+        {
+            HideControlsHintUI();
+            return;
+        }
+
         if (controlsHintText != null)
         {
             controlsHintText.fontSize = 17f;
