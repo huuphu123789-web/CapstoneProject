@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -523,6 +523,21 @@ public class TaskManager : MonoBehaviour
         {
             Debug.LogWarning("[TaskManager] Chưa gán điểm dịch chuyển 'Player Booth Teleport Point' trong Inspector!");
         }
+    }
+
+    // ================= XU LY NHIEM VU DOC BAO (NEWSPAPER) =================
+    [HideInInspector] public bool newspaperRead = false;
+    public void CompleteNewspaper()
+    {
+        if (newspaperRead) return;
+        newspaperRead = true;
+        Debug.Log("[TaskManager] Da doc bao!");
+        UpdateTaskUI();
+    }
+
+    public bool AreAllTasksDone()
+    {
+        return true;
     }
 
     public void SetTaskUIVisible(bool visible)
