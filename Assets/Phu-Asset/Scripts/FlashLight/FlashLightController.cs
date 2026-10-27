@@ -160,16 +160,26 @@ public class FlashlightController : MonoBehaviour
         localAudioSource = GetComponent<AudioSource>();
         if (localAudioSource == null)
             localAudioSource = gameObject.AddComponent<AudioSource>();
+
+        // Mặc định luôn tắt đèn pin khi mới vào game cho đến khi người chơi nhặt từ tủ
+        bool isCollected = (TaskManager.instance != null && TaskManager.instance.hasFlashlight);
+        hasFlashlight = isCollected;
+        if (flashlight != null)
+        {
+            flashlight.enabled = isCollected;
+        }
     }
 
     void Start()
     {
         GetFlashlightLight();
 
-        // Mặc định tắt nguồn sáng khi vừa sinh ra nếu chưa có đèn pin
-        if (flashlight != null && (!hasFlashlight && (TaskManager.instance == null || !TaskManager.instance.hasFlashlight)))
+        // Kiểm tra lại một lần nữa ở Start để bảo đảm nếu chưa nhặt thì đèn luôn tắt
+        bool isCollected = (TaskManager.instance != null && TaskManager.instance.hasFlashlight);
+        hasFlashlight = isCollected;
+        if (flashlight != null)
         {
-            flashlight.enabled = false;
+            flashlight.enabled = isCollected;
         }
 
         // Đảm bảo đèn phòng hầm Cellar không bị cúp khi bật đèn pin

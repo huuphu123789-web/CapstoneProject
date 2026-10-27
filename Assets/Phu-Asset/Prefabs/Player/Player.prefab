@@ -16157,7 +16157,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8353084617405348138}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 0.88, b: 0.35, a: 1}
@@ -16686,7 +16686,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08f4a244a91244a5387c9010e0a21625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashlightController
-  hasFlashlight: 1
+  hasFlashlight: 0
   flashlight: {fileID: 4512714026935545704}
   onClip: {fileID: 8300000, guid: 087224dd7ec352f42a3b950a07009a88, type: 3}
   autoApplyOptimalSettings: 1

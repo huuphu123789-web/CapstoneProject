@@ -495,5 +495,106 @@ public static class MutantPrefabGenerator
         Object.DestroyImmediate(instance);
         Debug.Log("[MutantGenerator] Created: " + path);
     }
+
+    [MenuItem("Tools/Border Anomaly/Setup Player Spawn In Cellar (Night-1)")]
+    public static void SetupPlayerSpawnInCellar()
+    {
+        // 1. Tìm StartSpawn hoặc CellarSpawnPoint
+        Transform spawnPoint = null;
+        string[] candidates = new string[] { "StartSpawn", "startspawn", "CellarSpawnPoint", "cellarspawnpoint" };
+        foreach (string cName in candidates)
+        {
+            GameObject ptObj = GameObject.Find(cName);
+            if (ptObj != null) { spawnPoint = ptObj.transform; break; }
+        }
+
+        if (spawnPoint == null)
+        {
+            GameObject cellar = GameObject.Find("Cellar");
+            if (cellar != null)
+            {
+                foreach (string cName in candidates)
+                {
+                    Transform pt = cellar.transform.Find(cName);
+                    if (pt != null) { spawnPoint = pt; break; }
+                }
+                if (spawnPoint == null)
+                {
+                    foreach (Transform c in cellar.GetComponentsInChildren<Transform>(true))
+                    {
+                        string lower = c.name.ToLower();
+                        if (lower == "startspawn" || lower == "cellarspawnpoint" || lower.Contains("startspawn") || lower.Contains("cellarspawn"))
+                        {
+                            spawnPoint = c;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        Vector3 targetPos = spawnPoint != null ? spawnPoint.position + Vector3.up * 0.08f : new Vector3(-11.596f, -12.450f, -25.516f);
+        Quaternion targetRot = spawnPoint != null ? spawnPoint.rotation : Quaternion.Euler(0f, 147.234f, 0f);
+
+        // 2. Tìm hoặc Tạo Player
+        PlayerController pc = Object.FindFirstObjectByType<PlayerController>() ?? Object.FindObjectOfType<PlayerController>();
+        GameObject playerObj = pc != null ? pc.gameObject : GameObject.FindWithTag("Player");
+        if (playerObj != null && playerObj.transform.parent != null && playerObj.transform.parent.CompareTag("Player"))
+        {
+            playerObj = playerObj.transform.parent.gameObject;
+        }
+
+        if (playerObj == null)
+        {
+            GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Phu-Asset/Prefabs/Player/Player.prefab");
+            if (playerPrefab == null) playerPrefab = Resources.Load<GameObject>("Player");
+            if (playerPrefab != null)
+            {
+                playerObj = (GameObject)PrefabUtility.InstantiatePrefab(playerPrefab);
+                playerObj.name = "Player";
+                Undo.RegisterCreatedObjectUndo(playerObj, "Spawn Player In Cellar");
+                pc = playerObj.GetComponentInChildren<PlayerController>();
+                Debug.Log("[PlayerSetup] Đã tạo mới Player từ Prefab trong Scene!");
+            }
+        }
+
+        if (playerObj != null)
+        {
+            Undo.RecordObject(playerObj.transform, "Position Player In Cellar");
+            CharacterController cc = playerObj.GetComponentInChildren<CharacterController>();
+            if (cc != null) cc.enabled = false;
+            playerObj.transform.position = targetPos;
+            playerObj.transform.rotation = targetRot;
+            if (cc != null) cc.enabled = true;
+            Debug.Log($"[PlayerSetup] Đã đặt Player tại vị trí Cellar: {targetPos}");
+        }
+
+        // 3. Đảm bảo PlayerSpawnManager tồn tại trong Scene
+        PlayerSpawnManager spawner = Object.FindFirstObjectByType<PlayerSpawnManager>() ?? Object.FindObjectOfType<PlayerSpawnManager>();
+        if (spawner == null)
+        {
+            GameObject spawnerObj = new GameObject("PlayerSpawnManager");
+            spawner = spawnerObj.AddComponent<PlayerSpawnManager>();
+            Undo.RegisterCreatedObjectUndo(spawnerObj, "Create PlayerSpawnManager");
+        }
+
+        spawner.defaultSpawnPoint = spawnPoint;
+        spawner.playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Phu-Asset/Prefabs/Player/Player.prefab");
+        spawner.autoPositionOnStart = true;
+        EditorUtility.SetDirty(spawner);
+
+        // 4. Căn chỉnh Camera
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            Undo.RecordObject(cam.transform, "Align Camera With Player");
+            cam.transform.position = targetPos + Vector3.up * 1.6f;
+            cam.transform.rotation = targetRot;
+        }
+
+        // 5. Lưu Scene
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+        EditorUtility.DisplayDialog("Thành công", $"Đã thiết lập Player xuất hiện tại vị trí CellarSpawnPoint trong hầm Cellar thành công!\nTọa độ: {targetPos}\nPlayer và PlayerSpawnManager đã sẵn sàng.", "OK");
+    }
 }
 #endif

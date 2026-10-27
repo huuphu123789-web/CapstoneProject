@@ -93,7 +93,7 @@ MonoBehaviour:
   dogBarkClip: {fileID: 8300000, guid: 7f56a6856953b452e8373fc878755e4f, type: 3}
   dogAggressiveBarkClip: {fileID: 8300000, guid: 7f56a6856953b452e8373fc878755e4f, type: 3}
   barkInterval: 0.55
-  jumpscareSprite: {fileID: 21300000, guid: 13e80ed8ffba47f5ae0ef7da75b62b27, type: 3}
+  jumpscareSprite: {fileID: -1296544189, guid: c59ddc52fdeaa4e509cf2c530281c73c, type: 3}
   jumpscareSound: {fileID: 8300000, guid: d3615fcdd9e294e13bd5e1caafb48409, type: 3}
   jumpscareDuration: 1.8
   isDogBarking: 0
