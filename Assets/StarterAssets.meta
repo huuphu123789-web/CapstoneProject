@@ -1,7 +1,18 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
+<<<<<<<< HEAD:Assets/StarterAssets.meta
 guid: b847bc10df5ca7b429f391588e84a61f
 folderAsset: yes
 DefaultImporter:
+========
+guid: 381dcb09d5029d14897e55f98031fca5
+TextScriptImporter:
+>>>>>>>> 162e3852f78795e0b7c9840cfaa63d3ac0441016:Assets/Loc asset/TextMesh Pro/Sprites/EmojiOne Attribution.txt.meta
+=======
+guid: 3a02228b247d93142bd5e9fe086feace
+folderAsset: yes
+DefaultImporter:
+>>>>>>> 162e3852f78795e0b7c9840cfaa63d3ac0441016
   externalObjects: {}
   userData: 
   assetBundleName: 
