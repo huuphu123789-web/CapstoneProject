@@ -590,11 +590,11 @@ public class NPCInspectionManager : MonoBehaviour
         currentAgent.enabled = true;
         currentAgent.stoppingDistance = 0.5f;
 
-        NPCCrawlerBehavior crawlerComp = currentNPCObject.GetComponentInChildren<NPCCrawlerBehavior>();
-        if (crawlerComp != null)
+        NPCBaseBehavior npcBehavior = currentNPCObject.GetComponentInChildren<NPCBaseBehavior>();
+        if (npcBehavior != null)
         {
             currentAgent.baseOffset = 0f;
-            currentAgent.speed = crawlerComp.walkSpeed;
+            currentAgent.speed = npcBehavior.walkSpeed;
         }
         else
         {
@@ -689,33 +689,12 @@ public class NPCInspectionManager : MonoBehaviour
             InspectionDeskInteractable.instance.SetDocumentsAvailable(true);
         }
 
-        // Kích hoạt các hành vi kì dị tương ứng của Đột biến khi đến bốt gác
-        NPCWeirdBehaviors weird = currentNPCObject.GetComponentInChildren<NPCWeirdBehaviors>();
-        if (weird != null) weird.StartInspection();
-
-        NPCSpinningLegsBehavior spin = currentNPCObject.GetComponentInChildren<NPCSpinningLegsBehavior>();
-        if (spin != null) spin.StartInspection();
-
-        NPCHeadSpinBehavior headSpin = currentNPCObject.GetComponentInChildren<NPCHeadSpinBehavior>();
-        if (headSpin != null) headSpin.StartInspection();
-
-        NPCExploderBehavior exploder = currentNPCObject.GetComponentInChildren<NPCExploderBehavior>();
-        if (exploder != null) exploder.StartInspection();
-
-        NPCFloatingBehavior floating = currentNPCObject.GetComponentInChildren<NPCFloatingBehavior>();
-        if (floating != null) floating.StartInspection();
-
-        NPCDetachedLimbsBehavior detached = currentNPCObject.GetComponentInChildren<NPCDetachedLimbsBehavior>();
-        if (detached != null) detached.StartInspection();
-
-        NPCJumperBehavior jumper = currentNPCObject.GetComponentInChildren<NPCJumperBehavior>();
-        if (jumper != null) jumper.StartInspection();
-
-        NPCCrawlerBehavior crawler = currentNPCObject.GetComponentInChildren<NPCCrawlerBehavior>();
-        if (crawler != null) crawler.StartInspection();
-
-        NPCScreamerBehavior screamer = currentNPCObject.GetComponentInChildren<NPCScreamerBehavior>();
-        if (screamer != null) screamer.StartInspection();
+        // Kích hoạt các hành vi tương ứng của NPC (Người thường & Đột biến) thông qua script cha NPCBaseBehavior
+        NPCBaseBehavior npcBehavior = currentNPCObject.GetComponentInChildren<NPCBaseBehavior>();
+        if (npcBehavior != null)
+        {
+            npcBehavior.StartInspection();
+        }
 
         Debug.Log($"[NPCInspectionManager] NPC [{currentProfile.npcName}] ĐÃ ĐẾN VẠCH KIỂM TRA. Giấy tờ đã sẵn sàng!");
 
@@ -771,6 +750,14 @@ public class NPCInspectionManager : MonoBehaviour
 
         if (currentProfile.isMutant)
         {
+            // Nếu là NPC Jumper và chưa kịp jumpscare, kích hoạt vồ ngay lập tức!
+            NPCJumperBehavior jumper = currentNPCObject != null ? currentNPCObject.GetComponentInChildren<NPCJumperBehavior>() : null;
+            if (jumper != null && !jumper.hasTriggeredScare)
+            {
+                jumper.TriggerImmediateJumpscare();
+                return;
+            }
+
             // NGUY HIỂM: Cho nhầm đột biến vào căn cứ!
             Debug.LogWarning("[NPCInspectionManager] CẢNH BÁO: Người chơi đã cho ĐỘT BIẾN qua cổng!");
             TriggerBreachAlarm();
@@ -806,9 +793,37 @@ public class NPCInspectionManager : MonoBehaviour
                 : "No! Please don't leave me out here in the dark!!");
 
         float dur = (voice != null && voice.length > 0) ? Mathf.Max(3.5f, voice.length + 1.0f) : 4.0f;
-        ShowDialogue(currentProfile != null ? currentProfile.npcName : "Citizen", denyText, dur, voice);
+        // KIỂM TRA JUMPSCARE TẤM HÌNH KINH DỊ CỦA NPC CHÓ SỦA (> 3 TIẾNG SỦA):
+        NPCDogBarkBehavior dogBark = currentNPCObject != null ? currentNPCObject.GetComponentInChildren<NPCDogBarkBehavior>() : null;
+        if (dogBark != null && dogBark.ShouldJumpscareOnDeny())
+        {
+            Debug.Log("[NPCInspectionManager] Người chơi bấm DENY và bị JUMPSCARE bằng tấm hình kinh dị!");
+            if (correctDecisionChime != null && AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFX(correctDecisionChime);
+            }
 
-        if (currentProfile.isMutant)
+            dogBark.TriggerImageJumpscare(() =>
+            {
+                StartCoroutine(MutantFleesRoutine());
+            });
+            return;
+        }
+
+        // KIỂM TRA JUMPSCARE CỦA NPC JUMPER KHI BẤM TỪ CHỐI:
+        NPCJumperBehavior jumper = currentNPCObject != null ? currentNPCObject.GetComponentInChildren<NPCJumperBehavior>() : null;
+        if (jumper != null && !jumper.hasTriggeredScare)
+        {
+            Debug.Log("[NPCInspectionManager] Người chơi bấm DENY và bị NPC Jumper vồ thẳng vào mặt!");
+            if (correctDecisionChime != null && AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFX(correctDecisionChime);
+            }
+            jumper.TriggerImmediateJumpscare();
+            return;
+        }
+
+        if (currentProfile.isMutant || (dogBark != null && dogBark.isMutant))
         {
             // ĐÚNG ĐẮN: Phát hiện và đuổi đột biến
             Debug.Log("[NPCInspectionManager] CHUẨN XÁC: Đã phát hiện và từ chối sinh vật đột biến!");

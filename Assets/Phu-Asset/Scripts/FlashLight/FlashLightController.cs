@@ -152,22 +152,38 @@ public class FlashlightController : MonoBehaviour
 
     void Awake()
     {
+        // Tối đa hóa giới hạn đèn pixel để đèn pin không bao giờ làm tắt các nguồn sáng khác
+        QualitySettings.pixelLightCount = 16;
+
         GetFlashlightLight();
 
         localAudioSource = GetComponent<AudioSource>();
         if (localAudioSource == null)
             localAudioSource = gameObject.AddComponent<AudioSource>();
+
+        // Mặc định luôn tắt đèn pin khi mới vào game cho đến khi người chơi nhặt từ tủ
+        bool isCollected = (TaskManager.instance != null && TaskManager.instance.hasFlashlight);
+        hasFlashlight = isCollected;
+        if (flashlight != null)
+        {
+            flashlight.enabled = isCollected;
+        }
     }
 
     void Start()
     {
         GetFlashlightLight();
 
-        // Mặc định tắt nguồn sáng khi vừa sinh ra nếu chưa có đèn pin
-        if (flashlight != null && (!hasFlashlight && (TaskManager.instance == null || !TaskManager.instance.hasFlashlight)))
+        // Kiểm tra lại một lần nữa ở Start để bảo đảm nếu chưa nhặt thì đèn luôn tắt
+        bool isCollected = (TaskManager.instance != null && TaskManager.instance.hasFlashlight);
+        hasFlashlight = isCollected;
+        if (flashlight != null)
         {
-            flashlight.enabled = false;
+            flashlight.enabled = isCollected;
         }
+
+        // Đảm bảo đèn phòng hầm Cellar không bị cúp khi bật đèn pin
+        EnsureCellarLightsNeverCulled();
 
         // Đồng bộ đèn pin với HUD Manager
         if (PlayerHUDManager.instance != null)
@@ -175,6 +191,26 @@ public class FlashlightController : MonoBehaviour
             PlayerHUDManager.instance.flashlightLight = flashlight;
             PlayerHUDManager.instance.UpdateFlashlightUI();
             PlayerHUDManager.instance.UpdateControlsHintUI();
+        }
+    }
+
+    /// <summary>
+    /// Đảm bảo các nguồn sáng trong phòng hầm (Cellar) luôn được ưu tiên (ForcePixel)
+    /// để Unity URP không bao giờ cúp đèn phòng hầm khi người chơi bật đèn pin.
+    /// </summary>
+    public void EnsureCellarLightsNeverCulled()
+    {
+        GameObject cellarObj = GameObject.Find("Cellar");
+        if (cellarObj != null)
+        {
+            Light[] cellarLights = cellarObj.GetComponentsInChildren<Light>(true);
+            foreach (var l in cellarLights)
+            {
+                if (l != null && l.renderMode != LightRenderMode.ForcePixel)
+                {
+                    l.renderMode = LightRenderMode.ForcePixel;
+                }
+            }
         }
     }
 
@@ -258,6 +294,7 @@ public class FlashlightController : MonoBehaviour
         if (flLight != null)
         {
             ApplyOptimalLightSettings(flLight);
+            EnsureCellarLightsNeverCulled();
             flLight.gameObject.SetActive(true);
             if (flLight.transform.parent != null)
             {

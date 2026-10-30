@@ -1,12 +1,11 @@
 using UnityEngine;
-using UnityEngine.AI;
 
-public class NPCSpinningLegsBehavior : MonoBehaviour
+/// <summary>
+/// Hành vi NPC Chân Xoay Chong Chóng (Spinning Legs Mutant):
+/// Kế thừa từ NPCBaseBehavior. Khi đến bốt gác kiểm tra, hai chân sẽ xoay tít như chong chóng.
+/// </summary>
+public class NPCSpinningLegsBehavior : NPCBaseBehavior
 {
-    [Header("=== Cấu Hình Tự Đi Bộ ===")]
-    public Transform inspectionPoint;
-    public float walkSpeed = 2.5f;
-
     [Header("=== Cấu Hình Chân Xoay Chong Chóng ===")]
     [Tooltip("Kéo xương Đùi/Chân trái (LeftUpLeg / LeftLeg) vào đây")]
     public Transform leftLegBone;
@@ -14,115 +13,32 @@ public class NPCSpinningLegsBehavior : MonoBehaviour
     public Transform rightLegBone;
     public float spinSpeed = 720f; // Tốc độ xoay (720 độ/giây = 2 vòng/s)
 
-    [Header("=== Âm Thanh & Footstep ===")]
-    public AudioClip[] footstepSounds;
+    [Header("=== Âm Thanh Xoay Chân ===")]
     public AudioClip legSpinSound; // Tiếng vồ vập / xoay rắc rắc
-    public float footstepInterval = 0.45f;
 
-    [Header("=== Trạng Thái ===")]
-    public bool isInspecting = false;
-
-    [Header("=== References ===")]
-    public Animator animator;
-    public AudioSource audioSource;
-
-    private NavMeshAgent agent;
     private Quaternion origLeftLegRot;
     private Quaternion origRightLegRot;
-    private float footstepTimer;
     private float spinAngle = 0f;
     private float soundTimer;
 
-    void Awake()
+    protected override void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
-        if (agent == null) agent = GetComponentInParent<NavMeshAgent>();
-        if (animator == null) animator = GetComponent<Animator>();
-        if (animator == null) animator = GetComponentInChildren<Animator>();
-        if (audioSource == null) audioSource = GetComponent<AudioSource>();
-        if (audioSource == null) audioSource = GetComponentInParent<AudioSource>();
-
+        base.Awake();
         if (leftLegBone != null) origLeftLegRot = leftLegBone.localRotation;
         if (rightLegBone != null) origRightLegRot = rightLegBone.localRotation;
     }
 
-    void Start()
+    public override void MoveToInspectionPoint()
     {
-        if (inspectionPoint == null)
-        {
-            GameObject zoneObj = GameObject.Find("InspectionZone");
-            if (zoneObj != null) inspectionPoint = zoneObj.transform;
-        }
-
-        // Chỉ tự di chuyển nếu không có NPCInspectionManager điều phối
-        if (NPCInspectionManager.instance == null && inspectionPoint != null)
-        {
-            MoveToInspectionPoint();
-        }
-    }
-
-    private void EnsureAgentOnNavMesh()
-    {
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
-        if (agent == null) agent = GetComponentInParent<NavMeshAgent>();
-        if (agent != null && !agent.isOnNavMesh)
-        {
-            if (NavMesh.SamplePosition(agent.transform.position, out NavMeshHit hit, 20f, NavMesh.AllAreas))
-            {
-                agent.Warp(hit.position);
-            }
-        }
-    }
-
-    public void MoveToInspectionPoint()
-    {
-        isInspecting = false;
-        EnsureAgentOnNavMesh();
-        if (agent != null && agent.isOnNavMesh && inspectionPoint != null)
-        {
-            agent.isStopped = false;
-            agent.speed = walkSpeed;
-            Vector3 target = inspectionPoint.position;
-            if (NavMesh.SamplePosition(target, out NavMeshHit hit, 20f, NavMesh.AllAreas)) target = hit.position;
-            agent.SetDestination(target);
-        }
-        if (animator != null) animator.SetBool("isWalk", true);
-
+        base.MoveToInspectionPoint();
         // Trở lại vị trí chân bình thường khi bước đi
         if (leftLegBone != null) leftLegBone.localRotation = origLeftLegRot;
         if (rightLegBone != null) rightLegBone.localRotation = origRightLegRot;
     }
 
-    public void StartInspection()
+    protected override void Update()
     {
-        isInspecting = true;
-        if (agent != null && agent.isOnNavMesh)
-        {
-            agent.isStopped = true;
-            agent.velocity = Vector3.zero;
-        }
-        if (animator != null) animator.SetBool("isWalk", false);
-    }
-
-    void Update()
-    {
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.velocity.magnitude > 0.1f)
-        {
-            footstepTimer -= Time.deltaTime;
-            if (footstepTimer <= 0)
-            {
-                PlayFootstepSound();
-                footstepTimer = footstepInterval;
-            }
-        }
-
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.enabled && !agent.pathPending && agent.hasPath)
-        {
-            if (agent.remainingDistance > 0.1f && agent.remainingDistance <= agent.stoppingDistance + 0.2f)
-            {
-                StartInspection();
-            }
-        }
+        base.Update();
 
         // Phát âm thanh xoay chân theo chu kỳ
         if (isInspecting && legSpinSound != null)
@@ -136,7 +52,7 @@ public class NPCSpinningLegsBehavior : MonoBehaviour
         }
     }
 
-    // LẠI UPDATE: XOAY 2 CHÂN NHƯ CHONG CHÓNG KHI ĐẾN VẠCH KIỂM DUYỆT
+    // LATE UPDATE: XOAY 2 CHÂN NHƯ CHONG CHÓNG KHI ĐẾN VẠCH KIỂM DUYỆT
     void LateUpdate()
     {
         if (isInspecting)
@@ -149,19 +65,12 @@ public class NPCSpinningLegsBehavior : MonoBehaviour
                 leftLegBone.localRotation = origLeftLegRot * Quaternion.Euler(spinAngle, 0f, 0f);
             }
 
-            // Chân phải xoay ngược chiều (hoặc cùng chiều) tạo hiệu ứng chong chóng
+            // Chân phải xoay ngược chiều tạo hiệu ứng chong chóng
             if (rightLegBone != null)
             {
                 rightLegBone.localRotation = origRightLegRot * Quaternion.Euler(-spinAngle, 0f, 0f);
             }
         }
-    }
-
-    private void PlayFootstepSound()
-    {
-        if (footstepSounds == null || footstepSounds.Length == 0) return;
-        int randomIndex = Random.Range(0, footstepSounds.Length);
-        PlaySound(footstepSounds[randomIndex], 0.6f);
     }
 
     private void PlaySound(AudioClip clip, float volume = 1f)

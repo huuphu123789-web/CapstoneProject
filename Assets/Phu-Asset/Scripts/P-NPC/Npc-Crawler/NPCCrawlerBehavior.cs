@@ -14,12 +14,8 @@ using UnityEngine.AI;
 /// 6. Plays deafening jumpscare screech, shakes the screen violently, thrashes on camera,
 ///    and then vanishes completely, advancing the inspection queue.
 /// </summary>
-public class NPCCrawlerBehavior : MonoBehaviour
+public class NPCCrawlerBehavior : NPCBaseBehavior
 {
-    [Header("=== MOVEMENT CONFIGURATION ===")]
-    public Transform inspectionPoint;
-    public float walkSpeed = 2.4f;
-
     [Header("=== DIALOGUE & VANISH TIMING ===")]
     [UnityEngine.Serialization.FormerlySerializedAs("deskWaitBeforeVanish")]
     [Tooltip("How long Crawler talks outside the window before vanishing (seconds)")]
@@ -41,7 +37,10 @@ public class NPCCrawlerBehavior : MonoBehaviour
     [Tooltip("Angle from the window desk required to count as turning around (default 100 degrees)")]
     public float turnAroundAngleThreshold = 100f;
 
-    [Tooltip("Max seconds to wait before prompting audio behind player")]
+    [Tooltip("Chỉ phát tiếng thì thầm 1 lần duy nhất khi vừa biến ra sau lưng, không lặp lại")]
+    public bool whisperOnlyOnce = true;
+
+    [Tooltip("Khoảng thời gian lặp lại tiếng thì thầm nếu không bật whisperOnlyOnce (giây)")]
     public float audioReminderInterval = 4.0f;
 
     [Header("=== AIRBORNE FACE LUNGE SETTINGS ===")]
@@ -62,40 +61,26 @@ public class NPCCrawlerBehavior : MonoBehaviour
     public float cameraShakeMagnitude = 0.55f;
 
     [Header("=== AUDIO EFFECTS ===")]
-    public AudioClip[] footstepSounds;
     public AudioClip vanishSound;
     public AudioClip behindWhisperSound;
     public AudioClip jumpscareRoarSound;
-    public float footstepInterval = 0.45f;
 
     [Header("=== INSPECTION PROGRESSION ===")]
     [Tooltip("Automatically advance inspection queue after Crawler scares and vanishes")]
     public bool advanceInspectionQueue = true;
 
     [Header("=== STATE ===")]
-    public bool isInspecting = false;
     public bool hasVanishedFromWindow = false;
     public bool isWaitingBehindPlayer = false;
     public bool hasAttackedPlayer = false;
 
-    [Header("=== REFERENCES ===")]
-    public Animator animator;
-    public AudioSource audioSource;
-
-    private NavMeshAgent agent;
-    private float footstepTimer;
     private Renderer[] allRenderers;
     private Collider rootCollider;
     private Coroutine ambushCoroutine;
 
-    void Awake()
+    protected override void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
-        if (agent == null) agent = GetComponentInParent<NavMeshAgent>();
-        if (animator == null) animator = GetComponent<Animator>();
-        if (animator == null) animator = GetComponentInChildren<Animator>();
-        if (audioSource == null) audioSource = GetComponent<AudioSource>();
-        if (audioSource == null) audioSource = GetComponentInParent<AudioSource>();
+        base.Awake();
 
         if (audioSource == null)
         {
@@ -127,20 +112,9 @@ public class NPCCrawlerBehavior : MonoBehaviour
 #endif
     }
 
-    void Start()
+    protected override void Start()
     {
-        if (inspectionPoint == null)
-        {
-            if (NPCInspectionManager.instance != null && NPCInspectionManager.instance.inspectionPoint != null)
-            {
-                inspectionPoint = NPCInspectionManager.instance.inspectionPoint;
-            }
-            else
-            {
-                GameObject zoneObj = FindSceneObject("InspectionZone", "InspectionPoint");
-                if (zoneObj != null) inspectionPoint = zoneObj.transform;
-            }
-        }
+        base.Start();
 
         // Auto-detect user created jumpscarebehind (whether active or inactive)
         if (jumpscareModel == null)
@@ -166,11 +140,6 @@ public class NPCCrawlerBehavior : MonoBehaviour
         {
             jumpscareModel.SetActive(false);
         }
-
-        if (NPCInspectionManager.instance == null && inspectionPoint != null)
-        {
-            MoveToInspectionPoint();
-        }
     }
 
     private GameObject FindSceneObject(params string[] possibleNames)
@@ -194,45 +163,20 @@ public class NPCCrawlerBehavior : MonoBehaviour
         return null;
     }
 
-    private void EnsureAgentOnNavMesh()
+    public override void MoveToInspectionPoint()
     {
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
-        if (agent != null && !agent.isOnNavMesh)
-        {
-            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 20f, NavMesh.AllAreas))
-            {
-                agent.Warp(hit.position);
-            }
-        }
-    }
-
-    public void MoveToInspectionPoint()
-    {
-        isInspecting = false;
         hasVanishedFromWindow = false;
         isWaitingBehindPlayer = false;
         hasAttackedPlayer = false;
         SetModelVisibility(true);
 
-        EnsureAgentOnNavMesh();
-        if (agent != null && agent.isOnNavMesh && inspectionPoint != null)
-        {
-            agent.isStopped = false;
-            agent.speed = walkSpeed;
-            Vector3 target = inspectionPoint.position;
-            if (NavMesh.SamplePosition(target, out NavMeshHit hit, 20f, NavMesh.AllAreas)) target = hit.position;
-            agent.SetDestination(target);
-        }
-        if (animator != null) animator.SetBool("isWalk", true);
+        base.MoveToInspectionPoint();
     }
 
-    public void StartInspection()
+    public override void StartInspection()
     {
         if (isInspecting) return;
-        isInspecting = true;
-
-        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
-        if (animator != null) animator.SetBool("isWalk", false);
+        base.StartInspection();
 
         if (ambushCoroutine != null) StopCoroutine(ambushCoroutine);
         ambushCoroutine = StartCoroutine(CrawlerBehindAmbushSequence());
@@ -438,12 +382,15 @@ public class NPCCrawlerBehavior : MonoBehaviour
                 break;
             }
 
-            // Periodic audio whispers behind the player
-            reminderTimer += Time.deltaTime;
-            if (reminderTimer >= audioReminderInterval)
+            // Periodic audio whispers behind the player (chỉ lặp lại nếu không bật whisperOnlyOnce)
+            if (!whisperOnlyOnce)
             {
-                reminderTimer = 0f;
-                PlaySound(behindWhisperSound, 0.9f);
+                reminderTimer += Time.deltaTime;
+                if (reminderTimer >= audioReminderInterval)
+                {
+                    reminderTimer = 0f;
+                    PlaySound(behindWhisperSound, 0.9f);
+                }
             }
 
             yield return null;
@@ -548,8 +495,8 @@ public class NPCCrawlerBehavior : MonoBehaviour
 
             GetPlayerCameraOrHead(out Vector3 eyePos, out Vector3 camFwd);
 
-            // Target position: right in front of camera lens
-            Vector3 targetFacePos = eyePos + camFwd * faceLatchDistance;
+            // Target position: right in front of camera lens / PlayerCameraJumpscarePoint
+            Vector3 targetFacePos = PlayerCameraJumpscarePoint.GetJumpscarePosition(faceLatchDistance);
 
             // Straight direct flight into the camera
             Vector3 currentFacePos = Vector3.Lerp(startHeadPos, targetFacePos, t);
@@ -579,12 +526,10 @@ public class NPCCrawlerBehavior : MonoBehaviour
         {
             scareElapsed += Time.deltaTime;
 
-            GetPlayerCameraOrHead(out Vector3 eyePos, out Vector3 camFwd);
-
             Vector3 jitter = Random.insideUnitSphere * 0.02f;
-            Vector3 targetFacePos = eyePos + camFwd * faceLatchDistance + jitter;
+            Vector3 targetFacePos = PlayerCameraJumpscarePoint.GetJumpscarePosition(faceLatchDistance) + jitter;
 
-            scareTransform.rotation = Quaternion.LookRotation(-camFwd);
+            scareTransform.rotation = PlayerCameraJumpscarePoint.GetJumpscareRotation();
 
             Vector3 headOffset = (monsterFace != null)
                 ? (monsterFace.position - scareTransform.position)
@@ -631,34 +576,6 @@ public class NPCCrawlerBehavior : MonoBehaviour
         {
             shaker.Shake(cameraShakeDuration, cameraShakeMagnitude);
         }
-    }
-
-    void Update()
-    {
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.velocity.magnitude > 0.1f)
-        {
-            footstepTimer -= Time.deltaTime;
-            if (footstepTimer <= 0)
-            {
-                PlayFootstepSound();
-                footstepTimer = footstepInterval;
-            }
-        }
-
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.enabled && !agent.pathPending && agent.hasPath)
-        {
-            if (agent.remainingDistance > 0.1f && agent.remainingDistance <= agent.stoppingDistance + 0.2f)
-            {
-                StartInspection();
-            }
-        }
-    }
-
-    private void PlayFootstepSound()
-    {
-        if (footstepSounds == null || footstepSounds.Length == 0) return;
-        int randomIndex = Random.Range(0, footstepSounds.Length);
-        PlaySound(footstepSounds[randomIndex], 0.6f);
     }
 
     private void PlaySound(AudioClip clip, float volume = 1f)
