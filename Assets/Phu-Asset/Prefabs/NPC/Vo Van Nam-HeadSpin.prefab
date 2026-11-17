@@ -8131,7 +8131,7 @@ GameObject:
   - component: {fileID: 4523581407628741608}
   - component: {fileID: 806121922553955926}
   m_Layer: 0
-  m_Name: Npc-HeadSpin
+  m_Name: Vo Van Nam-HeadSpin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

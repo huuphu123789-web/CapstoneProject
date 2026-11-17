@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3217018074798297616, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
       propertyPath: m_Name
-      value: NPC-DogBark
+      value: Le Van Dat-DogBark
       objectReference: {fileID: 0}
     - target: {fileID: 4430735785457844048, guid: 2721bbb1666534d72adb406e1d392b05, type: 3}
       propertyPath: m_LocalPosition.x

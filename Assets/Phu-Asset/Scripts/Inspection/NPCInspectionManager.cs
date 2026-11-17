@@ -197,15 +197,83 @@ public class NPCInspectionManager : MonoBehaviour
             return;
         }
         instance = this;
+        ValidateOrFormatNPCNames();
     }
 
     void Start()
     {
         EnsureSceneReferences();
         EnsureDefaultProfiles();
+        ValidateOrFormatNPCNames();
         EnsureDeskAndButtons();
         EnsureDialogueUI();
         EnsureVoiceClipsAssigned();
+    }
+
+    /// <summary>
+    /// Đảm bảo tất cả NPC trong hàng đợi đều hiển thị đúng định dạng [tên]-[tên đột biến],
+    /// giữ nguyên cố định tên Trịnh Hoàng Long.
+    /// </summary>
+    public void ValidateOrFormatNPCNames()
+    {
+        if (npcQueue == null) return;
+        string[] availableNames = new string[]
+        {
+            "Tran Quoc Hung", "Le Van Dat", "Pham Minh Tuan", "Nguyen Van An",
+            "ETIENNE PIERRE GIRAR", "Bui Hoang Viet", "Vu Quang Huy", "Hoang Duc Anh",
+            "Vo Van Nam", "Victor Jean Mercier"
+        };
+        int nameIdx = 0;
+
+        foreach (var profile in npcQueue)
+        {
+            if (profile == null) continue;
+
+            // Tên Trịnh Hoàng Long giữ nguyên theo yêu cầu
+            if (!string.IsNullOrEmpty(profile.npcName) && profile.npcName.ToLower().Contains("trinh hoang long"))
+            {
+                continue;
+            }
+
+            // Nếu Prefab đã có tên chuẩn [Tên]-[ĐộtBiến] (như Le Van Dat-DogBark, Nguyen Van An-Jumper...)
+            if (profile.npcPrefab != null)
+            {
+                string pName = profile.npcPrefab.name;
+                if (pName.Contains("-") && !pName.StartsWith("NPC-") && !pName.StartsWith("Npc-"))
+                {
+                    profile.npcName = pName;
+                    continue;
+                }
+            }
+
+            // Nếu tên cũ còn chứa Subject hoặc NPC-, chuyển sang [Tên]-[Tên đột biến]
+            if (string.IsNullOrEmpty(profile.npcName) || profile.npcName.StartsWith("Subject") || profile.npcName.StartsWith("NPC-") || profile.npcName.StartsWith("Npc-"))
+            {
+                string assignedName = availableNames[nameIdx % availableNames.Length];
+                nameIdx++;
+
+                string mutantType = "Mutant";
+                if (profile.npcPrefab != null)
+                {
+                    string pName = profile.npcPrefab.name;
+                    int dash = pName.LastIndexOf('-');
+                    if (dash >= 0 && dash < pName.Length - 1)
+                    {
+                        mutantType = pName.Substring(dash + 1);
+                    }
+                    else
+                    {
+                        mutantType = pName;
+                    }
+                }
+                else if (profile.npcName.Contains("Dog")) mutantType = "DogBark";
+                else if (profile.npcName.Contains("Jumper")) mutantType = "Jumper";
+                else if (profile.npcName.Contains("Crawler")) mutantType = "Crawler";
+                else if (profile.npcName.Contains("Screamer")) mutantType = "Screamer";
+
+                profile.npcName = $"{assignedName}-{mutantType}";
+            }
+        }
     }
 
     /// <summary>
@@ -342,7 +410,8 @@ public class NPCInspectionManager : MonoBehaviour
         if (p1.surrenderConfirmTexture == null) p1.surrenderConfirmTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/Surrender Confirm/npc-3.png");
 
         // Tìm prefab
-        p1.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/Npc-Normal.prefab");
+        p1.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/Victor Jean Mercier-Normal.prefab");
+        if (p1.npcPrefab == null) p1.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/Npc-Normal.prefab");
         if (p1.npcPrefab == null) p1.npcPrefab = LoadPrefabFromPath("Assets/Loc asset/Prefabs/NPC/npc_1 Variant.prefab");
 
         npcQueue.Add(p1);
@@ -369,8 +438,11 @@ public class NPCInspectionManager : MonoBehaviour
         if (p2.surrenderConfirmTexture == null) p2.surrenderConfirmTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/pass key/giay_thong_hanh_trần_quốc_hùng.png");
 
         p2.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/Trinh Hoang Long-SpinningLegs.prefab");
+        if (p2.npcPrefab == null) p2.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/Pham Minh Tuan-Glitch.prefab");
         if (p2.npcPrefab == null) p2.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/NPC-Glitch.prefab");
+        if (p2.npcPrefab == null) p2.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/Vo Van Nam-HeadSpin.prefab");
         if (p2.npcPrefab == null) p2.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/Npc-HeadSpin.prefab");
+        if (p2.npcPrefab == null) p2.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/Bui Hoang Viet-Boomer.prefab");
         if (p2.npcPrefab == null) p2.npcPrefab = LoadPrefabFromPath("Assets/Phu-Asset/Prefabs/NPC/Npc-Boomer.prefab");
 
         npcQueue.Add(p2);

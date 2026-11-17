@@ -3610,7 +3610,7 @@ GameObject:
   - component: {fileID: 8770740018908210156}
   - component: {fileID: 5286497358482479043}
   m_Layer: 0
-  m_Name: Npc-Normal
+  m_Name: Victor Jean Mercier-Normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
