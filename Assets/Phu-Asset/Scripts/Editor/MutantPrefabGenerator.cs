@@ -11,13 +11,61 @@ using System.IO;
 /// </summary>
 public static class MutantPrefabGenerator
 {
-    private const string BasePrefabPath = "Assets/Phu-Asset/Prefabs/NPC/Npc-Normal.prefab";
+    private const string BasePrefabPath = "Assets/Phu-Asset/Prefabs/NPC/Victor Jean Mercier-Normal.prefab";
+    private const string FallbackBasePrefabPath = "Assets/Phu-Asset/Prefabs/NPC/Npc-Normal.prefab";
     private const string OutputFolder = "Assets/Phu-Asset/Prefabs/NPC";
+
+    public static GameObject GetBasePrefab()
+    {
+        GameObject basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BasePrefabPath);
+        if (basePrefab == null) basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(FallbackBasePrefabPath);
+        return basePrefab;
+    }
+
+    public static GameObject GetJumperPrefab()
+    {
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/Nguyen Van An-Jumper.prefab");
+        if (prefab == null) prefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Jumper.prefab");
+        return prefab;
+    }
+
+    public static GameObject GetCrawlerPrefab()
+    {
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/Tran Quoc Hung-Crawler.prefab");
+        if (prefab == null) prefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Crawler.prefab");
+        return prefab;
+    }
+
+    public static GameObject GetScreamerPrefab()
+    {
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/ETIENNE PIERRE GIRAR-Screamer.prefab");
+        if (prefab == null) prefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Screamer.prefab");
+        return prefab;
+    }
+
+    public static GameObject GetDogBarkPrefab()
+    {
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/Le Van Dat-DogBark.prefab");
+        if (prefab == null) prefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-DogBark.prefab");
+        return prefab;
+    }
+
+    [MenuItem("Tools/Border Anomaly/Force Refresh Assets & Reload Scene")]
+    public static void ForceRefreshAssetsAndReloadScene()
+    {
+        AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Night-1")
+        {
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Phu-Asset/Scenes/Night-1.unity");
+        }
+        Debug.Log("[Border Anomaly] All assets refreshed and Night-1 scene reloaded!");
+        EditorUtility.DisplayDialog("Border Anomaly", "Đã làm mới tài nguyên và mở lại Scene Night-1 thành công!\nTất cả NPC đã cập nhật theo tên [tên]-[tên đột biến].", "OK");
+    }
 
     [MenuItem("Tools/Border Anomaly/Generate 3 New Mutant Prefabs")]
     public static void GenerateMutants()
     {
-        GameObject basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BasePrefabPath);
+        GameObject basePrefab = GetBasePrefab();
         if (basePrefab == null)
         {
             EditorUtility.DisplayDialog("Error", "Base prefab not found at: " + BasePrefabPath, "OK");
@@ -43,7 +91,7 @@ public static class MutantPrefabGenerator
 
         EditorUtility.DisplayDialog("Success", 
             "Successfully generated 3 New Mutant Prefabs in:\n" + OutputFolder + 
-            "\n\n1. NPC-Jumper.prefab\n2. NPC-Crawler.prefab\n3. NPC-Screamer.prefab", 
+            "\n\n1. Nguyen Van An-Jumper.prefab\n2. Tran Quoc Hung-Crawler.prefab\n3. ETIENNE PIERRE GIRAR-Screamer.prefab", 
             "OK");
     }
 
@@ -57,24 +105,16 @@ public static class MutantPrefabGenerator
             return;
         }
 
-        GameObject jumperPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Jumper.prefab");
-        GameObject crawlerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Crawler.prefab");
-        GameObject screamerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Screamer.prefab");
-        if (screamerPrefab == null)
-        {
-            screamerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/ETIENNE PIERRE GIRAR-Screamer.prefab");
-        }
+        GameObject jumperPrefab = GetJumperPrefab();
+        GameObject crawlerPrefab = GetCrawlerPrefab();
+        GameObject screamerPrefab = GetScreamerPrefab();
 
         if (jumperPrefab == null || crawlerPrefab == null || screamerPrefab == null)
         {
             GenerateMutants();
-            jumperPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Jumper.prefab");
-            crawlerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Crawler.prefab");
-            screamerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Screamer.prefab");
-            if (screamerPrefab == null)
-            {
-                screamerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/ETIENNE PIERRE GIRAR-Screamer.prefab");
-            }
+            jumperPrefab = GetJumperPrefab();
+            crawlerPrefab = GetCrawlerPrefab();
+            screamerPrefab = GetScreamerPrefab();
         }
 
         Undo.RecordObject(manager, "Add 3 New Mutants To Queue");
@@ -82,7 +122,7 @@ public static class MutantPrefabGenerator
         // 1. Jumper Profile
         NPCInspectionProfile jumperProfile = new NPCInspectionProfile
         {
-            npcName = "Subject J-01 (The Jumper)",
+            npcName = "Nguyen Van An - Jumper",
             isMutant = true,
             npcPrefab = jumperPrefab,
             dialogueOnArrive = "Officer! Open the gate quickly, I can hear them breathing behind me!",
@@ -99,7 +139,7 @@ public static class MutantPrefabGenerator
         // 2. Crawler Profile
         NPCInspectionProfile crawlerProfile = new NPCInspectionProfile
         {
-            npcName = "Subject C-02 (The Crawler)",
+            npcName = "Tran Quoc Hung - Crawler",
             isMutant = true,
             npcPrefab = crawlerPrefab,
             dialogueOnArrive = "Officer... down here... please help me... my legs...",
@@ -116,7 +156,7 @@ public static class MutantPrefabGenerator
         // 3. Screamer Profile
         NPCInspectionProfile screamerProfile = new NPCInspectionProfile
         {
-            npcName = "Subject S-03 (The Screamer)",
+            npcName = "ETIENNE PIERRE GIRAR - Screamer",
             isMutant = true,
             npcPrefab = screamerPrefab,
             dialogueOnArrive = "The static... it won't stop ringing... CAN YOU HEAR IT?!",
@@ -139,9 +179,9 @@ public static class MutantPrefabGenerator
 
         EditorUtility.DisplayDialog("Success", 
             "Successfully added 3 New Mutants to NPCInspectionManager.npcQueue!\n\n" +
-            "1. Subject J-01 (The Jumper)\n" +
-            "2. Subject C-02 (The Crawler)\n" +
-            "3. Subject S-03 (The Screamer)", 
+            "1. Nguyen Van An - Jumper\n" +
+            "2. Tran Quoc Hung - Crawler\n" +
+            "3. ETIENNE PIERRE GIRAR - Screamer", 
             "OK");
     }
 
@@ -155,18 +195,18 @@ public static class MutantPrefabGenerator
             return;
         }
 
-        GameObject crawlerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Crawler.prefab");
+        GameObject crawlerPrefab = GetCrawlerPrefab();
         if (crawlerPrefab == null)
         {
             GenerateMutants();
-            crawlerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Crawler.prefab");
+            crawlerPrefab = GetCrawlerPrefab();
         }
 
         Undo.RecordObject(manager, "Set Crawler As First In Queue");
 
         NPCInspectionProfile crawlerProfile = new NPCInspectionProfile
         {
-            npcName = "Subject C-02 (The Crawler)",
+            npcName = "Tran Quoc Hung - Crawler",
             isMutant = true,
             npcPrefab = crawlerPrefab,
             dialogueOnArrive = "Officer... down here... please help me... my legs...",
@@ -185,13 +225,13 @@ public static class MutantPrefabGenerator
         EditorUtility.SetDirty(manager);
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(manager.gameObject.scene);
 
-        EditorUtility.DisplayDialog("Success", "Set Subject C-02 (The Crawler) as the FIRST NPC in Inspection Queue! Press Play to test immediately.", "OK");
+        EditorUtility.DisplayDialog("Success", "Set Tran Quoc Hung - Crawler as the FIRST NPC in Inspection Queue! Press Play to test immediately.", "OK");
     }
 
     [MenuItem("Tools/Border Anomaly/Generate Dog Bark NPC Prefab")]
     public static void GenerateDogBarkPrefabMenu()
     {
-        GameObject basePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(BasePrefabPath);
+        GameObject basePrefab = GetBasePrefab();
         if (basePrefab == null)
         {
             EditorUtility.DisplayDialog("Error", "Base prefab not found at: " + BasePrefabPath, "OK");
@@ -202,7 +242,7 @@ public static class MutantPrefabGenerator
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        EditorUtility.DisplayDialog("Success", "Successfully generated NPC-DogBark.prefab in " + OutputFolder, "OK");
+        EditorUtility.DisplayDialog("Success", "Successfully generated Le Van Dat-DogBark.prefab in " + OutputFolder, "OK");
     }
 
     [MenuItem("Tools/Border Anomaly/Set Dog Bark NPC As First In Inspection Queue")]
@@ -215,18 +255,18 @@ public static class MutantPrefabGenerator
             return;
         }
 
-        GameObject dogBarkPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-DogBark.prefab");
+        GameObject dogBarkPrefab = GetDogBarkPrefab();
         if (dogBarkPrefab == null)
         {
             GenerateDogBarkPrefabMenu();
-            dogBarkPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-DogBark.prefab");
+            dogBarkPrefab = GetDogBarkPrefab();
         }
 
         Undo.RecordObject(manager, "Set Dog Bark NPC As First In Queue");
 
         NPCInspectionProfile dogBarkProfile = new NPCInspectionProfile
         {
-            npcName = "Subject D-04 (Suspect with Dog)",
+            npcName = "Le Van Dat - DogBark",
             isMutant = true,
             npcPrefab = dogBarkPrefab,
             dialogueOnArrive = "Officer, please let me pass! Why is that dog barking like crazy at me?!",
@@ -246,7 +286,7 @@ public static class MutantPrefabGenerator
         EditorUtility.SetDirty(manager);
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(manager.gameObject.scene);
 
-        EditorUtility.DisplayDialog("Success", "Set Subject D-04 (Dog Bark NPC) as the FIRST NPC in Inspection Queue!\nPress Play to test immediately.", "OK");
+        EditorUtility.DisplayDialog("Success", "Set Le Van Dat - DogBark as the FIRST NPC in Inspection Queue!\nPress Play to test immediately.", "OK");
     }
 
     [MenuItem("Tools/Border Anomaly/Set Jumper As First In Inspection Queue")]
@@ -259,18 +299,18 @@ public static class MutantPrefabGenerator
             return;
         }
 
-        GameObject jumperPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Jumper.prefab");
+        GameObject jumperPrefab = GetJumperPrefab();
         if (jumperPrefab == null)
         {
             GenerateMutants();
-            jumperPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(OutputFolder + "/NPC-Jumper.prefab");
+            jumperPrefab = GetJumperPrefab();
         }
 
         Undo.RecordObject(manager, "Set Jumper As First In Queue");
 
         NPCInspectionProfile jumperProfile = new NPCInspectionProfile
         {
-            npcName = "Subject J-01 (The Jumper)",
+            npcName = "Nguyen Van An - Jumper",
             isMutant = true,
             npcPrefab = jumperPrefab,
             dialogueOnArrive = "Officer! Open the gate quickly, I can hear them breathing behind me!",
@@ -383,7 +423,7 @@ public static class MutantPrefabGenerator
     private static void CreateJumperPrefab(GameObject basePrefab)
     {
         GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(basePrefab);
-        instance.name = "NPC-Jumper";
+        instance.name = "Nguyen Van An-Jumper";
 
         RemoveOtherBehaviors(instance);
 
@@ -405,7 +445,7 @@ public static class MutantPrefabGenerator
         jumper.jumpscareSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Phu-Asset/Audio/Horror Sound FX/Impacts & Hits/JumpScare.wav");
         jumper.nervousBreathingSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Phu-Asset/Audio/Horror Sound FX/Dark/Squishing_Short_01.wav");
 
-        string path = OutputFolder + "/NPC-Jumper.prefab";
+        string path = OutputFolder + "/Nguyen Van An-Jumper.prefab";
         PrefabUtility.SaveAsPrefabAsset(instance, path);
         Object.DestroyImmediate(instance);
         Debug.Log("[MutantGenerator] Created: " + path);
@@ -414,7 +454,7 @@ public static class MutantPrefabGenerator
     private static void CreateCrawlerPrefab(GameObject basePrefab)
     {
         GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(basePrefab);
-        instance.name = "NPC-Crawler";
+        instance.name = "Tran Quoc Hung-Crawler";
 
         RemoveOtherBehaviors(instance);
 
@@ -431,7 +471,7 @@ public static class MutantPrefabGenerator
         crawler.behindWhisperSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Phu-Asset/Audio/Horror Sound FX/Dark/Drn_Chrom_01.wav");
         crawler.jumpscareRoarSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Phu-Asset/Audio/Horror Sound FX/Impacts & Hits/JumpScare.wav");
 
-        string path = OutputFolder + "/NPC-Crawler.prefab";
+        string path = OutputFolder + "/Tran Quoc Hung-Crawler.prefab";
         PrefabUtility.SaveAsPrefabAsset(instance, path);
         Object.DestroyImmediate(instance);
         Debug.Log("[MutantGenerator] Created: " + path);
@@ -440,7 +480,7 @@ public static class MutantPrefabGenerator
     private static void CreateScreamerPrefab(GameObject basePrefab)
     {
         GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(basePrefab);
-        instance.name = "NPC-Screamer";
+        instance.name = "ETIENNE PIERRE GIRAR-Screamer";
 
         RemoveOtherBehaviors(instance);
 
@@ -466,7 +506,7 @@ public static class MutantPrefabGenerator
         screamer.radioStaticSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Phu-Asset/Audio/Horror Sound FX/Dark/Drn_Abandoned_Lab_01.wav");
         screamer.earRingingSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Phu-Asset/Audio/Horror Sound FX/Dark/Drn_Alien_01.wav");
 
-        string path = OutputFolder + "/NPC-Screamer.prefab";
+        string path = OutputFolder + "/ETIENNE PIERRE GIRAR-Screamer.prefab";
         PrefabUtility.SaveAsPrefabAsset(instance, path);
         Object.DestroyImmediate(instance);
         Debug.Log("[MutantGenerator] Created: " + path);
@@ -475,7 +515,7 @@ public static class MutantPrefabGenerator
     private static void CreateDogBarkPrefab(GameObject basePrefab)
     {
         GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(basePrefab);
-        instance.name = "NPC-DogBark";
+        instance.name = "Le Van Dat-DogBark";
 
         RemoveOtherBehaviors(instance);
 
@@ -490,7 +530,7 @@ public static class MutantPrefabGenerator
         dogBark.jumpscareSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Phu-Asset/Textures/Jumpscare/Horror_Jumpscare_Face.png");
         dogBark.jumpscareSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Phu-Asset/Audio/NPCVoice/Jumpscare_Scream_Horror.wav");
 
-        string path = OutputFolder + "/NPC-DogBark.prefab";
+        string path = OutputFolder + "/Le Van Dat-DogBark.prefab";
         PrefabUtility.SaveAsPrefabAsset(instance, path);
         Object.DestroyImmediate(instance);
         Debug.Log("[MutantGenerator] Created: " + path);

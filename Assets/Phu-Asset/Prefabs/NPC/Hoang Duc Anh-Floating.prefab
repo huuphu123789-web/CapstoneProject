@@ -1871,7 +1871,7 @@ GameObject:
   - component: {fileID: 6593185308220423695}
   - component: {fileID: 3207238049799911504}
   m_Layer: 0
-  m_Name: Npc-Floating
+  m_Name: Hoang Duc Anh-Floating
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
