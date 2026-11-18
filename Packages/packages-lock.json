@@ -16,7 +16,7 @@
       }
     },
     "com.unity.ads": {
-      "version": "4.16.4",
+      "version": "4.19.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -219,7 +219,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.probuilder": {
-      "version": "6.0.9",
+      "version": "6.1.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -347,7 +347,7 @@
       }
     },
     "com.unity.test-framework.performance": {
-      "version": "3.4.0",
+      "version": "3.5.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -518,7 +518,7 @@
     },
     "com.unity.modules.physicscore2d": {
       "version": "1.0.0",
-      "depth": 1,
+      "depth": 0,
       "source": "builtin",
       "dependencies": {}
     },
