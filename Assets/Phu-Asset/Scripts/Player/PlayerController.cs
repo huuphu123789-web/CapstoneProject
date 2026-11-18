@@ -117,6 +117,10 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log($"[PlayerController] Đã dịch chuyển Player tới: {targetPosition}");
     }
+    void Awake()
+{
+    Application.targetFrameRate = 60; // Khóa cứng game ở 60 FPS mượt mà
+}
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

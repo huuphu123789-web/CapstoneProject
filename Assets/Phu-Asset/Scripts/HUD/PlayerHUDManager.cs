@@ -145,6 +145,16 @@ public class PlayerHUDManager : MonoBehaviour
 
     // ===== PHÍM TẮT RÚT / CẤT SÚNG (1 HOẶC LĂN CHUỘT) =====
     private float _nextWeaponInputTime = 0f;
+    private float _nextComponentSearchTime = 0f;
+
+    private void TryFindMissingComponents()
+    {
+        if (Time.unscaledTime < _nextComponentSearchTime) return;
+        _nextComponentSearchTime = Time.unscaledTime + 2.0f; // Chỉ tìm tối đa mỗi 2 giây để tránh rò rỉ bộ nhớ
+
+        if (playerInteract == null) playerInteract = FindObjectOfType<PlayerInteract>();
+        if (playerGun == null) playerGun = FindObjectOfType<PlayerGun>(true);
+    }
 
     private void HandleWeaponInput()
     {
@@ -152,7 +162,7 @@ public class PlayerHUDManager : MonoBehaviour
 
         if (playerGun == null)
         {
-            playerGun = FindObjectOfType<PlayerGun>(true);
+            TryFindMissingComponents();
             if (playerGun == null) return;
         }
 
@@ -697,8 +707,10 @@ public class PlayerHUDManager : MonoBehaviour
 
         if (!shouldShow) return;
 
-        if (playerInteract == null) playerInteract = FindObjectOfType<PlayerInteract>();
-        if (playerGun == null) playerGun = FindObjectOfType<PlayerGun>(true);
+        if (playerInteract == null || playerGun == null)
+        {
+            TryFindMissingComponents();
+        }
 
         // NẾU ĐANG CHĨA / NHÌN VÀO VẬT THỂ TƯƠNG TÁC:
         // Ẩn chấm tâm đi theo yêu cầu, nhường chỗ cho dòng thông báo [E] nằm bên trái
