@@ -1,5 +1,78 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &182705490275280486
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 703345495756471516}
+  - component: {fileID: 7245441436464558517}
+  - component: {fileID: 8638125430017053034}
+  m_Layer: 0
+  m_Name: 'npc_11 (Missing Prefab with guid: 4a5dcda82d56b1344b9953582f36338a)'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &703345495756471516
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182705490275280486}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7195091, z: -0, w: 0.69448304}
+  m_LocalPosition: {x: -3.33, y: 0, z: 1.53}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2585100448832094055}
+  m_LocalEulerAnglesHint: {x: 0, y: 92.028, z: 0}
+--- !u!114 &7245441436464558517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182705490275280486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac4988d1fcf3e8847ad66556812512b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCHealth
+  disappearEffectPrefab: {fileID: 0}
+  disappearSound: {fileID: 0}
+  onDisappear:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!136 &8638125430017053034
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182705490275280486}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7910921543748731065
 GameObject:
   m_ObjectHideFlags: 0
@@ -1133,123 +1206,6 @@ CapsuleCollider:
 Transform:
   m_CorrespondingSourceObject: {fileID: 1286759998477849965, guid: 6d4e515c95a8d1848bb27947e55df28e, type: 3}
   m_PrefabInstance: {fileID: 7822660270368050954}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &8068548293541237977
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 2585100448832094055}
-    m_Modifications:
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -3.33
-      objectReference: {fileID: 0}
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1.53
-      objectReference: {fileID: 0}
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.69448304
-      objectReference: {fileID: 0}
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.7195091
-      objectReference: {fileID: 0}
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 92.028
-      objectReference: {fileID: 0}
-    - target: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7885842806697308863, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_Name
-      value: npc_11
-      objectReference: {fileID: 0}
-    - target: {fileID: 7885842806697308863, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      propertyPath: m_TagString
-      value: NPC
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7885842806697308863, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7245441436464558517}
-    - targetCorrespondingSourceObject: {fileID: 7885842806697308863, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8638125430017053034}
-  m_SourcePrefab: {fileID: 100100000, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
---- !u!1 &182705490275280486 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7885842806697308863, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-  m_PrefabInstance: {fileID: 8068548293541237977}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7245441436464558517
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 182705490275280486}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac4988d1fcf3e8847ad66556812512b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCHealth
-  disappearEffectPrefab: {fileID: 0}
-  disappearSound: {fileID: 0}
-  onDisappear:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!136 &8638125430017053034
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 182705490275280486}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!4 &703345495756471516 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7366750914062018565, guid: 4a5dcda82d56b1344b9953582f36338a, type: 3}
-  m_PrefabInstance: {fileID: 8068548293541237977}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8594777705050328941
 PrefabInstance:
