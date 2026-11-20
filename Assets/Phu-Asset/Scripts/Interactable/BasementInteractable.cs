@@ -182,8 +182,8 @@ public class BasementInteractable : Interactable
         PlayTransitionSound();
 
         // 2. Tìm Player
-        PlayerController player = FindObjectOfType<PlayerController>();
-        PlayerBodyRotator bodyRotator = FindObjectOfType<PlayerBodyRotator>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        PlayerBodyRotator bodyRotator = FindAnyObjectByType<PlayerBodyRotator>();
 
         // 3. Tính toán vị trí & góc nhìn đích
         Vector3 destPos;
@@ -323,7 +323,7 @@ public class BasementInteractable : Interactable
 
     private BasementInteractable FindCounterpartDoor()
     {
-        BasementInteractable[] allDoors = FindObjectsOfType<BasementInteractable>();
+        BasementInteractable[] allDoors = FindObjectsByType<BasementInteractable>();
         bool myIsExit = IsExitCellarDoor();
 
         foreach (var door in allDoors)

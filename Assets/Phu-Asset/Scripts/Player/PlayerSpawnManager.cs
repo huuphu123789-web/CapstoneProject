@@ -44,7 +44,7 @@ public class PlayerSpawnManager : MonoBehaviour
     {
         if (scene.name.ToLower().Contains("menu")) return;
 
-        PlayerSpawnManager mgr = FindFirstObjectByType<PlayerSpawnManager>() ?? FindObjectOfType<PlayerSpawnManager>();
+        PlayerSpawnManager mgr = FindAnyObjectByType<PlayerSpawnManager>();
         if (mgr == null)
         {
             GameObject spawnerObj = new GameObject("[Auto] PlayerSpawnManager");
@@ -98,7 +98,7 @@ public class PlayerSpawnManager : MonoBehaviour
         Transform spawnPoint = GetSpawnPoint();
 
         // 2. Tìm Player hiện có trong Scene
-        PlayerController pc = FindFirstObjectByType<PlayerController>() ?? FindObjectOfType<PlayerController>();
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
         GameObject playerObj = (pc != null) ? pc.gameObject : GameObject.FindWithTag("Player");
 
         // Nếu PlayerController nằm trên con (PlayerModel):
@@ -126,8 +126,8 @@ public class PlayerSpawnManager : MonoBehaviour
 
             if (prefabToSpawn != null)
             {
-                Vector3 spawnPos = (spawnPoint != null) ? spawnPoint.position + Vector3.up * yOffset : new Vector3(-11.596f, -12.450f, -25.516f);
-                Quaternion spawnRot = (spawnPoint != null) ? spawnPoint.rotation : Quaternion.Euler(0f, 147.234f, 0f);
+                Vector3 spawnPos = (spawnPoint != null) ? spawnPoint.position + Vector3.up * yOffset : Vector3.zero;
+                Quaternion spawnRot = (spawnPoint != null) ? spawnPoint.rotation : Quaternion.identity;
 
                 playerObj = Instantiate(prefabToSpawn, spawnPos, spawnRot);
                 playerObj.name = "Player";
@@ -142,12 +142,15 @@ public class PlayerSpawnManager : MonoBehaviour
             }
         }
 
-        // 4. Định vị Player tới Spawn Point
-        if (autoPositionOnStart && playerObj != null)
+        // 4. Chỉ định vị Player tới Spawn Point NẾU scene thực sự có điểm Spawn Point (không dùng tọa độ map cũ)
+        if (autoPositionOnStart && playerObj != null && spawnPoint != null)
         {
-            Vector3 targetPos = (spawnPoint != null) ? spawnPoint.position : new Vector3(-11.596f, -12.450f, -25.516f);
-            Quaternion targetRot = (spawnPoint != null) ? spawnPoint.rotation : Quaternion.Euler(0f, 147.234f, 0f);
-            PositionPlayerAt(playerObj, pc, targetPos, targetRot);
+            PositionPlayerAt(playerObj, pc, spawnPoint.position, spawnPoint.rotation);
+        }
+        else if (playerObj != null)
+        {
+            // Giữ nguyên vị trí Player đã đặt sẵn trong map mới, chỉ cập nhật JumpscarePoint & trạng thái Đèn Pin
+            EnsurePlayerPostSpawnSetup(playerObj);
         }
 
         return playerObj;
@@ -250,14 +253,23 @@ public class PlayerSpawnManager : MonoBehaviour
             cam.transform.rotation = targetRot;
         }
 
+        EnsurePlayerPostSpawnSetup(playerObj);
+
+        Debug.Log($"[PlayerSpawnManager] Đã đặt Player tại SpawnPoint: {finalPos}, góc xoay: {targetRot.eulerAngles.y}°");
+    }
+
+    private void EnsurePlayerPostSpawnSetup(GameObject playerObj)
+    {
+        if (playerObj == null) return;
+
         // Cập nhật PlayerCameraJumpscarePoint nếu có
-        PlayerCameraJumpscarePoint jp = FindFirstObjectByType<PlayerCameraJumpscarePoint>() ?? FindObjectOfType<PlayerCameraJumpscarePoint>();
+        PlayerCameraJumpscarePoint jp = FindAnyObjectByType<PlayerCameraJumpscarePoint>();
         if (jp != null)
         {
             jp.EnsureAttachedToCamera();
         }
 
-        // Đảm bảo Đèn Pin luôn tắt khi mới vào game cho đến khi nhặt từ tủ đồ
+        // Đảm bảo Đèn Pin luôn tắt khi mới vào game cho đến khi nhặt
         FlashlightController fl = playerObj.GetComponentInChildren<FlashlightController>(true);
         if (fl != null && (TaskManager.instance == null || !TaskManager.instance.hasFlashlight))
         {
@@ -265,8 +277,6 @@ public class PlayerSpawnManager : MonoBehaviour
             Light flLight = fl.GetFlashlightLight();
             if (flLight != null) flLight.enabled = false;
         }
-
-        Debug.Log($"[PlayerSpawnManager] Đã đặt Player tại StartSpawn: {finalPos}, góc xoay: {targetRot.eulerAngles.y}°");
     }
 
     private IEnumerator StabilizePlayerPosition()
@@ -276,15 +286,14 @@ public class PlayerSpawnManager : MonoBehaviour
         yield return null;
 
         Transform spawnPoint = GetSpawnPoint();
-        Vector3 targetPos = (spawnPoint != null) ? spawnPoint.position : new Vector3(-11.596f, -12.450f, -25.516f);
-        Quaternion targetRot = (spawnPoint != null) ? spawnPoint.rotation : Quaternion.Euler(0f, 147.234f, 0f);
+        if (spawnPoint == null) yield break;
 
-        PlayerController pc = FindFirstObjectByType<PlayerController>() ?? FindObjectOfType<PlayerController>();
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
         GameObject playerObj = (pc != null) ? pc.gameObject : GameObject.FindWithTag("Player");
 
         if (playerObj != null)
         {
-            PositionPlayerAt(playerObj, pc, targetPos, targetRot);
+            PositionPlayerAt(playerObj, pc, spawnPoint.position, spawnPoint.rotation);
         }
     }
 }

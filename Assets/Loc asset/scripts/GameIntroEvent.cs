@@ -534,7 +534,7 @@ public class GameIntroEvent : MonoBehaviour
     private void LookAtCamera(GameObject npc)
     {
         if (npc == null) return;
-        Camera cam = Camera.main != null ? Camera.main : FindFirstObjectByType<Camera>();
+        Camera cam = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
         if (cam == null) return;
         Vector3 d = cam.transform.position - npc.transform.position; d.y = 0f;
         if (d.sqrMagnitude > 0.001f) npc.transform.rotation = Quaternion.LookRotation(d);
@@ -628,7 +628,7 @@ public class GameIntroEvent : MonoBehaviour
         textGo.transform.SetParent(_dlgPanel.transform, false);
         _dlgText = textGo.AddComponent<TextMeshProUGUI>();
         _dlgText.fontSize = 22f; _dlgText.color = Color.white;
-        _dlgText.text = ""; _dlgText.enableWordWrapping = true;
+        _dlgText.text = ""; _dlgText.textWrappingMode = TMPro.TextWrappingModes.Normal;
         RectTransform txRT = textGo.GetComponent<RectTransform>();
         txRT.anchorMin = Vector2.zero; txRT.anchorMax = Vector2.one;
         txRT.offsetMin = new Vector2(40f, 12f); txRT.offsetMax = new Vector2(-40f, -6f);
@@ -667,8 +667,8 @@ public class GameIntroEvent : MonoBehaviour
 
     private void LockPlayer(bool lockIt)
     {
-        PlayerMovement pm = FindFirstObjectByType<PlayerMovement>() ?? FindObjectOfType<PlayerMovement>();
-        MouseLook ml      = FindFirstObjectByType<MouseLook>()      ?? FindObjectOfType<MouseLook>();
+        PlayerMovement pm = FindAnyObjectByType<PlayerMovement>();
+        MouseLook ml      = FindAnyObjectByType<MouseLook>();
         if (pm != null) pm.enabled = !lockIt;
         if (ml != null) ml.enabled = !lockIt;
         Cursor.lockState = lockIt ? CursorLockMode.None : CursorLockMode.Locked;

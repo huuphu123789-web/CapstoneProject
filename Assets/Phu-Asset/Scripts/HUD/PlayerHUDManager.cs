@@ -107,7 +107,7 @@ public class PlayerHUDManager : MonoBehaviour
 
         if (flashlightLight == null)
         {
-            FlashlightController fController = FindObjectOfType<FlashlightController>();
+            FlashlightController fController = FindAnyObjectByType<FlashlightController>();
             if (fController != null)
                 flashlightLight = fController.FlashlightLight;
             if (flashlightLight == null)
@@ -116,7 +116,7 @@ public class PlayerHUDManager : MonoBehaviour
 
         if (playerGun == null)
         {
-            playerGun = FindObjectOfType<PlayerGun>(true);
+            playerGun = FindAnyObjectByType<PlayerGun>(FindObjectsInactive.Include);
         }
 
         UpdateFlashlightUI();
@@ -130,7 +130,7 @@ public class PlayerHUDManager : MonoBehaviour
             HideControlsHintUI();
         }
         EnsureCrosshairUI();
-        if (playerInteract == null) playerInteract = FindObjectOfType<PlayerInteract>();
+        if (playerInteract == null) playerInteract = FindAnyObjectByType<PlayerInteract>();
     }
 
     void Update()
@@ -152,8 +152,8 @@ public class PlayerHUDManager : MonoBehaviour
         if (Time.unscaledTime < _nextComponentSearchTime) return;
         _nextComponentSearchTime = Time.unscaledTime + 2.0f; // Chỉ tìm tối đa mỗi 2 giây để tránh rò rỉ bộ nhớ
 
-        if (playerInteract == null) playerInteract = FindObjectOfType<PlayerInteract>();
-        if (playerGun == null) playerGun = FindObjectOfType<PlayerGun>(true);
+        if (playerInteract == null) playerInteract = FindAnyObjectByType<PlayerInteract>();
+        if (playerGun == null) playerGun = FindAnyObjectByType<PlayerGun>(FindObjectsInactive.Include);
     }
 
     private void HandleWeaponInput()
@@ -264,7 +264,7 @@ public class PlayerHUDManager : MonoBehaviour
         if (staminaSlider != null) return;
 
         // 2. Tìm trong các con của Canvas hoặc Scene có Slider tên "stamina"
-        Slider[] allSliders = FindObjectsOfType<Slider>(true);
+        Slider[] allSliders = FindObjectsByType<Slider>(FindObjectsInactive.Include);
         foreach (var s in allSliders)
         {
             if (s.gameObject.name.ToLower().Contains("stamina"))
@@ -288,7 +288,7 @@ public class PlayerHUDManager : MonoBehaviour
         }
         if (targetCanvas == null)
         {
-            targetCanvas = FindObjectOfType<Canvas>();
+            targetCanvas = FindAnyObjectByType<Canvas>();
         }
 
         // 4. Nếu không có Canvas nào, tạo mới Canvas
@@ -384,7 +384,7 @@ public class PlayerHUDManager : MonoBehaviour
     {
         if (flashlightIcon == null) return;
 
-        FlashlightController fController = FindObjectOfType<FlashlightController>();
+        FlashlightController fController = FindAnyObjectByType<FlashlightController>();
         if (fController != null && !fController.hasFlashlight)
         {
             // Chưa có đèn pin: Làm tối mờ biểu tượng
@@ -463,7 +463,7 @@ public class PlayerHUDManager : MonoBehaviour
         if (ammoText != null) return;
 
         // Tìm trong Scene nếu đã có
-        TextMeshProUGUI[] allTexts = FindObjectsOfType<TextMeshProUGUI>(true);
+        TextMeshProUGUI[] allTexts = FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include);
         foreach (var t in allTexts)
         {
             if (t.gameObject.name.ToLower().Contains("ammo"))
@@ -480,7 +480,7 @@ public class PlayerHUDManager : MonoBehaviour
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null) targetCanvas = player.GetComponentInChildren<Canvas>(true);
         }
-        if (targetCanvas == null) targetCanvas = FindObjectOfType<Canvas>();
+        if (targetCanvas == null) targetCanvas = FindAnyObjectByType<Canvas>();
         if (targetCanvas == null) return;
 
         GameObject ammoGO = new GameObject("AmmoText");
@@ -536,7 +536,7 @@ public class PlayerHUDManager : MonoBehaviour
         }
 
         // Tìm trong Scene nếu đã có
-        TextMeshProUGUI[] allTexts = FindObjectsOfType<TextMeshProUGUI>(true);
+        TextMeshProUGUI[] allTexts = FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include);
         foreach (var t in allTexts)
         {
             if (t.gameObject.name.ToLower().Contains("controlshint") || t.gameObject.name.ToLower().Contains("hinttext"))
@@ -560,7 +560,7 @@ public class PlayerHUDManager : MonoBehaviour
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null) targetCanvas = player.GetComponentInChildren<Canvas>(true);
         }
-        if (targetCanvas == null) targetCanvas = FindObjectOfType<Canvas>();
+        if (targetCanvas == null) targetCanvas = FindAnyObjectByType<Canvas>();
         if (targetCanvas == null) return;
 
         // Tạo Panel nền mờ trang nhã ở góc dưới bên phải (ngay trên AmmoText)
@@ -614,8 +614,8 @@ public class PlayerHUDManager : MonoBehaviour
         EnsureControlsHintUI();
         if (controlsHintText == null) return;
 
-        FlashlightController fController = FindObjectOfType<FlashlightController>();
-        if (playerGun == null) playerGun = FindObjectOfType<PlayerGun>(true);
+        FlashlightController fController = FindAnyObjectByType<FlashlightController>();
+        if (playerGun == null) playerGun = FindAnyObjectByType<PlayerGun>(FindObjectsInactive.Include);
 
         bool hasFlashlight = (fController != null && fController.hasFlashlight);
         bool hasGun = (playerGun != null && playerGun.HasGun);
@@ -656,7 +656,7 @@ public class PlayerHUDManager : MonoBehaviour
         if (crosshairDot != null) return;
 
         // Tìm xem trên Canvas đã có Crosshair / Reticle chưa
-        Image[] allImages = FindObjectsOfType<Image>(true);
+        Image[] allImages = FindObjectsByType<Image>(FindObjectsInactive.Include);
         foreach (var img in allImages)
         {
             string n = img.gameObject.name.ToLower();
@@ -674,7 +674,7 @@ public class PlayerHUDManager : MonoBehaviour
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null) targetCanvas = player.GetComponentInChildren<Canvas>(true);
         }
-        if (targetCanvas == null) targetCanvas = FindObjectOfType<Canvas>();
+        if (targetCanvas == null) targetCanvas = FindAnyObjectByType<Canvas>();
         if (targetCanvas == null) return;
 
         GameObject dotGO = new GameObject("CrosshairDot");

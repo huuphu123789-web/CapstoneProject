@@ -9430,7 +9430,7 @@ MonoBehaviour:
     FieldOfView: 60
     OrthographicSize: 5
     NearClipPlane: 0.01
-    FarClipPlane: 1000
+    FarClipPlane: 150
     Dutch: 0
     ModeOverride: 0
     PhysicalProperties:
@@ -12721,6 +12721,7 @@ MonoBehaviour:
   generatorsChecked: 0
   gateInspectionDone: 0
   gateInspectionTriggered: 0
+  newspaperRead: 0
 --- !u!114 &7159961969656027549
 MonoBehaviour:
   m_ObjectHideFlags: 0

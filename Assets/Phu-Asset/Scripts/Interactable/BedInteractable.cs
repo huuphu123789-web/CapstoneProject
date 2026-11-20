@@ -129,7 +129,7 @@ public class BedInteractable : Interactable
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null) cam = player.GetComponentInChildren<Camera>(true);
         }
-        if (cam == null) cam = FindObjectOfType<Camera>();
+        if (cam == null) cam = FindAnyObjectByType<Camera>();
         if (cam == null) return;
 
         PlayerGun existingGun = cam.GetComponentInChildren<PlayerGun>(true);
@@ -233,7 +233,7 @@ public class BedInteractable : Interactable
         // Chờ 1 frame để tất cả GameObject và Player khởi tạo hoàn tất
         yield return null;
 
-        PlayerController pc = FindObjectOfType<PlayerController>();
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
         GameObject player = (pc != null) ? pc.gameObject : GameObject.FindWithTag("Player");
 
         if (player != null)
@@ -343,7 +343,7 @@ public class BedInteractable : Interactable
         GameObject player = GameObject.FindWithTag("Player");
         if (player == null)
         {
-            PlayerController pc = FindObjectOfType<PlayerController>();
+            PlayerController pc = FindAnyObjectByType<PlayerController>();
             if (pc != null) player = pc.gameObject;
         }
 
@@ -454,7 +454,7 @@ public class BedInteractable : Interactable
         TurnOffFlashlight();
 
         // Nạp đầy đạn (7 viên) khi sang màn mới
-        PlayerGun playerGun = FindObjectOfType<PlayerGun>();
+        PlayerGun playerGun = FindAnyObjectByType<PlayerGun>();
         if (playerGun != null)
         {
             playerGun.ReplenishAmmo();
@@ -478,15 +478,15 @@ public class BedInteractable : Interactable
     private void DisablePlayerInput()
     {
         // Tắt Player Movement
-        PlayerController pController = FindObjectOfType<PlayerController>();
+        PlayerController pController = FindAnyObjectByType<PlayerController>();
         if (pController != null) pController.enabled = false;
 
         // Tắt PlayerBodyRotator
-        PlayerBodyRotator bRotator = FindObjectOfType<PlayerBodyRotator>();
+        PlayerBodyRotator bRotator = FindAnyObjectByType<PlayerBodyRotator>();
         if (bRotator != null) bRotator.enabled = false;
 
         // Tắt Player Interact
-        PlayerInteract pInteract = FindObjectOfType<PlayerInteract>();
+        PlayerInteract pInteract = FindAnyObjectByType<PlayerInteract>();
         if (pInteract != null) pInteract.enabled = false;
 
         // Tắt CinemachineBrain trên Camera để giải phóng Camera tự do di chuyển & xoay
@@ -499,7 +499,7 @@ public class BedInteractable : Interactable
 
     private void TurnOffFlashlight()
     {
-        FlashlightController fController = FindObjectOfType<FlashlightController>();
+        FlashlightController fController = FindAnyObjectByType<FlashlightController>();
         if (fController != null)
         {
             Light flLight = fController.GetComponentInChildren<Light>();

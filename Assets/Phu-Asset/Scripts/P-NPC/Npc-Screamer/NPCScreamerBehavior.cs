@@ -111,8 +111,14 @@ public class NPCScreamerBehavior : NPCBaseBehavior
             return;
         }
 
-        Vector3 boothCenter = new Vector3(-51.17f, 0f, -50.18f);
-        Light[] allLights = FindObjectsByType<Light>(FindObjectsSortMode.None);
+        Vector3 boothCenter = transform.position;
+        if (Camera.main != null) boothCenter = Camera.main.transform.position;
+        else
+        {
+            GameObject playerObj = GameObject.FindWithTag("Player");
+            if (playerObj != null) boothCenter = playerObj.transform.position;
+        }
+        Light[] allLights = FindObjectsByType<Light>();
         Light closestLight = null;
         float closestDist = float.MaxValue;
 
@@ -185,7 +191,7 @@ public class NPCScreamerBehavior : NPCBaseBehavior
         PlaySound(screamShriekSound, 1.0f);
         if (radioStaticSound != null) PlaySound(radioStaticSound, 0.75f);
 
-        CameraShake shaker = CameraShake.instance ?? FindFirstObjectByType<CameraShake>();
+        CameraShake shaker = CameraShake.instance ?? FindAnyObjectByType<CameraShake>();
         if (shaker == null)
         {
             GameObject player = GameObject.FindWithTag("Player");

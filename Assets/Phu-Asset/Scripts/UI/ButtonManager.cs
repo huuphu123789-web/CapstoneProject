@@ -19,7 +19,7 @@ public class ButtonManager : MonoBehaviour
    [Tooltip("Thời gian mở sáng dần màn hình khi vào Night-1 (giây)")]
    [SerializeField] private float fadeInDuration = 2.0f;
    [Tooltip("Tên scene cần nạp khi Play (để trống sẽ dùng build index 1)")]
-   [SerializeField] private string targetSceneName = "Night-1";
+   [SerializeField] private string targetSceneName = "Night-1 (new)";
 
 
     public static ButtonManager instance;
@@ -88,7 +88,7 @@ public class ButtonManager : MonoBehaviour
     {
         if (SceneFader.Instance != null)
         {
-            if (!string.IsNullOrEmpty(targetSceneName))
+            if (!string.IsNullOrEmpty(targetSceneName) && Application.CanStreamedLevelBeLoaded(targetSceneName))
             {
                 SceneFader.Instance.FadeToScene(targetSceneName, fadeOutDuration, fadeInDuration);
             }

@@ -69,7 +69,7 @@ public class CameraShake : MonoBehaviour
         // 3. Search anywhere in the scene
         if (virtualCamera == null)
         {
-            virtualCamera = FindFirstObjectByType<CinemachineCamera>();
+            virtualCamera = FindAnyObjectByType<CinemachineCamera>();
         }
 
         // Setup CinemachineCameraOffset on the virtual camera for shake

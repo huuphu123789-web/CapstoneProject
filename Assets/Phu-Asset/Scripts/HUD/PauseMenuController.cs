@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using TMPro;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
+#endif
 
 public class PauseMenuController : MonoBehaviour
 {
@@ -34,11 +39,19 @@ public class PauseMenuController : MonoBehaviour
 
     void Awake() 
     { 
+        if (instance != null && instance != this)
+        {
+            // Tránh 2 PauseMenuController trùng nhau cùng xử lý phím ESC
+            enabled = false;
+            return;
+        }
         instance = this; 
     }
 
     void Start()
     {
+        EnsureEventSystem();
+
         // Tu dong tim SettingPanel neu de trong
         if (pauseMenuPanel == null)
         {
@@ -55,10 +68,60 @@ public class PauseMenuController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        bool escapePressed = false;
+#if ENABLE_INPUT_SYSTEM
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            escapePressed = true;
+        }
+#endif
+#if ENABLE_LEGACY_INPUT_MANAGER
+        if (!escapePressed && Input.GetKeyDown(KeyCode.Escape))
+        {
+            escapePressed = true;
+        }
+#endif
+        if (escapePressed)
         {
             if (isPaused) BackToGame();
             else OpenPauseMenu();
+        }
+    }
+
+    /// <summary>
+    /// Đảm bảo Scene luôn có EventSystem chuẩn (tương thích Input System) để bấm được mọi nút/slider trong Pause Menu
+    /// </summary>
+    public static void EnsureEventSystem()
+    {
+        EventSystem es = EventSystem.current;
+        if (es == null)
+        {
+            es = FindAnyObjectByType<EventSystem>(FindObjectsInactive.Include);
+        }
+
+        if (es == null)
+        {
+            GameObject esObj = new GameObject("EventSystem");
+            es = esObj.AddComponent<EventSystem>();
+#if ENABLE_INPUT_SYSTEM
+            esObj.AddComponent<InputSystemUIInputModule>();
+#else
+            esObj.AddComponent<StandaloneInputModule>();
+#endif
+            Debug.Log("[PauseMenuController] Đã tự động tạo EventSystem cho Scene để tương tác UI!");
+        }
+        else
+        {
+            if (!es.gameObject.activeInHierarchy) es.gameObject.SetActive(true);
+            es.enabled = true;
+#if ENABLE_INPUT_SYSTEM
+            if (es.GetComponent<InputSystemUIInputModule>() == null)
+            {
+                StandaloneInputModule oldMod = es.GetComponent<StandaloneInputModule>();
+                if (oldMod != null) oldMod.enabled = false;
+                es.gameObject.AddComponent<InputSystemUIInputModule>();
+            }
+#endif
         }
     }
 
@@ -256,6 +319,7 @@ public class PauseMenuController : MonoBehaviour
 
     public void OpenPauseMenu()
     {
+        EnsureEventSystem();
         isPaused = true;
         Time.timeScale = 0f;
         if (pauseMenuPanel != null) pauseMenuPanel.SetActive(true);

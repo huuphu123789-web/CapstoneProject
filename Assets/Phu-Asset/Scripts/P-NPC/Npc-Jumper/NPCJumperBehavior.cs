@@ -324,7 +324,7 @@ public class NPCJumperBehavior : NPCBaseBehavior
         }
 
         // Tạm khóa di chuyển người chơi trong tích tắc để không bị né
-        PlayerController pc = FindFirstObjectByType<PlayerController>();
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
         bool wasPcEnabled = (pc != null && pc.enabled);
         if (pc != null) pc.enabled = false;
 

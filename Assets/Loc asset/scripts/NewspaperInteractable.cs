@@ -227,7 +227,7 @@ public class NewspaperInteractable : MonoBehaviour, IInteractable
         t.color             = color;
         t.fontStyle         = style;
         t.alignment         = align;
-        t.enableWordWrapping = true;
+        t.textWrappingMode = TMPro.TextWrappingModes.Normal;
         LayoutElement le    = go.AddComponent<LayoutElement>();
         le.flexibleWidth    = 1f;
         return t;
@@ -253,13 +253,13 @@ public class NewspaperInteractable : MonoBehaviour, IInteractable
 
     private void LockLook(bool lockIt)
     {
-        MouseLook ml = FindFirstObjectByType<MouseLook>();
+        MouseLook ml = FindAnyObjectByType<MouseLook>();
         if (ml != null)
         {
             if (lockIt) ml.UnlockCursor();
             else        ml.LockCursor();
         }
-        PlayerInteraction pi = FindFirstObjectByType<PlayerInteraction>();
+        PlayerInteraction pi = FindAnyObjectByType<PlayerInteraction>();
         if (pi != null) pi.enabled = !lockIt;
     }
 

@@ -159,7 +159,7 @@ public class DocumentInspectionUI : MonoBehaviour
 
         // 1. Tìm Canvas
         Canvas targetCanvas = GetComponentInParent<Canvas>();
-        if (targetCanvas == null) targetCanvas = FindObjectOfType<Canvas>();
+        if (targetCanvas == null) targetCanvas = FindAnyObjectByType<Canvas>();
 
         if (targetCanvas == null)
         {

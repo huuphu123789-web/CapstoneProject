@@ -32,7 +32,7 @@ public class PlayerCameraJumpscarePoint : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = FindFirstObjectByType<PlayerCameraJumpscarePoint>();
+                instance = FindAnyObjectByType<PlayerCameraJumpscarePoint>();
                 if (instance == null)
                 {
                     instance = CreateDefaultCameraPoint();
@@ -91,7 +91,7 @@ public class PlayerCameraJumpscarePoint : MonoBehaviour
         if (targetCam == null)
         {
             targetCam = Camera.main;
-            if (targetCam == null) targetCam = FindFirstObjectByType<Camera>();
+            if (targetCam == null) targetCam = FindAnyObjectByType<Camera>();
         }
 
         if (targetCam != null && transform.parent != targetCam.transform)
@@ -108,7 +108,7 @@ public class PlayerCameraJumpscarePoint : MonoBehaviour
     public static PlayerCameraJumpscarePoint CreateDefaultCameraPoint()
     {
         Camera cam = Camera.main;
-        if (cam == null) cam = FindFirstObjectByType<Camera>();
+        if (cam == null) cam = FindAnyObjectByType<Camera>();
 
         Transform parentTransform = null;
         if (cam != null)
@@ -135,7 +135,7 @@ public class PlayerCameraJumpscarePoint : MonoBehaviour
         }
         else
         {
-            pointObj.transform.position = new Vector3(-48.63f, 1.6f, -50.45f) + Vector3.forward * 0.4f;
+            pointObj.transform.position = Vector3.zero;
         }
 
         PlayerCameraJumpscarePoint point = pointObj.AddComponent<PlayerCameraJumpscarePoint>();
@@ -174,7 +174,7 @@ public class PlayerCameraJumpscarePoint : MonoBehaviour
             return cam.transform.position + cam.transform.forward * dist;
         }
 
-        return new Vector3(-48.63f, 1.6f, -50.45f);
+        return Vector3.zero;
     }
 
     /// <summary>

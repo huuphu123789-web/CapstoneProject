@@ -41,7 +41,7 @@ public class HeadBobbing : MonoBehaviour
             playerController = GetComponentInParent<PlayerController>();
             if (playerController == null)
             {
-                playerController = FindFirstObjectByType<PlayerController>();
+                playerController = FindAnyObjectByType<PlayerController>();
             }
         }
 
@@ -77,7 +77,7 @@ public class HeadBobbing : MonoBehaviour
 
         if (playerController == null)
         {
-            playerController = FindFirstObjectByType<PlayerController>();
+            playerController = FindAnyObjectByType<PlayerController>();
             if (playerController == null) return;
         }
 
