@@ -13,7 +13,9 @@ public class livingBirdsDemoScript : MonoBehaviour
 
     private Camera currentCamera;
 
+#pragma warning disable CS0414
     private bool cameraDirections = false;
+#pragma warning restore CS0414
 
     [Header("Camera Rotation")]
     public float cameraRotateSpeed = 50f;
@@ -46,7 +48,7 @@ public class livingBirdsDemoScript : MonoBehaviour
         if (birdControl == null)
         {
             birdControl =
-                FindFirstObjectByType<lb_BirdController>();
+                FindAnyObjectByType<lb_BirdController>();
         }
 
         if (birdControl != null && currentCamera != null)

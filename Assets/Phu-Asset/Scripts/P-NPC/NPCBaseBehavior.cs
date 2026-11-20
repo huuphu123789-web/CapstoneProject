@@ -205,7 +205,7 @@ public abstract class NPCBaseBehavior : MonoBehaviour
         }
 
         Camera mainCam = Camera.main;
-        if (mainCam == null) mainCam = Object.FindFirstObjectByType<Camera>();
+        if (mainCam == null) mainCam = Object.FindAnyObjectByType<Camera>();
 
         if (playerObj != null)
         {
@@ -244,7 +244,7 @@ public abstract class NPCBaseBehavior : MonoBehaviour
             return;
         }
 
-        eyePos = new Vector3(-48.63f, 1.6f, -50.45f);
+        eyePos = Vector3.up * 1.6f;
         forwardDir = Vector3.forward;
     }
 
@@ -256,7 +256,7 @@ public abstract class NPCBaseBehavior : MonoBehaviour
             return;
         }
 
-        CameraShake shaker = Object.FindFirstObjectByType<CameraShake>();
+        CameraShake shaker = Object.FindAnyObjectByType<CameraShake>();
         if (shaker == null)
         {
             GameObject player = GameObject.FindWithTag("Player");

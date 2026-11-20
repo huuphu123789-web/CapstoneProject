@@ -36,7 +36,7 @@ public class PlayerInteract : MonoBehaviour
     {
         if (hitText == null)
         {
-            TextMeshProUGUI[] tmps = FindObjectsOfType<TextMeshProUGUI>(true);
+            TextMeshProUGUI[] tmps = FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include);
             foreach (var t in tmps)
             {
                 if (t.name.ToLower().Contains("hittext") || t.name.ToLower().Contains("interacttext"))
@@ -56,7 +56,7 @@ public class PlayerInteract : MonoBehaviour
             rt.anchoredPosition = new Vector2(-20f, 0f); // Nằm lệch về bên trái tâm màn hình 20 pixel
             rt.sizeDelta = new Vector2(600f, 60f);
             hitText.alignment = TextAlignmentOptions.MidlineRight;
-            hitText.enableWordWrapping = false;
+            hitText.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
         }
     }
 

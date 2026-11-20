@@ -48,7 +48,7 @@ public class GunCabinet : MonoBehaviour, IInteractable
 
         // Tu dong tim PlayerGun trong Scene neu chua gán
         if (playerGun == null)
-            playerGun = FindObjectOfType<PlayerGun>();
+            playerGun = FindAnyObjectByType<PlayerGun>();
     }
 
     // Hien thi prompt tuong ung voi trang thai hien tai cua sung

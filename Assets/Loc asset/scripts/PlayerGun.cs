@@ -166,7 +166,7 @@ public class PlayerGun : MonoBehaviour
         }
 
         // 3. Quét tất cả PlayerGun trong scene và ưu tiên cái nằm dưới Player hoặc Camera
-        PlayerGun[] allGuns = FindObjectsOfType<PlayerGun>(true);
+        PlayerGun[] allGuns = FindObjectsByType<PlayerGun>(FindObjectsInactive.Include);
         foreach (var g in allGuns)
         {
             if (g.transform.root.CompareTag("Player") || 

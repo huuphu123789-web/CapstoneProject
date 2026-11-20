@@ -570,7 +570,7 @@ public class SettingManager : MonoBehaviour
     {
         PlayerPrefs.SetFloat("UIScale", scale);
 
-        CanvasScaler[] scalers = FindObjectsByType<CanvasScaler>(FindObjectsSortMode.None);
+        CanvasScaler[] scalers = FindObjectsByType<CanvasScaler>();
         foreach (var scaler in scalers)
         {
             if (scaler == null) continue;

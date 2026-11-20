@@ -204,7 +204,7 @@ public class CellarEquipmentCabinet : Interactable
         promptMessage = emptyPrompt;
 
         // 1. Mở khóa Đèn Pin
-        FlashlightController fController = FindObjectOfType<FlashlightController>();
+        FlashlightController fController = FindAnyObjectByType<FlashlightController>();
         if (fController == null)
         {
             GameObject player = GameObject.FindWithTag("Player");

@@ -299,7 +299,8 @@ public class NPCInspectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Tự động tìm kiếm các điểm tọa độ nếu chưa kéo vào Inspector
+    /// Tự động tìm kiếm các điểm tọa độ có sẵn trong Scene nếu chưa kéo vào Inspector.
+    /// Không còn tự tạo ở tọa độ cứng của map Night-1 cũ.
     /// </summary>
     public void EnsureSceneReferences()
     {
@@ -313,13 +314,11 @@ public class NPCInspectionManager : MonoBehaviour
             }
             else
             {
-                GameObject newIZ = new GameObject("InspectionZone");
-                newIZ.transform.position = new Vector3(-50.84f, -3.21f, -43.69f);
-                inspectionPoint = newIZ.transform;
+                Debug.LogWarning("[NPCInspectionManager] Chưa gán InspectionPoint và không tìm thấy GameObject 'InspectionZone' trong map mới.");
             }
         }
 
-        // 2. Spawn Point (ngoài đường rừng xa về phía +Z)
+        // 2. Spawn Point
         if (spawnPoint == null)
         {
             GameObject sp = GameObject.Find("NPC_SpawnPoint");
@@ -329,13 +328,11 @@ public class NPCInspectionManager : MonoBehaviour
             }
             else
             {
-                sp = new GameObject("NPC_SpawnPoint");
-                sp.transform.position = new Vector3(-50.84f, 0.0f, -20.0f);
-                spawnPoint = sp.transform;
+                Debug.LogWarning("[NPCInspectionManager] Chưa gán SpawnPoint và không tìm thấy GameObject 'NPC_SpawnPoint' trong map mới.");
             }
         }
 
-        // 3. Pass Destination (trong khuôn viên căn cứ về phía -Z)
+        // 3. Pass Destination
         if (passDestination == null)
         {
             GameObject pd = GameObject.Find("NPC_PassDestination");
@@ -343,15 +340,9 @@ public class NPCInspectionManager : MonoBehaviour
             {
                 passDestination = pd.transform;
             }
-            else
-            {
-                pd = new GameObject("NPC_PassDestination");
-                pd.transform.position = new Vector3(-50.84f, -3.21f, -65.0f);
-                passDestination = pd.transform;
-            }
         }
 
-        // 4. Dismiss Destination (quay trở lại ngoài rừng)
+        // 4. Dismiss Destination
         if (dismissDestination == null)
         {
             GameObject dd = GameObject.Find("NPC_DismissDestination");
@@ -469,7 +460,7 @@ public class NPCInspectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Đảm bảo trên bàn bốt gác có điểm tương tác Tập Giấy Tờ và 2 Nút Bấm Cho qua / Từ chối
+    /// Đảm bảo có DocumentInspectionUI. Không tự động tạo bàn/nút ở tọa độ map Night-1 cũ.
     /// </summary>
     public void EnsureDeskAndButtons()
     {
@@ -478,58 +469,6 @@ public class NPCInspectionManager : MonoBehaviour
         {
             GameObject uiGO = new GameObject("DocumentInspectionUI_Manager");
             uiGO.AddComponent<DocumentInspectionUI>();
-        }
-
-        // 2. Tìm hoặc tạo điểm tương tác Tập Giấy Tờ trên bàn bốt gác
-        InspectionDeskInteractable desk = FindObjectOfType<InspectionDeskInteractable>();
-        if (desk == null)
-        {
-            GameObject deskGO = new GameObject("InspectionDocumentsDesk");
-            // Tọa độ quầy cửa sổ trước mặt bốt gác
-            deskGO.transform.position = new Vector3(-51.05f, 0.45f, -48.65f);
-
-            BoxCollider col = deskGO.AddComponent<BoxCollider>();
-            col.isTrigger = true;
-            col.size = new Vector3(0.8f, 0.4f, 0.8f);
-
-            desk = deskGO.AddComponent<InspectionDeskInteractable>();
-        }
-
-        // 3. Tìm hoặc tạo 2 nút bấm vật lý trên bàn
-        GateButtonInteractable[] buttons = FindObjectsOfType<GateButtonInteractable>();
-        if (buttons == null || buttons.Length == 0)
-        {
-            // Nút Xanh - CHO QUA
-            GameObject btnPass = GameObject.Find("Button_ApprovePass");
-            if (btnPass == null)
-            {
-                btnPass = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                btnPass.name = "Button_ApprovePass";
-                btnPass.transform.position = new Vector3(-51.4f, 0.48f, -48.8f);
-                btnPass.transform.localScale = new Vector3(0.12f, 0.04f, 0.12f);
-
-                Renderer r = btnPass.GetComponent<Renderer>();
-                if (r != null) r.material.color = new Color(0.15f, 0.8f, 0.25f);
-
-                GateButtonInteractable gb = btnPass.AddComponent<GateButtonInteractable>();
-                gb.buttonType = GateButtonInteractable.ButtonType.ApprovePass;
-            }
-
-            // Nút Đỏ - TỪ CHỐI
-            GameObject btnDeny = GameObject.Find("Button_RejectDeny");
-            if (btnDeny == null)
-            {
-                btnDeny = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                btnDeny.name = "Button_RejectDeny";
-                btnDeny.transform.position = new Vector3(-50.8f, 0.48f, -48.8f);
-                btnDeny.transform.localScale = new Vector3(0.12f, 0.04f, 0.12f);
-
-                Renderer r = btnDeny.GetComponent<Renderer>();
-                if (r != null) r.material.color = new Color(0.85f, 0.2f, 0.2f);
-
-                GateButtonInteractable gb = btnDeny.AddComponent<GateButtonInteractable>();
-                gb.buttonType = GateButtonInteractable.ButtonType.RejectDeny;
-            }
         }
     }
 
@@ -586,9 +525,9 @@ public class NPCInspectionManager : MonoBehaviour
             Destroy(currentNPCObject);
         }
 
-        Vector3 spawnPos = (spawnPoint != null) ? spawnPoint.position : new Vector3(-50.84f, 0.0f, -20.0f);
+        Vector3 spawnPos = (spawnPoint != null) ? spawnPoint.position : transform.position;
         spawnPos.y += spawnHeightOffset;
-        Quaternion spawnRot = (spawnPoint != null) ? spawnPoint.rotation : Quaternion.Euler(0f, 180f, 0f);
+        Quaternion spawnRot = (spawnPoint != null) ? spawnPoint.rotation : transform.rotation;
 
         if (currentProfile.npcPrefab != null)
         {
@@ -694,7 +633,7 @@ public class NPCInspectionManager : MonoBehaviour
         health.onDisappear.RemoveListener(OnNPCShot);
         health.onDisappear.AddListener(OnNPCShot);
 
-        Vector3 targetPos = (inspectionPoint != null) ? inspectionPoint.position : new Vector3(-50.84f, -3.21f, -43.69f);
+        Vector3 targetPos = (inspectionPoint != null) ? inspectionPoint.position : transform.position;
         targetPos = GetSampledNavMeshPosition(targetPos);
 
         if (currentAgent.isOnNavMesh)
@@ -745,10 +684,21 @@ public class NPCInspectionManager : MonoBehaviour
         Animator anim = currentNPCObject.GetComponentInChildren<Animator>();
         if (anim != null) anim.SetBool("isWalk", false);
 
-        // Quay mặt về phía bốt gác
+        // Quay mặt về phía người chơi hoặc bốt gác
         if (currentNPCObject != null)
         {
-            Vector3 lookDir = (new Vector3(-51.17f, currentNPCObject.transform.position.y, -50.18f) - currentNPCObject.transform.position).normalized;
+            Vector3 lookTarget = currentNPCObject.transform.position + currentNPCObject.transform.forward;
+            if (Camera.main != null)
+            {
+                lookTarget = Camera.main.transform.position;
+            }
+            else
+            {
+                GameObject playerObj = GameObject.FindWithTag("Player");
+                if (playerObj != null) lookTarget = playerObj.transform.position;
+            }
+
+            Vector3 lookDir = (new Vector3(lookTarget.x, currentNPCObject.transform.position.y, lookTarget.z) - currentNPCObject.transform.position).normalized;
             if (lookDir != Vector3.zero)
             {
                 currentNPCObject.transform.rotation = Quaternion.LookRotation(lookDir);
@@ -1136,7 +1086,7 @@ public class NPCInspectionManager : MonoBehaviour
         if (dialoguePanel != null && dialogueContentText != null) return;
 
         Canvas targetCanvas = null;
-        Canvas[] canvases = FindObjectsOfType<Canvas>(true);
+        Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsInactive.Include);
         foreach (var c in canvases)
         {
             if (c.gameObject.name == "NPCDialogue_Canvas")
@@ -1227,7 +1177,7 @@ public class NPCInspectionManager : MonoBehaviour
         dialogueContentText.fontSize = 20;
         dialogueContentText.color = Color.white;
         dialogueContentText.alignment = TextAlignmentOptions.TopLeft;
-        dialogueContentText.enableWordWrapping = true;
+        dialogueContentText.textWrappingMode = TMPro.TextWrappingModes.Normal;
         dialogueContentText.raycastTarget = false;
 
         TMP_FontAsset robotoFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Roboto-Bold SDF");

@@ -102,9 +102,10 @@ public class NPCDogBarkBehavior : NPCBaseBehavior
 
         if (dogPoint == null)
         {
-            // Tự tạo một điểm chú chó nằm ngay cạnh cửa sổ bốt gác
+            // Tự tạo điểm chú chó gần Player/Camera hoặc vị trí hiện tại của NPC
             GameObject autoDog = new GameObject("DogCompanion_Booth");
-            autoDog.transform.position = new Vector3(-50.8f, 0.25f, -49.6f);
+            Transform refTr = Camera.main != null ? Camera.main.transform : transform;
+            autoDog.transform.position = refTr.position + refTr.right * 1.2f;
             dogPoint = autoDog.transform;
         }
 

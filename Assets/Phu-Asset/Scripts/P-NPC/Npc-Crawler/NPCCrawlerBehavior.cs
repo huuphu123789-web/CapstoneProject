@@ -144,7 +144,7 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
 
     private GameObject FindSceneObject(params string[] possibleNames)
     {
-        Transform[] all = FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        Transform[] all = FindObjectsByType<Transform>(FindObjectsInactive.Include);
         foreach (var targetName in possibleNames)
         {
             string cleanTarget = targetName.Replace(" ", "").Replace("_", "").ToLower();
@@ -183,11 +183,11 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
     }
 
 
-    private void GetPlayerCameraOrHead(out Vector3 eyePos, out Vector3 forwardDir)
+    private new void GetPlayerCameraOrHead(out Vector3 eyePos, out Vector3 forwardDir)
     {
         // 1. Locate the active Player GameObject in the scene
         GameObject playerObj = null;
-        PlayerController pc = FindFirstObjectByType<PlayerController>();
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
         if (pc != null) playerObj = pc.gameObject;
 
         if (playerObj == null)
@@ -206,7 +206,7 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
 
         // 2. Camera reference in scene
         Camera mainCam = Camera.main;
-        if (mainCam == null) mainCam = FindFirstObjectByType<Camera>();
+        if (mainCam == null) mainCam = FindAnyObjectByType<Camera>();
 
         // 3. If Player is found in booth:
         if (playerObj != null)
@@ -251,9 +251,9 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
             return;
         }
 
-        // 5. Default booth position fallback
-        eyePos = new Vector3(-48.63f, 1.6f, -50.45f);
-        forwardDir = Vector3.forward;
+        // 5. Fallback relative to NPC position
+        eyePos = transform.position + transform.forward * 2f + Vector3.up * 1.6f;
+        forwardDir = -transform.forward;
     }
 
     private Vector3 GetBehindJumpScarePosition(out Quaternion rotation)
@@ -265,7 +265,7 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
             return customBehindPoint.position;
         }
 
-        // 2. Search scene for JumpscareBehiand (the point created by user in Map inside booth)
+        // 2. Search scene for JumpscareBehiand
         GameObject sceneBehind = FindSceneObject("JumpscareBehiand", "jumpscarebehind", "BehindJumpScare", "JumpscareBehind");
         if (sceneBehind != null)
         {
@@ -274,9 +274,14 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
             return sceneBehind.transform.position;
         }
 
-        // 3. Fallback to exact user coordinates of JumpscareBehiand in booth: (-49.32, -1.69, -51.0)
-        rotation = Quaternion.Euler(0f, 45f, 0f);
-        return new Vector3(-49.32f, -1.69f, -51.0f);
+        // 3. Fallback dynamically behind the player
+        GetPlayerCameraOrHead(out Vector3 eyePos, out Vector3 forwardDir);
+        Vector3 flatForward = new Vector3(forwardDir.x, 0f, forwardDir.z).normalized;
+        if (flatForward == Vector3.zero) flatForward = Vector3.forward;
+        Vector3 behindPos = eyePos - flatForward * behindDistance;
+        behindPos.y = transform.position.y;
+        rotation = Quaternion.LookRotation(flatForward);
+        return behindPos;
     }
 
     private IEnumerator CrawlerBehindAmbushSequence()
@@ -296,8 +301,8 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
 
         yield return new WaitForSeconds(0.2f);
 
-        // 3. PREPARE JUMPSCARE MODEL EXACTLY AT USER'S 'JumpscareBehiand' POINT
-        Vector3 deskPos = (inspectionPoint != null) ? inspectionPoint.position : new Vector3(-46.32f, -3.22f, -43.68f);
+        // 3. PREPARE JUMPSCARE MODEL
+        Vector3 deskPos = (inspectionPoint != null) ? inspectionPoint.position : transform.position;
 
         // Resolve Jumpscare Model (Support Scene Objects AND Project Prefabs)
         GameObject scarePrefabOrSceneObj = jumpscareModel;
@@ -430,7 +435,7 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
         Destroy(gameObject, 0.2f);
     }
 
-    private static Transform FindDeepChild(Transform parent, string name)
+    private static new Transform FindDeepChild(Transform parent, string name)
     {
         if (parent == null) return null;
         foreach (Transform child in parent)
@@ -466,7 +471,7 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
         }
 
         // Disable player movement temporarily during jumpscare so player cannot dodge
-        PlayerController pc = FindFirstObjectByType<PlayerController>();
+        PlayerController pc = FindAnyObjectByType<PlayerController>();
         bool wasPcEnabled = (pc != null && pc.enabled);
         if (pc != null) pc.enabled = false;
 
@@ -564,7 +569,7 @@ public class NPCCrawlerBehavior : NPCBaseBehavior
             return;
         }
 
-        CameraShake shaker = FindFirstObjectByType<CameraShake>();
+        CameraShake shaker = FindAnyObjectByType<CameraShake>();
         if (shaker == null)
         {
             GameObject player = GameObject.FindWithTag("Player");

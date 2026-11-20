@@ -54,12 +54,13 @@ public static class MutantPrefabGenerator
     public static void ForceRefreshAssetsAndReloadScene()
     {
         AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
-        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Night-1")
+        var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        if (!string.IsNullOrEmpty(activeScene.path))
         {
-            UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Phu-Asset/Scenes/Night-1.unity");
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene(activeScene.path);
         }
-        Debug.Log("[Border Anomaly] All assets refreshed and Night-1 scene reloaded!");
-        EditorUtility.DisplayDialog("Border Anomaly", "Đã làm mới tài nguyên và mở lại Scene Night-1 thành công!\nTất cả NPC đã cập nhật theo tên [tên]-[tên đột biến].", "OK");
+        Debug.Log($"[Border Anomaly] All assets refreshed and scene '{activeScene.name}' reloaded!");
+        EditorUtility.DisplayDialog("Border Anomaly", $"Đã làm mới tài nguyên và mở lại Scene '{activeScene.name}' thành công!", "OK");
     }
 
     [MenuItem("Tools/Border Anomaly/Generate 3 New Mutant Prefabs")]
@@ -98,7 +99,7 @@ public static class MutantPrefabGenerator
     [MenuItem("Tools/Border Anomaly/Add 3 Mutants To Scene Inspection Queue")]
     public static void AddMutantsToInspectionQueue()
     {
-        NPCInspectionManager manager = Object.FindFirstObjectByType<NPCInspectionManager>();
+        NPCInspectionManager manager = Object.FindAnyObjectByType<NPCInspectionManager>();
         if (manager == null)
         {
             EditorUtility.DisplayDialog("Notice", "Please open the Night-1 scene containing NPCInspectionManager first!", "OK");
@@ -188,7 +189,7 @@ public static class MutantPrefabGenerator
     [MenuItem("Tools/Border Anomaly/Set Crawler As First In Inspection Queue")]
     public static void SetCrawlerAsFirstInQueue()
     {
-        NPCInspectionManager manager = Object.FindFirstObjectByType<NPCInspectionManager>();
+        NPCInspectionManager manager = Object.FindAnyObjectByType<NPCInspectionManager>();
         if (manager == null)
         {
             EditorUtility.DisplayDialog("Notice", "Please open the Night-1 scene containing NPCInspectionManager first!", "OK");
@@ -248,7 +249,7 @@ public static class MutantPrefabGenerator
     [MenuItem("Tools/Border Anomaly/Set Dog Bark NPC As First In Inspection Queue")]
     public static void SetDogBarkAsFirstInQueue()
     {
-        NPCInspectionManager manager = Object.FindFirstObjectByType<NPCInspectionManager>();
+        NPCInspectionManager manager = Object.FindAnyObjectByType<NPCInspectionManager>();
         if (manager == null)
         {
             EditorUtility.DisplayDialog("Notice", "Please open the Night-1 scene containing NPCInspectionManager first!", "OK");
@@ -292,7 +293,7 @@ public static class MutantPrefabGenerator
     [MenuItem("Tools/Border Anomaly/Set Jumper As First In Inspection Queue")]
     public static void SetJumperAsFirstInQueue()
     {
-        NPCInspectionManager manager = Object.FindFirstObjectByType<NPCInspectionManager>();
+        NPCInspectionManager manager = Object.FindAnyObjectByType<NPCInspectionManager>();
         if (manager == null)
         {
             EditorUtility.DisplayDialog("Notice", "Please open the Night-1 scene containing NPCInspectionManager first!", "OK");
@@ -336,7 +337,7 @@ public static class MutantPrefabGenerator
     [MenuItem("Tools/Border Anomaly/Create Player Camera Jumpscare Point In Scene")]
     public static void CreateCameraJumpscarePointInScene()
     {
-        PlayerCameraJumpscarePoint existing = Object.FindFirstObjectByType<PlayerCameraJumpscarePoint>();
+        PlayerCameraJumpscarePoint existing = Object.FindAnyObjectByType<PlayerCameraJumpscarePoint>();
         if (existing != null)
         {
             Selection.activeGameObject = existing.gameObject;
@@ -573,11 +574,17 @@ public static class MutantPrefabGenerator
             }
         }
 
-        Vector3 targetPos = spawnPoint != null ? spawnPoint.position + Vector3.up * 0.08f : new Vector3(-11.596f, -12.450f, -25.516f);
-        Quaternion targetRot = spawnPoint != null ? spawnPoint.rotation : Quaternion.Euler(0f, 147.234f, 0f);
+        if (spawnPoint == null)
+        {
+            EditorUtility.DisplayDialog("Thông báo", "Chưa tìm thấy GameObject 'StartSpawn' trong Scene hiện tại.\nHãy tạo 1 GameObject rỗng tên 'StartSpawn' tại vị trí mong muốn trên map mới rồi chạy lại!", "OK");
+            return;
+        }
+
+        Vector3 targetPos = spawnPoint.position + Vector3.up * 0.08f;
+        Quaternion targetRot = spawnPoint.rotation;
 
         // 2. Tìm hoặc Tạo Player
-        PlayerController pc = Object.FindFirstObjectByType<PlayerController>() ?? Object.FindObjectOfType<PlayerController>();
+        PlayerController pc = Object.FindAnyObjectByType<PlayerController>();
         GameObject playerObj = pc != null ? pc.gameObject : GameObject.FindWithTag("Player");
         if (playerObj != null && playerObj.transform.parent != null && playerObj.transform.parent.CompareTag("Player"))
         {
@@ -610,7 +617,7 @@ public static class MutantPrefabGenerator
         }
 
         // 3. Đảm bảo PlayerSpawnManager tồn tại trong Scene
-        PlayerSpawnManager spawner = Object.FindFirstObjectByType<PlayerSpawnManager>() ?? Object.FindObjectOfType<PlayerSpawnManager>();
+        PlayerSpawnManager spawner = Object.FindAnyObjectByType<PlayerSpawnManager>();
         if (spawner == null)
         {
             GameObject spawnerObj = new GameObject("PlayerSpawnManager");

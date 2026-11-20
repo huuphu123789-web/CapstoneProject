@@ -27,7 +27,7 @@ public class HorrorImageJumpscareUI : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = FindFirstObjectByType<HorrorImageJumpscareUI>();
+                instance = FindAnyObjectByType<HorrorImageJumpscareUI>();
                 if (instance == null)
                 {
                     GameObject go = new GameObject("HorrorImageJumpscareManager");

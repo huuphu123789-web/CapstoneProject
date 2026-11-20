@@ -235,7 +235,7 @@ public class TaskManager : MonoBehaviour
         }
         if (fController == null)
         {
-            fController = FindObjectOfType<FlashlightController>(true);
+            fController = FindAnyObjectByType<FlashlightController>(FindObjectsInactive.Include);
         }
         if (fController != null)
         {
@@ -291,7 +291,7 @@ public class TaskManager : MonoBehaviour
         }
 
         // 5. Ẩn các vật phẩm trên tủ (đèn pin/súng) trong phòng
-        EquipmentPickup[] pickups = FindObjectsOfType<EquipmentPickup>(true);
+        EquipmentPickup[] pickups = FindObjectsByType<EquipmentPickup>(FindObjectsInactive.Include);
         foreach (var p in pickups)
         {
             if (p.equipmentType == EquipmentPickupType.Flashlight || 
@@ -328,7 +328,7 @@ public class TaskManager : MonoBehaviour
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null) fController = player.GetComponentInChildren<FlashlightController>(true);
         }
-        if (fController == null) fController = FindObjectOfType<FlashlightController>(true);
+        if (fController == null) fController = FindAnyObjectByType<FlashlightController>(FindObjectsInactive.Include);
         if (fController != null)
         {
             fController.EquipFlashlight(turnOnImmediately: true);
@@ -375,7 +375,7 @@ public class TaskManager : MonoBehaviour
         }
 
         // 4. Ẩn các vật phẩm trên tủ (đèn pin/súng) nếu chưa nhặt
-        EquipmentPickup[] pickups = FindObjectsOfType<EquipmentPickup>(true);
+        EquipmentPickup[] pickups = FindObjectsByType<EquipmentPickup>(FindObjectsInactive.Include);
         foreach (var p in pickups)
         {
             if (p.equipmentType == EquipmentPickupType.Flashlight || 
@@ -386,14 +386,14 @@ public class TaskManager : MonoBehaviour
         }
 
         // 5. Ẩn các điểm tuần tra hàng rào và tắt collider
-        FencePatrolZone[] zones = FindObjectsOfType<FencePatrolZone>();
+        FencePatrolZone[] zones = FindObjectsByType<FencePatrolZone>();
         foreach (var z in zones)
         {
             z.gameObject.SetActive(false);
         }
 
         // 6. Bật hệ thống đèn hàng rào kết nối máy phát điện
-        GeneratorInteractable gen = FindObjectOfType<GeneratorInteractable>();
+        GeneratorInteractable gen = FindAnyObjectByType<GeneratorInteractable>();
         if (gen != null)
         {
             gen.TurnOnAllFenceLights(false);
@@ -441,7 +441,7 @@ public class TaskManager : MonoBehaviour
             GameObject tpObj = GameObject.Find("PlayerBoothTeleportPoint");
             if (tpObj == null)
             {
-                GameObject[] allObjs = FindObjectsOfType<GameObject>();
+                GameObject[] allObjs = FindObjectsByType<GameObject>();
                 foreach (var obj in allObjs)
                 {
                     if (obj != null && (obj.name.IndexOf("BoothTeleport", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -794,7 +794,7 @@ public class TaskManager : MonoBehaviour
             }
             else
             {
-                NPCInspectionManager mgr = FindObjectOfType<NPCInspectionManager>();
+                NPCInspectionManager mgr = FindAnyObjectByType<NPCInspectionManager>();
                 if (mgr != null)
                 {
                     mgr.StartGateInspection();
@@ -867,7 +867,7 @@ public class TaskManager : MonoBehaviour
 
     private IEnumerator FlickerFlashlightRoutine(int flickerCount, float speed, float blackoutDuration)
     {
-        FlashlightController fController = FindObjectOfType<FlashlightController>();
+        FlashlightController fController = FindAnyObjectByType<FlashlightController>();
         if (fController == null) yield break;
 
         Light flLight = fController.FlashlightLight;
@@ -958,7 +958,7 @@ public class TaskManager : MonoBehaviour
         Canvas targetCanvas = GetComponentInChildren<Canvas>(true);
         if (targetCanvas == null)
         {
-            targetCanvas = FindObjectOfType<Canvas>();
+            targetCanvas = FindAnyObjectByType<Canvas>();
         }
 
         // 3. Nếu chưa có Canvas nào thì tự tạo mới

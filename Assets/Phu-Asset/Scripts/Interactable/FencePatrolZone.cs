@@ -105,7 +105,7 @@ public class FencePatrolZone : Interactable
         }
         else
         {
-            Camera cam = FindObjectOfType<Camera>();
+            Camera cam = FindAnyObjectByType<Camera>();
             if (cam != null) mainCameraTransform = cam.transform;
         }
     }

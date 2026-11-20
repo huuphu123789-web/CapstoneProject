@@ -110,7 +110,7 @@ public class FlashlightController : MonoBehaviour
         }
 
         // 4. Tìm kiếm bất kỳ Light nào có tên Flashlight trong Scene
-        Light[] allSceneLights = FindObjectsOfType<Light>(true);
+        Light[] allSceneLights = FindObjectsByType<Light>(FindObjectsInactive.Include);
         foreach (var l in allSceneLights)
         {
             if (l.gameObject.name.ToLower().Contains("flashlight"))

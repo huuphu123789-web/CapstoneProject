@@ -106,7 +106,7 @@ public class InteractablePhone : MonoBehaviour, IInteractable
         // Tu dong tim DialogueUI neu chua gan
         if (dialogueUI == null)
         {
-            dialogueUI = FindFirstObjectByType<DialogueUI>() ?? FindObjectOfType<DialogueUI>();
+            dialogueUI = FindAnyObjectByType<DialogueUI>();
         }
 
         // Bat dau reo chuong khi game bat dau
@@ -423,7 +423,7 @@ public class InteractablePhone : MonoBehaviour, IInteractable
         _fallbackText = txtGo.AddComponent<TextMeshProUGUI>();
         _fallbackText.fontSize = 21f;
         _fallbackText.color = Color.white;
-        _fallbackText.enableWordWrapping = true;
+        _fallbackText.textWrappingMode = TMPro.TextWrappingModes.Normal;
 
         RectTransform txtRT = txtGo.GetComponent<RectTransform>();
         txtRT.anchorMin = new Vector2(0f, 0f);

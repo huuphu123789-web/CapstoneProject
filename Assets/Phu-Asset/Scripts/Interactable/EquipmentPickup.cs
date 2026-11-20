@@ -170,7 +170,7 @@ public class EquipmentPickup : Interactable
             FlashlightController fController = null;
             GameObject player = GameObject.FindWithTag("Player");
             if (player != null) fController = player.GetComponentInChildren<FlashlightController>(true);
-            if (fController == null) fController = FindObjectOfType<FlashlightController>();
+            if (fController == null) fController = FindAnyObjectByType<FlashlightController>();
 
             if (fController != null)
             {
@@ -198,7 +198,7 @@ public class EquipmentPickup : Interactable
                 GameObject player = GameObject.FindWithTag("Player");
                 if (player != null) cam = player.GetComponentInChildren<Camera>(true);
             }
-            if (cam == null) cam = FindObjectOfType<Camera>();
+            if (cam == null) cam = FindAnyObjectByType<Camera>();
 
             // Kiểm tra nếu khẩu súng hiện tại là súng cũ (không có mesh Cube.000 của Pistol 92) thì hủy ngay để thay mới
             if (gun != null && gun.transform.Find("Cube.000") == null)
@@ -264,7 +264,7 @@ public class EquipmentPickup : Interactable
         else if (equipmentType == EquipmentPickupType.Ammo)
         {
             // Nhặt đạn cho súng
-            PlayerGun gun = FindObjectOfType<PlayerGun>();
+            PlayerGun gun = FindAnyObjectByType<PlayerGun>();
             if (gun == null)
             {
                 Camera cam = Camera.main;
