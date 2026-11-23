@@ -16,11 +16,11 @@ public class PlayerSpawnManager : MonoBehaviour
     public GameObject playerPrefab;
 
     [Header("=== ĐIỂM XUẤT PHÁT (SPAWN POINT) ===")]
-    [Tooltip("Kéo điểm xuất phát vào đây (nếu để trống, script sẽ tự động tìm StartSpawn trong hầm Cellar)")]
+    [Tooltip("Kéo điểm xuất phát vào đây (nếu để trống, script sẽ tự động tìm SpawnPoint / PlayerSpawnPoint / StartSpawn trong Scene)")]
     public Transform defaultSpawnPoint;
 
-    [Tooltip("Tên GameObject điểm xuất phát cần tự động tìm kiếm (Mặc định: StartSpawn)")]
-    public string targetSpawnPointName = "StartSpawn";
+    [Tooltip("Tên GameObject điểm xuất phát cần tự động tìm kiếm (Mặc định: player spawn point)")]
+    public string targetSpawnPointName = "player spawn point";
 
     [Tooltip("Độ lệch trục Y khi đặt chân Player để tránh kẹt sàn (mét)")]
     public float yOffset = 0.08f;
@@ -157,66 +157,51 @@ public class PlayerSpawnManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Tìm điểm xuất phát StartSpawn trong Scene hoặc Cellar
+    /// Tìm điểm xuất phát (ưu tiên SpawnPoint / PlayerSpawnPoint / StartSpawn) trong Scene hiện tại.
+    /// Tự động bỏ qua NPC_SpawnPoint để không nhận nhầm điểm spawn của NPC.
     /// </summary>
     public Transform GetSpawnPoint()
     {
         if (defaultSpawnPoint != null) return defaultSpawnPoint;
 
-        // 1. Tìm theo tên chỉ định (Mặc định: StartSpawn)
-        if (!string.IsNullOrEmpty(targetSpawnPointName))
+        string targetCompact = string.IsNullOrEmpty(targetSpawnPointName) ? "" : targetSpawnPointName.Trim().ToLower().Replace(" ", "").Replace("_", "");
+        Transform bestMatch = null;
+        int bestPriority = int.MaxValue;
+
+        Transform[] allTransforms = FindObjectsByType<Transform>(FindObjectsInactive.Include);
+        foreach (Transform t in allTransforms)
         {
-            GameObject found = GameObject.Find(targetSpawnPointName);
-            if (found != null)
+            if (t == null || !t.gameObject.scene.IsValid()) continue;
+            string lower = t.name.Trim().ToLower();
+
+            // Tuyệt đối bỏ qua các điểm spawn của NPC (ví dụ: NPC_SpawnPoint)
+            if (lower.Contains("npc")) continue;
+
+            string compact = lower.Replace(" ", "").Replace("_", "");
+
+            int priority = int.MaxValue;
+            if (!string.IsNullOrEmpty(targetCompact) && compact == targetCompact)
+                priority = 0;
+            else if (compact == "playerspawnpoint" || compact == "spawnpoint" || compact == "playerspawn")
+                priority = 1;
+            else if (compact == "startspawn")
+                priority = 2;
+            else if (compact == "cellarspawnpoint" || compact == "cellarspawn")
+                priority = 3;
+            else if (compact == "bedwakeuppoint")
+                priority = 4;
+
+            if (priority < bestPriority)
             {
-                defaultSpawnPoint = found.transform;
-                return defaultSpawnPoint;
+                bestPriority = priority;
+                bestMatch = t;
+                if (bestPriority == 0) break;
             }
         }
 
-        // 2. Tìm kiếm danh sách các tên thông dụng: StartSpawn, startspawn, CellarSpawnPoint
-        string[] candidates = new string[] { "StartSpawn", "startspawn", "Start_Spawn", "CellarSpawnPoint", "cellarspawnpoint", "CellarSpawn" };
-        foreach (string cName in candidates)
+        if (bestMatch != null)
         {
-            GameObject found = GameObject.Find(cName);
-            if (found != null)
-            {
-                defaultSpawnPoint = found.transform;
-                return defaultSpawnPoint;
-            }
-        }
-
-        // 3. Tìm bên trong Cellar
-        GameObject cellar = GameObject.Find("Cellar");
-        if (cellar != null)
-        {
-            foreach (string cName in candidates)
-            {
-                Transform pt = cellar.transform.Find(cName);
-                if (pt != null)
-                {
-                    defaultSpawnPoint = pt;
-                    return defaultSpawnPoint;
-                }
-            }
-
-            // Tìm đệ quy trong tất cả các con của Cellar
-            foreach (Transform child in cellar.GetComponentsInChildren<Transform>(true))
-            {
-                string lower = child.name.ToLower();
-                if (lower == "startspawn" || lower == "start_spawn" || lower == "cellarspawnpoint" || lower.Contains("startspawn") || lower.Contains("cellarspawn"))
-                {
-                    defaultSpawnPoint = child;
-                    return defaultSpawnPoint;
-                }
-            }
-        }
-
-        // 4. Fallback: BedWakeupPoint
-        GameObject fallback = GameObject.Find("BedWakeupPoint");
-        if (fallback != null)
-        {
-            defaultSpawnPoint = fallback.transform;
+            defaultSpawnPoint = bestMatch;
             return defaultSpawnPoint;
         }
 
