@@ -262,6 +262,14 @@ public class PlayerSpawnManager : MonoBehaviour
     {
         if (playerObj == null) return;
 
+        // Đảm bảo Camera chính luôn có PlayerInteract để tương tác với cửa, vật phẩm...
+        Camera cam = Camera.main;
+        if (cam != null && cam.GetComponent<PlayerInteract>() == null && FindAnyObjectByType<PlayerInteract>() == null)
+        {
+            cam.gameObject.AddComponent<PlayerInteract>();
+            Debug.Log("[PlayerSpawnManager] Đã tự động gắn PlayerInteract lên MainCamera!");
+        }
+
         // Cập nhật PlayerCameraJumpscarePoint nếu có
         PlayerCameraJumpscarePoint jp = FindAnyObjectByType<PlayerCameraJumpscarePoint>();
         if (jp != null)

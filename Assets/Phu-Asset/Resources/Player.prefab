@@ -8645,7 +8645,7 @@ Transform:
   m_GameObject: {fileID: 4187920932450562975}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.019, y: 1.737, z: 0.208}
+  m_LocalPosition: {x: -0.019, y: 1.737, z: 0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9430,7 +9430,7 @@ MonoBehaviour:
     FieldOfView: 60
     OrthographicSize: 5
     NearClipPlane: 0.01
-    FarClipPlane: 1000
+    FarClipPlane: 150
     Dutch: 0
     ModeOverride: 0
     PhysicalProperties:
@@ -9464,7 +9464,7 @@ MonoBehaviour:
     AngularDampingMode: 0
     RotationDamping: {x: 0, y: 0, z: 0}
     QuaternionDamping: 1
-  FollowOffset: {x: 0, y: 0.13, z: 0.2}
+  FollowOffset: {x: 0, y: 0.13, z: 0}
 --- !u!114 &6972839927493832511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9513,17 +9513,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineDeoccluder
   CollideAgainst:
     serializedVersion: 2
-    m_Bits: 0
-  IgnoreTag: 
+    m_Bits: 1
+  IgnoreTag: Player
   TransparentLayers:
     serializedVersion: 2
-    m_Bits: 1
-  MinimumDistanceFromTarget: 0.3
+    m_Bits: 0
+  MinimumDistanceFromTarget: 0.05
   AvoidObstacles:
     Enabled: 1
     DistanceLimit: 0
     MinimumOcclusionTime: 0
-    CameraRadius: 0.2
+    CameraRadius: 0.15
     UseFollowTarget:
       Enabled: 0
       YOffset: 0
@@ -12721,6 +12721,7 @@ MonoBehaviour:
   generatorsChecked: 0
   gateInspectionDone: 0
   gateInspectionTriggered: 0
+  newspaperRead: 0
 --- !u!114 &7159961969656027549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16656,7 +16657,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 2
-  m_Radius: 0.4
+  m_Radius: 0.45
   m_SlopeLimit: 45
   m_StepOffset: 0.4
   m_SkinWidth: 0.08

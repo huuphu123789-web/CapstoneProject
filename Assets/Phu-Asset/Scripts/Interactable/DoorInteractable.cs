@@ -2,12 +2,17 @@ using UnityEngine;
 
 public class DoorInteractable : Interactable
 {
-    [Header("=== Kéo Hinge / Cánh Cửa Vào Đây ===")]
-    [Tooltip("Kéo Booth Door Hinge vào đây")]
+    public enum RotationAxis { X, Y, Z }
+
+    [Header("=== Kéo Hinge / Pivot Cánh Cửa Vào Đây ===")]
+    [Tooltip("Kéo Booth Door Hinge hoặc DoorPivot vào đây")]
     public Transform doorHinge;
 
-    [Header("=== Góc Mở Cửa (Trục Z) ===")]
-    [Tooltip("Góc xoay mở cửa theo Trục Z (thử 90 hoặc -90 nếu muốn đổi hướng mở)")]
+    [Header("=== Góc Mở Cửa ===")]
+    [Tooltip("Trục xoay mở cửa (Y cho DoorPivot thẳng đứng, Z cho model Blender xoay trục Z)")]
+    public RotationAxis rotationAxis = RotationAxis.Z;
+
+    [Tooltip("Góc xoay mở cửa (thử 90 hoặc -90 nếu muốn đổi hướng mở)")]
     public float openAngleZ = 90f;
     public float openSpeed = 4f;
 
@@ -34,11 +39,24 @@ public class DoorInteractable : Interactable
     {
         if (doorHinge == null) doorHinge = transform;
 
+        // Nếu DoorPivot nằm ngang hàng (chưa là cha của Door), tự động gắn Door làm con của DoorPivot
+        if (doorHinge != transform && !transform.IsChildOf(doorHinge))
+        {
+            transform.SetParent(doorHinge, true);
+        }
+
         // Lưu góc xoay đóng ban đầu
         closedRotation = doorHinge.localRotation;
-        
-        // Tính góc mở theo Trục Z
-        openRotation = closedRotation * Quaternion.Euler(0f, 0f, openAngleZ);
+
+        // Tính góc mở theo trục đã chọn
+        Vector3 eulerOffset = Vector3.zero;
+        switch (rotationAxis)
+        {
+            case RotationAxis.X: eulerOffset = new Vector3(openAngleZ, 0f, 0f); break;
+            case RotationAxis.Y: eulerOffset = new Vector3(0f, openAngleZ, 0f); break;
+            default:             eulerOffset = new Vector3(0f, 0f, openAngleZ); break;
+        }
+        openRotation = closedRotation * Quaternion.Euler(eulerOffset);
 
         promptMessage = "Open Door";
     }

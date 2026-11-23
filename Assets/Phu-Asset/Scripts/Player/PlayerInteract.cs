@@ -1,5 +1,8 @@
 using TMPro;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 /// <summary>
 /// Quản lý tương tác của người chơi qua Raycast từ Camera.
@@ -29,7 +32,8 @@ public class PlayerInteract : MonoBehaviour
 
     void Awake()
     {
-        playerRoot = transform.root;
+        GameObject p = GameObject.FindWithTag("Player");
+        playerRoot = (p != null) ? p.transform.root : transform.root;
     }
 
     void Start()
@@ -93,7 +97,9 @@ public class PlayerInteract : MonoBehaviour
             foreach (var hit in hits)
             {
                 // Bỏ qua collider của chính bản thân người chơi
-                if (playerRoot != null && hit.collider.transform.root == playerRoot)
+                if (hit.collider.transform.root == transform.root ||
+                    hit.collider.transform.root.CompareTag("Player") ||
+                    (playerRoot != null && hit.collider.transform.root == playerRoot))
                 {
                     continue;
                 }
@@ -137,7 +143,20 @@ public class PlayerInteract : MonoBehaviour
                         }
                     }
 
-                    if (Input.GetKeyDown(KeyCode.E))
+                    bool interactPressed = false;
+#if ENABLE_INPUT_SYSTEM
+                    if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+                    {
+                        interactPressed = true;
+                    }
+#endif
+#if ENABLE_LEGACY_INPUT_MANAGER
+                    if (!interactPressed && Input.GetKeyDown(KeyCode.E))
+                    {
+                        interactPressed = true;
+                    }
+#endif
+                    if (interactPressed)
                     {
                         if (armAnimator != null)
                         {
