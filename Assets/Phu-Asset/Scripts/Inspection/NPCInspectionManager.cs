@@ -147,20 +147,27 @@ public class NPCInspectionManager : MonoBehaviour
     [Tooltip("Tự động nạp mẫu khi danh sách trống. Tắt (false) để bạn tự thiết lập 4 mẫu trong Inspector.")]
     public bool autoPopulateDefaults = false;
 
+    [Header("=== TỰ ĐỘNG BẮT ĐẦU KIỂM TRA ===")]
+    [Tooltip("Bật (tick) nếu muốn bắt đầu cho NPC đi vào kiểm tra ngay khi bấm Play (bất kể có TaskManager hay không)")]
+    public bool startInspectionOnStart = false;
+
+    [Tooltip("Nếu trong Scene chưa gắn TaskManager, tự động bắt đầu kiểm tra NPC sau 1 giây để test ngay")]
+    public bool autoStartIfNoTaskManager = true;
+
     [Header("=== CÁC ĐIỂM TỌA ĐỘ TRONG SCENE ===")]
-    [Tooltip("Điểm đứng chờ kiểm tra trước bốt gác (InspectionZone)")]
+    [Tooltip("Điểm đứng chờ kiểm tra trước bốt gác (inspectionZone / InspectionZone)")]
     public Transform inspectionPoint;
 
-    [Tooltip("Điểm xuất phát của NPC bên ngoài cổng (đường lớn ngoài rừng)")]
+    [Tooltip("Điểm xuất phát của NPC bên ngoài cổng (NPC_SpawnPoint). Nếu để trống sẽ dùng tạm điểm dismiss")]
     public Transform spawnPoint;
 
     [Tooltip("Độ lệch chiều cao Y khi spawn (cộng thêm vào nếu NPC bị chìm chân hoặc lơ lửng)")]
     public float spawnHeightOffset = 0f;
 
-    [Tooltip("Điểm NPC đi vào sau khi được Cho qua (Bên trong khuôn viên căn cứ)")]
+    [Tooltip("Điểm NPC đi vào sau khi được Cho qua (pass / NPC_PassDestination)")]
     public Transform passDestination;
 
-    [Tooltip("Điểm NPC quay đầu bỏ đi sau khi bị Từ chối (Bên ngoài rừng)")]
+    [Tooltip("Điểm NPC quay đầu bỏ đi sau khi bị Từ chối (dismiss / NPC_DismissDestination)")]
     public Transform dismissDestination;
 
     [Header("=== ÂM THANH & HIỆU ỨNG ===")]
@@ -208,6 +215,12 @@ public class NPCInspectionManager : MonoBehaviour
         EnsureDeskAndButtons();
         EnsureDialogueUI();
         EnsureVoiceClipsAssigned();
+
+        bool noTaskManager = (TaskManager.instance == null && FindAnyObjectByType<TaskManager>() == null);
+        if (startInspectionOnStart || (autoStartIfNoTaskManager && noTaskManager))
+        {
+            Invoke(nameof(StartGateInspection), 1.0f);
+        }
     }
 
     /// <summary>
@@ -298,62 +311,78 @@ public class NPCInspectionManager : MonoBehaviour
         }
     }
 
+    private static string NormalizeObjectName(string raw)
+    {
+        if (string.IsNullOrEmpty(raw)) return string.Empty;
+        return raw.Trim().Replace(" ", "").Replace("_", "").Replace("-", "").ToLowerInvariant();
+    }
+
+    private static Transform FindPointByNames(params string[] candidateNames)
+    {
+        Transform[] allTransforms = FindObjectsByType<Transform>(FindObjectsInactive.Include);
+        for (int c = 0; c < candidateNames.Length; c++)
+        {
+            string targetNorm = NormalizeObjectName(candidateNames[c]);
+            if (string.IsNullOrEmpty(targetNorm)) continue;
+
+            for (int i = 0; i < allTransforms.Length; i++)
+            {
+                Transform t = allTransforms[i];
+                if (t != null && NormalizeObjectName(t.name) == targetNorm)
+                {
+                    return t;
+                }
+            }
+        }
+        return null;
+    }
+
     /// <summary>
-    /// Tự động tìm kiếm các điểm tọa độ có sẵn trong Scene nếu chưa kéo vào Inspector.
-    /// Không còn tự tạo ở tọa độ cứng của map Night-1 cũ.
+    /// Tự động tìm kiếm các điểm tọa độ có sẵn trong Scene (nhận diện không phân biệt hoa thường:
+    /// inspectionZone, pass, dismiss, NPC_SpawnPoint...) nếu chưa kéo vào Inspector.
     /// </summary>
     public void EnsureSceneReferences()
     {
-        // 1. Inspection Point
+        // 1. Inspection Point (inspectionZone / InspectionZone)
         if (inspectionPoint == null)
         {
-            GameObject iz = GameObject.Find("InspectionZone");
-            if (iz != null)
+            inspectionPoint = FindPointByNames("inspectionZone", "InspectionPoint", "NPC_InspectionPoint");
+            if (inspectionPoint == null)
             {
-                inspectionPoint = iz.transform;
-            }
-            else
-            {
-                Debug.LogWarning("[NPCInspectionManager] Chưa gán InspectionPoint và không tìm thấy GameObject 'InspectionZone' trong map mới.");
+                Debug.LogWarning("[NPCInspectionManager] Chưa gán InspectionPoint và không tìm thấy 'inspectionZone' trong Scene.");
             }
         }
 
-        // 2. Spawn Point
-        if (spawnPoint == null)
-        {
-            GameObject sp = GameObject.Find("NPC_SpawnPoint");
-            if (sp != null)
-            {
-                spawnPoint = sp.transform;
-            }
-            else
-            {
-                Debug.LogWarning("[NPCInspectionManager] Chưa gán SpawnPoint và không tìm thấy GameObject 'NPC_SpawnPoint' trong map mới.");
-            }
-        }
-
-        // 3. Pass Destination
+        // 2. Pass Destination (pass / PassDestination / NPC_PassDestination)
         if (passDestination == null)
         {
-            GameObject pd = GameObject.Find("NPC_PassDestination");
-            if (pd != null)
+            passDestination = FindPointByNames("pass", "PassPoint", "PassDestination", "NPC_PassDestination");
+        }
+
+        // 3. Dismiss Destination (dismiss / DismissDestination / NPC_DismissDestination)
+        if (dismissDestination == null)
+        {
+            dismissDestination = FindPointByNames("dismiss", "DismissPoint", "DismissDestination", "NPC_DismissDestination");
+        }
+
+        // 4. Spawn Point (NPC_SpawnPoint / npc spawn point; nếu chưa đặt riêng thì dùng tạm dismiss)
+        if (spawnPoint == null)
+        {
+            spawnPoint = FindPointByNames("NPC_SpawnPoint", "NPCSpawnPoint", "NPCSpawn");
+            if (spawnPoint == null && dismissDestination != null)
             {
-                passDestination = pd.transform;
+                spawnPoint = dismissDestination;
+                Debug.Log("[NPCInspectionManager] Chưa đặt 'NPC_SpawnPoint' riêng -> dùng tạm điểm 'dismiss' làm nơi xuất phát cho NPC.");
+            }
+            else if (spawnPoint == null)
+            {
+                Debug.LogWarning("[NPCInspectionManager] Chưa gán SpawnPoint ('NPC_SpawnPoint').");
             }
         }
 
-        // 4. Dismiss Destination
         if (dismissDestination == null)
         {
-            GameObject dd = GameObject.Find("NPC_DismissDestination");
-            if (dd != null)
-            {
-                dismissDestination = dd.transform;
-            }
-            else
-            {
-                dismissDestination = spawnPoint;
-            }
+            dismissDestination = spawnPoint;
         }
     }
 
@@ -613,17 +642,19 @@ public class NPCInspectionManager : MonoBehaviour
             currentAgent.baseOffset = 0f;
         }
 
-        // Reset vị trí Agent chuẩn xác trên NavMesh bằng Warp
+        // Reset vị trí Agent chuẩn xác trên NavMesh (nếu đã Bake NavMesh) hoặc chuyển sang chế độ đi bộ trực tiếp
         currentNPCObject.transform.position = spawnPos;
         currentNPCObject.transform.rotation = spawnRot;
 
-        if (NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 5.0f, NavMesh.AllAreas))
+        bool hasNavMesh = NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, 8.0f, NavMesh.AllAreas);
+        if (hasNavMesh)
         {
             currentAgent.Warp(hit.position);
         }
-        else if (!currentAgent.isOnNavMesh)
+        else
         {
-            currentAgent.Warp(spawnPos);
+            currentAgent.enabled = false;
+            currentNPCObject.transform.position = SnapPositionToGround(spawnPos) + Vector3.up * spawnHeightOffset;
         }
 
         // Đảm bảo có NPCHealth để có thể bắn bằng súng
@@ -634,10 +665,9 @@ public class NPCInspectionManager : MonoBehaviour
         health.onDisappear.AddListener(OnNPCShot);
 
         Vector3 targetPos = (inspectionPoint != null) ? inspectionPoint.position : transform.position;
-        targetPos = GetSampledNavMeshPosition(targetPos);
-
-        if (currentAgent.isOnNavMesh)
+        if (hasNavMesh && currentAgent.enabled && currentAgent.isOnNavMesh)
         {
+            targetPos = GetSampledNavMeshPosition(targetPos, 8.0f);
             currentAgent.isStopped = false;
             currentAgent.SetDestination(targetPos);
         }
@@ -645,27 +675,85 @@ public class NPCInspectionManager : MonoBehaviour
         Animator anim = currentNPCObject.GetComponentInChildren<Animator>();
         if (anim != null) anim.SetBool("isWalk", true);
 
-        StartCoroutine(WaitForNPCArrivalRoutine());
+        StartCoroutine(WaitForNPCArrivalRoutine(targetPos, currentAgent.speed));
 
         Debug.Log($"[NPCInspectionManager] NPC [{currentProfile.npcName}] đang tiến về bốt gác...");
     }
 
-    private IEnumerator WaitForNPCArrivalRoutine()
+    private Vector3 SnapPositionToGround(Vector3 pos)
     {
-        // Chờ 0.3s để NavMeshAgent bắt đầu tính toán lộ trình
-        yield return new WaitForSeconds(0.3f);
-
-        while (currentAgent != null && currentNPCObject != null)
+        Ray ray = new Ray(pos + Vector3.up * 3.0f, Vector3.down);
+        RaycastHit[] hits = Physics.RaycastAll(ray, 10.0f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        float bestDist = float.MaxValue;
+        float bestY = pos.y;
+        for (int i = 0; i < hits.Length; i++)
         {
-            if (currentAgent.enabled && currentAgent.isOnNavMesh && !currentAgent.pathPending)
+            Collider c = hits[i].collider;
+            if (c == null) continue;
+            if (currentNPCObject != null && c.transform.IsChildOf(currentNPCObject.transform)) continue;
+            if (c.CompareTag("Player") || c.CompareTag("NPC")) continue;
+            if (hits[i].distance < bestDist)
             {
-                if (currentAgent.hasPath && currentAgent.remainingDistance <= currentAgent.stoppingDistance + 0.35f)
-                {
-                    OnNPCArrivedAtDesk();
-                    yield break;
-                }
+                bestDist = hits[i].distance;
+                bestY = hits[i].point.y;
             }
-            yield return new WaitForSeconds(0.2f);
+        }
+        return new Vector3(pos.x, bestY, pos.z);
+    }
+
+    private IEnumerator MoveNPCDirectlyRoutine(Vector3 targetPos, float moveSpeed, float maxDuration)
+    {
+        float elapsed = 0f;
+        while (currentNPCObject != null && elapsed < maxDuration)
+        {
+            Vector3 curr = currentNPCObject.transform.position;
+            Vector3 flatCurr = new Vector3(curr.x, 0f, curr.z);
+            Vector3 flatTarget = new Vector3(targetPos.x, 0f, targetPos.z);
+            float dist = Vector3.Distance(flatCurr, flatTarget);
+            if (dist <= 0.45f) break;
+
+            Vector3 dir = (flatTarget - flatCurr).normalized;
+            if (dir.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRot = Quaternion.LookRotation(dir);
+                currentNPCObject.transform.rotation = Quaternion.Slerp(currentNPCObject.transform.rotation, targetRot, Time.deltaTime * 8f);
+            }
+
+            Vector3 nextXZ = Vector3.MoveTowards(flatCurr, flatTarget, moveSpeed * Time.deltaTime);
+            Vector3 snapped = SnapPositionToGround(new Vector3(nextXZ.x, curr.y, nextXZ.z));
+            currentNPCObject.transform.position = snapped + Vector3.up * spawnHeightOffset;
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    private IEnumerator WaitForNPCArrivalRoutine(Vector3 fallbackTargetPos, float walkSpeed)
+    {
+        // Nếu Scene đã Bake NavMesh -> dùng NavMeshAgent
+        if (currentAgent != null && currentAgent.enabled && currentAgent.isOnNavMesh)
+        {
+            yield return new WaitForSeconds(0.3f);
+            while (currentAgent != null && currentNPCObject != null)
+            {
+                if (currentAgent.enabled && currentAgent.isOnNavMesh && !currentAgent.pathPending)
+                {
+                    if (!currentAgent.hasPath || currentAgent.remainingDistance <= currentAgent.stoppingDistance + 0.35f)
+                    {
+                        OnNPCArrivedAtDesk();
+                        yield break;
+                    }
+                }
+                yield return new WaitForSeconds(0.2f);
+            }
+            yield break;
+        }
+
+        // Dự phòng: Nếu chưa kịp Bake NavMeshSurface, cho NPC đi bộ mượt thẳng tới điểm inspectionZone
+        yield return StartCoroutine(MoveNPCDirectlyRoutine(fallbackTargetPos, Mathf.Max(1.8f, walkSpeed), 45f));
+        if (currentNPCObject != null)
+        {
+            OnNPCArrivedAtDesk();
         }
     }
 
@@ -676,7 +764,7 @@ public class NPCInspectionManager : MonoBehaviour
     {
         isCurrentNPCAtDesk = true;
 
-        if (currentAgent != null && currentAgent.isOnNavMesh)
+        if (currentAgent != null && currentAgent.enabled && currentAgent.isOnNavMesh)
         {
             currentAgent.isStopped = true;
         }
@@ -725,7 +813,7 @@ public class NPCInspectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Mở giao diện xem giấy tờ của NPC hiện tại
+    /// Mở/hiển thị giấy tờ của NPC hiện tại (lên 2 màn hình Secure Control Panel và/hoặc UI toàn màn hình)
     /// </summary>
     public void OpenCurrentNPCDocuments()
     {
@@ -736,13 +824,30 @@ public class NPCInspectionManager : MonoBehaviour
             AudioManager.instance.PlaySFX(documentOpenSound);
         }
 
-        if (DocumentInspectionUI.instance != null)
+        bool displayedOnControlPanel = false;
+        bool shouldOpenFullscreen = true;
+
+        if (InspectionDeskInteractable.instance != null && InspectionDeskInteractable.instance.HasControlPanelScreens)
+        {
+            InspectionDeskInteractable.instance.DisplayDocumentsOnScreens(
+                currentProfile.cccdTexture,
+                currentProfile.surrenderConfirmTexture
+            );
+            displayedOnControlPanel = true;
+            shouldOpenFullscreen = InspectionDeskInteractable.instance.alsoOpenFullscreenUI;
+        }
+
+        if (shouldOpenFullscreen && DocumentInspectionUI.instance != null)
         {
             DocumentInspectionUI.instance.OpenInspection(
                 currentProfile.cccdTexture,
                 currentProfile.surrenderConfirmTexture,
                 currentProfile.npcName
             );
+        }
+        else if (displayedOnControlPanel)
+        {
+            Debug.Log($"[NPCInspectionManager] Đã hiển thị CCCD & Surrender Confirm của [{currentProfile.npcName}] lên 2 màn hình Secure Control Panel!");
         }
     }
 
@@ -897,33 +1002,35 @@ public class NPCInspectionManager : MonoBehaviour
         Invoke(nameof(SpawnNextNPC), 2.5f);
     }
 
-    private IEnumerator NPCWalkThroughGateRoutine()
+    private IEnumerator MoveNPCOutAndDestroyRoutine(Transform destinationTransform, float speed, float duration)
     {
         if (InspectionDeskInteractable.instance != null)
         {
             InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
         }
 
-        if (currentAgent != null && passDestination != null)
+        if (currentNPCObject != null && destinationTransform != null)
         {
-            Vector3 target = GetSampledNavMeshPosition(passDestination.position);
-            if (!currentAgent.isOnNavMesh && currentNPCObject != null)
-            {
-                currentAgent.Warp(GetSampledNavMeshPosition(currentNPCObject.transform.position));
-            }
-
-            if (currentAgent.isOnNavMesh)
-            {
-                currentAgent.isStopped = false;
-                currentAgent.speed = 2.2f;
-                currentAgent.SetDestination(target);
-            }
-
             Animator anim = currentNPCObject.GetComponentInChildren<Animator>();
             if (anim != null) anim.SetBool("isWalk", true);
-        }
 
-        yield return new WaitForSeconds(4.5f);
+            if (currentAgent != null && currentAgent.enabled && currentAgent.isOnNavMesh)
+            {
+                Vector3 target = GetSampledNavMeshPosition(destinationTransform.position, 8.0f);
+                currentAgent.isStopped = false;
+                currentAgent.speed = speed;
+                currentAgent.SetDestination(target);
+                yield return new WaitForSeconds(duration);
+            }
+            else
+            {
+                yield return StartCoroutine(MoveNPCDirectlyRoutine(destinationTransform.position, speed, duration));
+            }
+        }
+        else
+        {
+            yield return new WaitForSeconds(duration);
+        }
 
         if (currentNPCObject != null)
         {
@@ -931,118 +1038,32 @@ public class NPCInspectionManager : MonoBehaviour
         }
 
         SpawnNextNPC();
+    }
+
+    private IEnumerator NPCWalkThroughGateRoutine()
+    {
+        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(passDestination, 2.2f, 4.5f));
     }
 
     private IEnumerator NPCDismissedRoutine()
     {
-        if (InspectionDeskInteractable.instance != null)
-        {
-            InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
-        }
-
-        if (currentAgent != null && dismissDestination != null)
-        {
-            Vector3 target = GetSampledNavMeshPosition(dismissDestination.position);
-            if (!currentAgent.isOnNavMesh && currentNPCObject != null)
-            {
-                currentAgent.Warp(GetSampledNavMeshPosition(currentNPCObject.transform.position));
-            }
-
-            if (currentAgent.isOnNavMesh)
-            {
-                currentAgent.isStopped = false;
-                currentAgent.speed = 2.0f;
-                currentAgent.SetDestination(target);
-            }
-
-            Animator anim = currentNPCObject.GetComponentInChildren<Animator>();
-            if (anim != null) anim.SetBool("isWalk", true);
-        }
-
-        yield return new WaitForSeconds(4.5f);
-
-        if (currentNPCObject != null)
-        {
-            Destroy(currentNPCObject);
-        }
-
-        SpawnNextNPC();
+        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(dismissDestination, 2.0f, 4.5f));
     }
 
     private IEnumerator MutantFleesRoutine()
     {
-        if (InspectionDeskInteractable.instance != null)
-        {
-            InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
-        }
-
-        if (currentAgent != null && dismissDestination != null)
-        {
-            Vector3 target = GetSampledNavMeshPosition(dismissDestination.position);
-            if (!currentAgent.isOnNavMesh && currentNPCObject != null)
-            {
-                currentAgent.Warp(GetSampledNavMeshPosition(currentNPCObject.transform.position));
-            }
-
-            if (currentAgent.isOnNavMesh)
-            {
-                currentAgent.isStopped = false;
-                currentAgent.speed = 4.5f; // Chạy nhanh bỏ trốn
-                currentAgent.SetDestination(target);
-            }
-
-            Animator anim = currentNPCObject.GetComponentInChildren<Animator>();
-            if (anim != null) anim.SetBool("isWalk", true);
-        }
-
-        yield return new WaitForSeconds(3.5f);
-
-        if (currentNPCObject != null)
-        {
-            Destroy(currentNPCObject);
-        }
-
-        SpawnNextNPC();
+        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(dismissDestination, 4.5f, 3.5f));
     }
 
     private IEnumerator MutantAttackRoutine()
     {
-        if (InspectionDeskInteractable.instance != null)
-        {
-            InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
-        }
-
-        // Đột biến lao qua cổng
-        if (currentAgent != null && passDestination != null)
-        {
-            Vector3 target = GetSampledNavMeshPosition(passDestination.position);
-            if (!currentAgent.isOnNavMesh && currentNPCObject != null)
-            {
-                currentAgent.Warp(GetSampledNavMeshPosition(currentNPCObject.transform.position));
-            }
-
-            if (currentAgent.isOnNavMesh)
-            {
-                currentAgent.isStopped = false;
-                currentAgent.speed = 5.0f;
-                currentAgent.SetDestination(target);
-            }
-        }
-
         // Đèn chớp tắt báo động
         if (TaskManager.instance != null)
         {
             TaskManager.instance.FlickerFlashlight(5, 0.08f, 0.8f);
         }
 
-        yield return new WaitForSeconds(4.0f);
-
-        if (currentNPCObject != null)
-        {
-            Destroy(currentNPCObject);
-        }
-
-        SpawnNextNPC();
+        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(passDestination, 5.0f, 4.0f));
     }
 
     private void TriggerBreachAlarm()

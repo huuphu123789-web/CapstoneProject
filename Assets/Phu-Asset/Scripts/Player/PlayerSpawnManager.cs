@@ -270,6 +270,21 @@ public class PlayerSpawnManager : MonoBehaviour
             Light flLight = fl.GetFlashlightLight();
             if (flLight != null) flLight.enabled = false;
         }
+
+        // Trong scene Night-1 (new), tắt bóng đổ của các đèn phụ (Point/Spot) để tránh tràn Shadow Atlas và tối ưu FPS
+        string activeSceneLower = SceneManager.GetActiveScene().name.Trim().ToLower();
+        if (activeSceneLower == "night-1 (new)" || activeSceneLower == "night 1 (new)")
+        {
+            Light[] allLights = FindObjectsByType<Light>(FindObjectsInactive.Include);
+            foreach (Light l in allLights)
+            {
+                if (l == null || l.type == LightType.Directional) continue;
+                if (l.transform.IsChildOf(playerObj.transform) || l.GetComponentInParent<FlashlightController>() != null)
+                    continue;
+                if (l.shadows != LightShadows.None)
+                    l.shadows = LightShadows.None;
+            }
+        }
     }
 
     private IEnumerator StabilizePlayerPosition()

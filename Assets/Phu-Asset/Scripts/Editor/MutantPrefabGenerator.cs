@@ -1,7 +1,8 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
-using System.IO;
 
 /// <summary>
 /// Editor Utility to automatically generate 3 new Mutant NPC Prefabs:
@@ -642,6 +643,374 @@ public static class MutantPrefabGenerator
         // 5. Lưu Scene
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
         EditorUtility.DisplayDialog("Thành công", $"Đã thiết lập Player xuất hiện tại vị trí CellarSpawnPoint trong hầm Cellar thành công!\nTọa độ: {targetPos}\nPlayer và PlayerSpawnManager đã sẵn sàng.", "OK");
+    }
+
+    // =========================================================================
+    // CHUYỂN TOÀN BỘ MATERIAL TRONG SCENE NIGHT-1 (NEW) SANG OPAQUE (ĐỘC LẬP)
+    // =========================================================================
+    private const string Night1OpaqueFolder = "Assets/Phu-Asset/Materials/Night1_Opaque";
+    private const string Night1ScenePath = "Assets/Phu-Asset/Scenes/Night-1 (new).unity";
+    private const string AutoOpaqueSessionKey = "Night1New_OpaqueAndShadows_v2";
+
+    [InitializeOnLoadMethod]
+    private static void InitNight1OpaqueAutoConverter()
+    {
+        EditorApplication.delayCall += TryAutoConvertNight1NewOpaque;
+        UnityEditor.SceneManagement.EditorSceneManager.sceneOpened -= OnSceneOpenedForOpaque;
+        UnityEditor.SceneManagement.EditorSceneManager.sceneOpened += OnSceneOpenedForOpaque;
+    }
+
+    private static void OnSceneOpenedForOpaque(UnityEngine.SceneManagement.Scene scene, UnityEditor.SceneManagement.OpenSceneMode mode)
+    {
+        if (IsNight1NewScene(scene) && !EditorApplication.isPlayingOrWillChangePlaymode)
+        {
+            ConvertSceneMaterialsToOpaqueInternal(scene, showDialog: false);
+            DisableAdditionalLightShadowsInternal(scene, showDialog: false);
+        }
+    }
+
+    private static void TryAutoConvertNight1NewOpaque()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+        if (SessionState.GetBool(AutoOpaqueSessionKey, false)) return;
+
+        var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        if (IsNight1NewScene(activeScene))
+        {
+            SessionState.SetBool(AutoOpaqueSessionKey, true);
+            ConvertSceneMaterialsToOpaqueInternal(activeScene, showDialog: false);
+            DisableAdditionalLightShadowsInternal(activeScene, showDialog: false);
+        }
+    }
+
+    [MenuItem("Tools/Border Anomaly/Convert Night-1 (new) Materials To Opaque")]
+    public static void ConvertNight1NewMaterialsToOpaqueMenu()
+    {
+        if (EditorApplication.isPlaying)
+        {
+            EditorUtility.DisplayDialog("Thông báo", "Hãy tắt chế độ Play trước khi chuyển đổi Material nhé!", "OK");
+            return;
+        }
+
+        var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        if (!IsNight1NewScene(activeScene))
+        {
+            if (File.Exists(Night1ScenePath))
+            {
+                if (!UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                    return;
+                activeScene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(Night1ScenePath);
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("Thông báo", "Hãy mở scene 'Night-1 (new)' trước khi chạy công cụ này!", "OK");
+                return;
+            }
+        }
+
+        ConvertSceneMaterialsToOpaqueInternal(activeScene, showDialog: true);
+    }
+
+    private static bool IsNight1NewScene(UnityEngine.SceneManagement.Scene scene)
+    {
+        if (!scene.IsValid()) return false;
+        string n = scene.name.Trim().ToLower();
+        return n == "night-1 (new)" || n == "night 1 (new)" || n == "night-1(new)" || n == "night 1(new)";
+    }
+
+    private static void EnsureOpaqueFolderExists()
+    {
+        if (!AssetDatabase.IsValidFolder("Assets/Phu-Asset/Materials"))
+        {
+            AssetDatabase.CreateFolder("Assets/Phu-Asset", "Materials");
+        }
+        if (!AssetDatabase.IsValidFolder(Night1OpaqueFolder))
+        {
+            AssetDatabase.CreateFolder("Assets/Phu-Asset/Materials", "Night1_Opaque");
+        }
+    }
+
+    private static bool ShouldSkipMaterialForOpaque(Material mat)
+    {
+        if (mat == null || mat.shader == null) return true;
+        string matName = mat.name.ToLower();
+        string shaderName = mat.shader.name.ToLower();
+
+        // Giữ nguyên kính cửa sổ, nước, bầu trời, UI, chữ, hiệu ứng khói/sương/hạt
+        string[] skipKeywords =
+        {
+            "glass", "water", "ui/", "sprites/", "textmeshpro", "font",
+            "particle", "skybox", "decal", "flare", "smoke", "fog", "beam"
+        };
+        foreach (string kw in skipKeywords)
+        {
+            if (matName.Contains(kw) || shaderName.Contains(kw))
+                return true;
+        }
+        return false;
+    }
+
+    private static bool NeedsOpaqueConversion(Material mat)
+    {
+        if (ShouldSkipMaterialForOpaque(mat)) return false;
+
+        bool surfaceTransparent = mat.HasProperty("_Surface") && mat.GetFloat("_Surface") > 0.5f;
+        bool kwTransparent = mat.IsKeywordEnabled("_SURFACE_TYPE_TRANSPARENT");
+        string renderType = mat.GetTag("RenderType", false);
+        bool tagTransparent = string.Equals(renderType, "Transparent", System.StringComparison.OrdinalIgnoreCase);
+        bool queueTransparent = mat.renderQueue >= (int)UnityEngine.Rendering.RenderQueue.Transparent;
+        bool zWriteOff = mat.HasProperty("_ZWrite") && mat.GetFloat("_ZWrite") < 0.5f;
+
+        return surfaceTransparent || kwTransparent || tagTransparent || queueTransparent || zWriteOff;
+    }
+
+    private static void ApplyOpaqueSettings(Material mat)
+    {
+        if (mat == null) return;
+
+        bool alphaClip = (mat.HasProperty("_AlphaClip") && mat.GetFloat("_AlphaClip") > 0.5f)
+                      || mat.IsKeywordEnabled("_ALPHATEST_ON")
+                      || string.Equals(mat.GetTag("RenderType", false), "TransparentCutout", System.StringComparison.OrdinalIgnoreCase);
+
+        if (mat.HasProperty("_Surface")) mat.SetFloat("_Surface", 0f);
+        if (mat.HasProperty("_Blend")) mat.SetFloat("_Blend", 0f);
+        if (mat.HasProperty("_SrcBlend")) mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One);
+        if (mat.HasProperty("_DstBlend")) mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);
+        if (mat.HasProperty("_SrcBlendAlpha")) mat.SetFloat("_SrcBlendAlpha", (float)UnityEngine.Rendering.BlendMode.One);
+        if (mat.HasProperty("_DstBlendAlpha")) mat.SetFloat("_DstBlendAlpha", (float)UnityEngine.Rendering.BlendMode.Zero);
+        if (mat.HasProperty("_AlphaDstBlend")) mat.SetFloat("_AlphaDstBlend", (float)UnityEngine.Rendering.BlendMode.Zero);
+        if (mat.HasProperty("_ZWrite")) mat.SetFloat("_ZWrite", 1f);
+        if (mat.HasProperty("_ZWriteControl")) mat.SetFloat("_ZWriteControl", 0f);
+        if (mat.HasProperty("_ZTestGBuffer")) mat.SetFloat("_ZTestGBuffer", (float)UnityEngine.Rendering.CompareFunction.LessEqual);
+
+        mat.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        mat.DisableKeyword("_DISABLE_SSR_TRANSPARENT");
+        mat.DisableKeyword("_ENABLE_FOG_ON_TRANSPARENT");
+        mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        mat.DisableKeyword("_ALPHAMODULATE_ON");
+
+        mat.SetShaderPassEnabled("DepthOnly", true);
+        mat.SetShaderPassEnabled("DepthNormals", true);
+        mat.SetShaderPassEnabled("ShadowCaster", true);
+
+        if (alphaClip)
+        {
+            mat.SetOverrideTag("RenderType", "TransparentCutout");
+            mat.EnableKeyword("_ALPHATEST_ON");
+            mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+        }
+        else
+        {
+            mat.SetOverrideTag("RenderType", "Opaque");
+            mat.renderQueue = -1;
+        }
+
+        mat.enableInstancing = true;
+    }
+
+    private static string SanitizeFileName(string raw)
+    {
+        foreach (char c in Path.GetInvalidFileNameChars())
+        {
+            raw = raw.Replace(c, '_');
+        }
+        return raw.Replace('/', '_').Replace('\\', '_').Replace(':', '_').Trim();
+    }
+
+    private static void ConvertSceneMaterialsToOpaqueInternal(UnityEngine.SceneManagement.Scene scene, bool showDialog)
+    {
+        EnsureOpaqueFolderExists();
+
+        Dictionary<Material, Material> convertedCache = new Dictionary<Material, Material>();
+        int rendererUpdatedCount = 0;
+        int materialCreatedOrUpdatedCount = 0;
+
+        GameObject[] roots = scene.GetRootGameObjects();
+        foreach (GameObject root in roots)
+        {
+            if (root == null) continue;
+            // Bỏ qua Player và UI Canvas
+            if (root.CompareTag("Player") || root.GetComponent<PlayerController>() != null || root.GetComponent<Canvas>() != null)
+                continue;
+
+            Renderer[] renderers = root.GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer r in renderers)
+            {
+                if (r == null) continue;
+                if (!(r is MeshRenderer) && !(r is SkinnedMeshRenderer)) continue;
+                if (r.GetComponentInParent<Canvas>() != null || r.GetComponentInParent<PlayerController>() != null)
+                    continue;
+
+                Material[] mats = r.sharedMaterials;
+                if (mats == null || mats.Length == 0) continue;
+
+                bool changedThisRenderer = false;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    Material srcMat = mats[i];
+                    if (srcMat == null) continue;
+
+                    // Nếu đã là bản clone nằm trong Night1_Opaque thì chỉ đảm bảo thông số Opaque chuẩn
+                    string srcAssetPath = AssetDatabase.GetAssetPath(srcMat);
+                    if (!string.IsNullOrEmpty(srcAssetPath) && srcAssetPath.StartsWith(Night1OpaqueFolder))
+                    {
+                        if (NeedsOpaqueConversion(srcMat))
+                        {
+                            ApplyOpaqueSettings(srcMat);
+                            EditorUtility.SetDirty(srcMat);
+                            materialCreatedOrUpdatedCount++;
+                        }
+                        continue;
+                    }
+
+                    if (!NeedsOpaqueConversion(srcMat))
+                        continue;
+
+                    if (!convertedCache.TryGetValue(srcMat, out Material opaqueMat) || opaqueMat == null)
+                    {
+                        string keySuffix = Mathf.Abs(srcMat.GetHashCode()).ToString();
+                        if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier(srcMat, out string guid, out long localId))
+                        {
+                            string shortGuid = guid.Length >= 8 ? guid.Substring(0, 8) : guid;
+                            keySuffix = $"{shortGuid}_{Mathf.Abs((int)(localId & 0x7FFFFFFF))}";
+                        }
+
+                        string safeName = SanitizeFileName(string.IsNullOrEmpty(srcMat.name) ? "Mat" : srcMat.name);
+                        string clonePath = $"{Night1OpaqueFolder}/{safeName}_{keySuffix}_Opaque.mat";
+
+                        opaqueMat = AssetDatabase.LoadAssetAtPath<Material>(clonePath);
+                        if (opaqueMat == null)
+                        {
+                            opaqueMat = new Material(srcMat);
+                            opaqueMat.name = $"{safeName}_Opaque";
+                            ApplyOpaqueSettings(opaqueMat);
+                            AssetDatabase.CreateAsset(opaqueMat, clonePath);
+                        }
+                        else
+                        {
+                            ApplyOpaqueSettings(opaqueMat);
+                            EditorUtility.SetDirty(opaqueMat);
+                        }
+
+                        convertedCache[srcMat] = opaqueMat;
+                        materialCreatedOrUpdatedCount++;
+                    }
+
+                    if (mats[i] != opaqueMat)
+                    {
+                        if (!changedThisRenderer)
+                        {
+                            Undo.RecordObject(r, "Convert Material To Opaque (Night-1 new)");
+                            changedThisRenderer = true;
+                        }
+                        mats[i] = opaqueMat;
+                    }
+                }
+
+                if (changedThisRenderer)
+                {
+                    r.sharedMaterials = mats;
+                    EditorUtility.SetDirty(r);
+                    rendererUpdatedCount++;
+                }
+            }
+        }
+
+        if (rendererUpdatedCount > 0 || materialCreatedOrUpdatedCount > 0)
+        {
+            AssetDatabase.SaveAssets();
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
+            Debug.Log($"[Border Anomaly] Đã chuyển {materialCreatedOrUpdatedCount} Material sang Opaque trên {rendererUpdatedCount} Renderer CHỈ TRONG scene '{scene.name}' (lưu tại {Night1OpaqueFolder}).");
+        }
+
+        if (showDialog)
+        {
+            EditorUtility.DisplayDialog(
+                "Hoàn tất chuyển Opaque (Night-1 new)",
+                $"Đã kiểm tra toàn bộ scene '{scene.name}':\n" +
+                $"- Số Material chuyển sang Opaque: {materialCreatedOrUpdatedCount}\n" +
+                $"- Số Renderer đã cập nhật: {rendererUpdatedCount}\n\n" +
+                $"Các bản Material Opaque riêng được lưu tại:\n{Night1OpaqueFolder}\n" +
+                $"(Không ảnh hưởng tới bất kỳ scene hay file gốc nào của thành viên khác!)\n\n" +
+                $"Hãy nhấn Cmd + S để lưu Scene nhé!",
+                "OK");
+        }
+    }
+
+    [MenuItem("Tools/Border Anomaly/Disable Additional Light Shadows (Night-1 new)")]
+    public static void DisableAdditionalLightShadowsMenu()
+    {
+        if (EditorApplication.isPlaying)
+        {
+            EditorUtility.DisplayDialog("Thông báo", "Hãy tắt chế độ Play trước khi chỉnh sửa đèn nhé!", "OK");
+            return;
+        }
+
+        var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        if (!IsNight1NewScene(activeScene))
+        {
+            if (File.Exists(Night1ScenePath))
+            {
+                if (!UnityEditor.SceneManagement.EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                    return;
+                activeScene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(Night1ScenePath);
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("Thông báo", "Hãy mở scene 'Night-1 (new)' trước khi chạy công cụ này!", "OK");
+                return;
+            }
+        }
+
+        DisableAdditionalLightShadowsInternal(activeScene, showDialog: true);
+    }
+
+    private static void DisableAdditionalLightShadowsInternal(UnityEngine.SceneManagement.Scene scene, bool showDialog)
+    {
+        int updatedLights = 0;
+
+        GameObject[] roots = scene.GetRootGameObjects();
+        foreach (GameObject root in roots)
+        {
+            if (root == null) continue;
+            if (root.CompareTag("Player") || root.GetComponent<PlayerController>() != null)
+                continue;
+
+            Light[] lights = root.GetComponentsInChildren<Light>(true);
+            foreach (Light l in lights)
+            {
+                if (l == null) continue;
+                // Giữ nguyên Directional Light và đèn của Player
+                if (l.type == LightType.Directional) continue;
+                if (l.GetComponentInParent<PlayerController>() != null || l.GetComponentInParent<FlashlightController>() != null)
+                    continue;
+
+                if (l.shadows != LightShadows.None)
+                {
+                    Undo.RecordObject(l, "Disable Additional Light Shadows (Night-1 new)");
+                    l.shadows = LightShadows.None;
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(l);
+                    EditorUtility.SetDirty(l);
+                    updatedLights++;
+                }
+            }
+        }
+
+        if (updatedLights > 0)
+        {
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
+            Debug.Log($"[Border Anomaly] Đã chuyển {updatedLights} đèn phụ sang No Shadows CHỈ TRONG scene '{scene.name}' (hết lỗi tràn Shadow Atlas & tăng FPS).");
+        }
+
+        if (showDialog)
+        {
+            EditorUtility.DisplayDialog(
+                "Đã tắt bóng đèn phụ (Night-1 new)",
+                $"Đã chuyển {updatedLights} đèn phụ (Point/Spot Light) sang 'No Shadows' trong scene '{scene.name}'.\n" +
+                $"Đã giữ nguyên Directional Light và Đèn pin Player.\n\n" +
+                $"Hãy nhấn Cmd + S để lưu Scene nhé!",
+                "OK");
+        }
     }
 }
 #endif

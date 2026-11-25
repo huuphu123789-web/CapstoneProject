@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 3791785268746619816}
   - component: {fileID: 1378903266627997706}
   - component: {fileID: 6317011003668182943}
+  - component: {fileID: 9215048412631482082}
   m_Layer: 0
   m_Name: On
   m_TagString: Untagged
@@ -124,6 +125,27 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &9215048412631482082
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 91567217605862421}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0154, y: 0.02359854, z: 0.014231617}
+  m_Center: {x: 0, y: 0.01179927, z: 0.00044741295}
 --- !u!1 &127316042727321699
 GameObject:
   m_ObjectHideFlags: 0
@@ -507,6 +529,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4746399287348361952}
   - component: {fileID: 1761001519527818531}
+  - component: {fileID: 4647447201004047716}
   m_Layer: 0
   m_Name: ToggleOnOff (1)
   m_TagString: Untagged
@@ -543,6 +566,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d50b66bb031043b45ad56f423235a798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4647447201004047716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820201279836297039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0e209244b8c4426983518234ab1a3db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GateButtonInteractable
+  promptMessage: Interact
+  interactSound: {fileID: 8300000, guid: 92b13f80e14c84f4a8b9d5de6ddf85cf, type: 3}
+  buttonType: 1
 --- !u!1 &1038877165432810990
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,6 +683,7 @@ GameObject:
   - component: {fileID: 1057791667684187014}
   - component: {fileID: 2282612649624470186}
   - component: {fileID: 1351582924379292535}
+  - component: {fileID: 2627476439791141706}
   m_Layer: 0
   m_Name: Off
   m_TagString: Untagged
@@ -724,6 +763,27 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &2627476439791141706
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123888337463953882}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0154, y: 0.02359854, z: 0.014231617}
+  m_Center: {x: 0, y: 0.01179927, z: -0.00044741295}
 --- !u!1 &1181030270754395035
 GameObject:
   m_ObjectHideFlags: 0
@@ -881,6 +941,8 @@ GameObject:
   - component: {fileID: 4873323788464135910}
   - component: {fileID: 7594552558798374517}
   - component: {fileID: 5217790084225031466}
+  - component: {fileID: 7237072287546318578}
+  - component: {fileID: 2435241641659655595}
   m_Layer: 0
   m_Name: Off
   m_TagString: Untagged
@@ -960,6 +1022,49 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &7237072287546318578
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1401614049818850154}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0154, y: 0.02359854, z: 0.014231617}
+  m_Center: {x: 0, y: 0.01179927, z: -0.00044741295}
+--- !u!114 &2435241641659655595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1401614049818850154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc0259dde983e4367981e065ca6174c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InspectionDeskInteractable
+  promptMessage: Interact
+  interactSound: {fileID: 0}
+  documentVisualProp: {fileID: 0}
+  cccdScreenRenderer: {fileID: 3147012581541122022}
+  surrenderScreenRenderer: {fileID: 2923278372508587376}
+  screenMaterialIndex: 0
+  screenEmissionIntensity: 0.85
+  screenTextureScale: {x: 1, y: 1}
+  screenTextureOffset: {x: 0, y: 0}
+  alsoOpenFullscreenUI: 0
 --- !u!1 &1950963949064002912
 GameObject:
   m_ObjectHideFlags: 0
@@ -1151,7 +1256,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3536172616221095986}
   m_Layer: 0
-  m_Name: Tonggle2
+  m_Name: DenyToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1281,7 +1386,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: somthing
+  m_text: Deny
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 32f31ffd4bd55403d9dac83324fdd680, type: 2}
   m_sharedMaterial: {fileID: 5143839559249315238, guid: 32f31ffd4bd55403d9dac83324fdd680, type: 2}
@@ -1636,7 +1741,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6050622641223928427}
   m_Layer: 0
-  m_Name: Tonggle1
+  m_Name: ApproveTOggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2275,7 +2380,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: OpenGate
+  m_text: Approve
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 32f31ffd4bd55403d9dac83324fdd680, type: 2}
   m_sharedMaterial: {fileID: 5143839559249315238, guid: 32f31ffd4bd55403d9dac83324fdd680, type: 2}
@@ -2587,6 +2692,7 @@ GameObject:
   - component: {fileID: 5202729900824132109}
   - component: {fileID: 8286930703894935080}
   - component: {fileID: 7309587272812952788}
+  - component: {fileID: 5335250918719324705}
   m_Layer: 0
   m_Name: On
   m_TagString: Untagged
@@ -2666,6 +2772,27 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &5335250918719324705
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5225707672042635672}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0154, y: 0.02359854, z: 0.014231617}
+  m_Center: {x: 0, y: 0.01179927, z: 0.00044741295}
 --- !u!1 &5226644754859542273
 GameObject:
   m_ObjectHideFlags: 0
@@ -2902,6 +3029,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8402119676405734014}
   - component: {fileID: 329151822373469421}
+  - component: {fileID: 3967639783101231302}
   m_Layer: 0
   m_Name: ToggleOnOff
   m_TagString: Untagged
@@ -2938,6 +3066,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d50b66bb031043b45ad56f423235a798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3967639783101231302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5675467540117679990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0e209244b8c4426983518234ab1a3db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GateButtonInteractable
+  promptMessage: Interact
+  interactSound: {fileID: 8300000, guid: 92b13f80e14c84f4a8b9d5de6ddf85cf, type: 3}
+  buttonType: 0
 --- !u!1 &5970324957591241444
 GameObject:
   m_ObjectHideFlags: 0
@@ -3228,7 +3371,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: somthing
+  m_text: Inspect
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 32f31ffd4bd55403d9dac83324fdd680, type: 2}
   m_sharedMaterial: {fileID: 5143839559249315238, guid: 32f31ffd4bd55403d9dac83324fdd680, type: 2}
@@ -3503,7 +3646,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1399630562262543634}
   m_Layer: 0
-  m_Name: Toggle3
+  m_Name: Inspect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3538,6 +3681,7 @@ GameObject:
   - component: {fileID: 2205831152122206099}
   - component: {fileID: 3704063384031604125}
   - component: {fileID: 3253439151528612627}
+  - component: {fileID: 771243621619934310}
   m_Layer: 0
   m_Name: On
   m_TagString: Untagged
@@ -3617,6 +3761,27 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &771243621619934310
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6792478728296769291}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0154, y: 0.02359854, z: 0.014231617}
+  m_Center: {x: 0, y: 0.01179927, z: 0.00044741295}
 --- !u!1 &6984014329192916891
 GameObject:
   m_ObjectHideFlags: 0
@@ -4230,6 +4395,7 @@ GameObject:
   - component: {fileID: 8131589899373715259}
   - component: {fileID: 6461269000908731509}
   - component: {fileID: 8405773486943255835}
+  - component: {fileID: 3163970978394359638}
   m_Layer: 0
   m_Name: Off
   m_TagString: Untagged
@@ -4309,6 +4475,27 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3163970978394359638
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8161501364663339277}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0154, y: 0.02359854, z: 0.014231617}
+  m_Center: {x: 0, y: 0.01179927, z: -0.00044741295}
 --- !u!1 &8542945543269011950
 GameObject:
   m_ObjectHideFlags: 0

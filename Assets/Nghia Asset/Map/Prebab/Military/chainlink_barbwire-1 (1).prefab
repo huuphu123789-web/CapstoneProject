@@ -69,6 +69,7 @@ GameObject:
   - component: {fileID: 4813938049700751048}
   - component: {fileID: 543297187209803996}
   - component: {fileID: 9059779147681162363}
+  - component: {fileID: 8658555250051355207}
   m_Layer: 0
   m_Name: chainlink_barbwire-1_LOD1
   m_TagString: Untagged
@@ -148,6 +149,28 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8658555250051355207
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3861172754008766684}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300002, guid: a352243a7ef767044a66e3541605f536, type: 3}
 --- !u!1 &6869805825642222136
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,6 +182,7 @@ GameObject:
   - component: {fileID: 4287388927398840056}
   - component: {fileID: 7176368898713701029}
   - component: {fileID: 948999465656051815}
+  - component: {fileID: 2078216636386535137}
   m_Layer: 0
   m_Name: chainlink_barbwire-1_LOD0
   m_TagString: Untagged
@@ -238,3 +262,25 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &2078216636386535137
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6869805825642222136}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: a352243a7ef767044a66e3541605f536, type: 3}
