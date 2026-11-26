@@ -93,6 +93,7 @@ public class SettingManager : MonoBehaviour
         SetupGameplaySettings();
         SetupUIScale();
         SetupLanguage();
+        SetupControlsRebindPanel();
     }
 
     void OnEnable()
@@ -101,6 +102,35 @@ public class SettingManager : MonoBehaviour
         SetupGameplaySettings();
         SetupUIScale();
         SetupLanguage();
+        SetupControlsRebindPanel();
+    }
+
+    private void SetupControlsRebindPanel()
+    {
+        // Đảm bảo nền SettingPanel đủ tối và đục để Mặt Trăng / Skybox / 3D không xuyên đè lên giao diện cài đặt
+        Image bgImg = GetComponent<Image>();
+        if (bgImg != null && bgImg.color.a < 0.85f)
+        {
+            bgImg.color = new Color(0.03f, 0.04f, 0.06f, 0.94f);
+        }
+
+        Transform[] children = GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < children.Length; i++)
+        {
+            Transform t = children[i];
+            if (t == null) continue;
+            string lower = t.name.ToLowerInvariant();
+            if (lower == "panel_controls" || lower == "panelcontrols" || lower == "controlspanel")
+            {
+                ControlsRebindPanel rebind = t.GetComponent<ControlsRebindPanel>();
+                if (rebind == null)
+                {
+                    rebind = t.gameObject.AddComponent<ControlsRebindPanel>();
+                }
+                rebind.EnsureBuilt();
+                break;
+            }
+        }
     }
 
     // ================= 1. XỬ LÝ ÂM THANH =================

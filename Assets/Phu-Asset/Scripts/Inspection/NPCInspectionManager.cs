@@ -215,6 +215,7 @@ public class NPCInspectionManager : MonoBehaviour
         EnsureDeskAndButtons();
         EnsureDialogueUI();
         EnsureVoiceClipsAssigned();
+        EnsureDocumentTexturesAssigned();
 
         bool noTaskManager = (TaskManager.instance == null && FindAnyObjectByType<TaskManager>() == null);
         if (startInspectionOnStart || (autoStartIfNoTaskManager && noTaskManager))
@@ -285,6 +286,72 @@ public class NPCInspectionManager : MonoBehaviour
                 else if (profile.npcName.Contains("Screamer")) mutantType = "Screamer";
 
                 profile.npcName = $"{assignedName}-{mutantType}";
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tự động nạp ảnh CCCD và Surrender Confirm cho các NPC trong danh sách nếu người dùng chưa kéo thủ công
+    /// </summary>
+    public void EnsureDocumentTexturesAssigned()
+    {
+        if (npcQueue == null) return;
+
+        string[] fallbackCccds = new string[]
+        {
+            "Assets/Loc asset/sprites/CCCD/CCQN/Victor Jean Mercier.png",
+            "Assets/Loc asset/sprites/CCCD/CCQN/Trinh Hoang Long.png",
+            "Assets/Loc asset/sprites/CCCD/CCQN/ETIENNE PIERRE GIRAR.png",
+            "Assets/Loc asset/sprites/CCCD/CCQN/npc-1.png",
+            "Assets/Loc asset/sprites/CCCD/CCQN/npc-2.png",
+            "Assets/Loc asset/sprites/CCCD/CCQN/npc-3.png",
+            "Assets/Loc asset/sprites/CCCD/CCQN/npc-6.png",
+            "Assets/Loc asset/sprites/CCCD/CCQN/npc-8.png",
+            "Assets/Loc asset/sprites/CCCD/CCQN/npc-9.png",
+            "Assets/Loc asset/sprites/CCCD/CCQN/npc-12.png"
+        };
+
+        string[] fallbackSurrenders = new string[]
+        {
+            "Assets/Loc asset/sprites/CCCD/Surrender Confirm/Victor Jean Mercier.png",
+            "Assets/Loc asset/sprites/CCCD/Surrender Confirm/npc-6.png",
+            "Assets/Loc asset/sprites/CCCD/Surrender Confirm/npc-2.png",
+            "Assets/Loc asset/sprites/CCCD/Surrender Confirm/npc-3.png",
+            "Assets/Loc asset/sprites/CCCD/Surrender Confirm/npc-8.png",
+            "Assets/Loc asset/sprites/CCCD/Surrender Confirm/npc-9.png",
+            "Assets/Loc asset/sprites/CCCD/Surrender Confirm/npc-12.png"
+        };
+
+        for (int i = 0; i < npcQueue.Count; i++)
+        {
+            var npc = npcQueue[i];
+            if (npc == null) continue;
+
+            string lowerName = (npc.npcName ?? "").ToLowerInvariant();
+            if (npc.npcPrefab != null) lowerName += " " + npc.npcPrefab.name.ToLowerInvariant();
+
+            if (npc.cccdTexture == null)
+            {
+                if (lowerName.Contains("victor"))
+                    npc.cccdTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/CCQN/Victor Jean Mercier.png");
+                else if (lowerName.Contains("trinh hoang long"))
+                    npc.cccdTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/CCQN/Trinh Hoang Long.png");
+                else if (lowerName.Contains("etienne"))
+                    npc.cccdTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/CCQN/ETIENNE PIERRE GIRAR.png");
+
+                if (npc.cccdTexture == null)
+                    npc.cccdTexture = LoadTextureFromPath(fallbackCccds[i % fallbackCccds.Length]);
+            }
+
+            if (npc.surrenderConfirmTexture == null)
+            {
+                if (lowerName.Contains("victor"))
+                    npc.surrenderConfirmTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/Surrender Confirm/Victor Jean Mercier.png");
+                else if (lowerName.Contains("tran quoc hung"))
+                    npc.surrenderConfirmTexture = LoadTextureFromPath("Assets/Loc asset/sprites/CCCD/pass key/giay_thong_hanh_trần_quốc_hùng.png");
+
+                if (npc.surrenderConfirmTexture == null)
+                    npc.surrenderConfirmTexture = LoadTextureFromPath(fallbackSurrenders[i % fallbackSurrenders.Length]);
             }
         }
     }
@@ -546,6 +613,12 @@ public class NPCInspectionManager : MonoBehaviour
         if (InspectionDeskInteractable.instance != null)
         {
             InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
+        }
+
+        if (currentNPCObject != null)
+        {
+            NPCBaseBehavior behavior = currentNPCObject.GetComponentInChildren<NPCBaseBehavior>();
+            if (behavior != null) behavior.isInspecting = false;
         }
 
         // Hủy NPC cũ nếu còn
@@ -950,6 +1023,32 @@ public class NPCInspectionManager : MonoBehaviour
             return;
         }
 
+        // KIỂM TRA NPC LƠ LỬNG (FLOATING): KHI BẤM TỪ CHỐI -> BAY VÒNG VÒNG RỒI BAY THẲNG LÊN TRỜI BIẾN MẤT
+        NPCFloatingBehavior floating = currentNPCObject != null ? currentNPCObject.GetComponentInChildren<NPCFloatingBehavior>() : null;
+        if (floating != null)
+        {
+            Debug.Log("[NPCInspectionManager] CHUẨN XÁC: Đã từ chối NPC Floating -> Bay lơ lửng vòng vòng rồi bay lên trời biến mất!");
+            ShowDialogue(currentProfile != null ? currentProfile.npcName : "Floating Mutant", denyText, dur, voice);
+            if (correctDecisionChime != null && AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFX(correctDecisionChime);
+            }
+            if (InspectionDeskInteractable.instance != null)
+            {
+                InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
+            }
+
+            floating.TriggerDenyFlyAway(() =>
+            {
+                if (currentNPCObject != null)
+                {
+                    Destroy(currentNPCObject);
+                }
+                SpawnNextNPC();
+            });
+            return;
+        }
+
         if (currentProfile.isMutant || (dogBark != null && dogBark.isMutant))
         {
             // ĐÚNG ĐẮN: Phát hiện và đuổi đột biến
@@ -998,15 +1097,27 @@ public class NPCInspectionManager : MonoBehaviour
             InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
         }
 
+        if (currentNPCObject != null)
+        {
+            NPCBaseBehavior behavior = currentNPCObject.GetComponentInChildren<NPCBaseBehavior>();
+            if (behavior != null) behavior.isInspecting = false;
+        }
+
         // Chờ 2.5s rồi gọi NPC tiếp theo
         Invoke(nameof(SpawnNextNPC), 2.5f);
     }
 
-    private IEnumerator MoveNPCOutAndDestroyRoutine(Transform destinationTransform, float speed, float duration)
+    private IEnumerator MoveNPCOutAndDestroyRoutine(Transform destinationTransform, float speed, float maxSafetyTimeout = 45f)
     {
         if (InspectionDeskInteractable.instance != null)
         {
             InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
+        }
+
+        if (currentNPCObject != null)
+        {
+            NPCBaseBehavior behavior = currentNPCObject.GetComponentInChildren<NPCBaseBehavior>();
+            if (behavior != null) behavior.isInspecting = false;
         }
 
         if (currentNPCObject != null && destinationTransform != null)
@@ -1020,16 +1131,41 @@ public class NPCInspectionManager : MonoBehaviour
                 currentAgent.isStopped = false;
                 currentAgent.speed = speed;
                 currentAgent.SetDestination(target);
-                yield return new WaitForSeconds(duration);
+
+                // Chờ 0.25s để NavMeshAgent tính lộ trình
+                yield return new WaitForSeconds(0.25f);
+
+                float elapsed = 0f;
+                while (currentNPCObject != null && currentAgent != null && elapsed < maxSafetyTimeout)
+                {
+                    if (!currentAgent.enabled || !currentAgent.isOnNavMesh) break;
+
+                    Vector3 curr = currentNPCObject.transform.position;
+                    float flatDist = Vector2.Distance(new Vector2(curr.x, curr.z), new Vector2(target.x, target.z));
+                    if (flatDist <= Mathf.Max(0.75f, currentAgent.stoppingDistance + 0.35f))
+                    {
+                        break;
+                    }
+
+                    if (!currentAgent.pathPending && currentAgent.hasPath &&
+                        currentAgent.remainingDistance <= currentAgent.stoppingDistance + 0.45f)
+                    {
+                        break;
+                    }
+
+                    elapsed += 0.15f;
+                    yield return new WaitForSeconds(0.15f);
+                }
             }
             else
             {
-                yield return StartCoroutine(MoveNPCDirectlyRoutine(destinationTransform.position, speed, duration));
+                // Chế độ đi bộ trực tiếp (chưa bake NavMesh): đi tới sát điểm đích mới biến mất
+                yield return StartCoroutine(MoveNPCDirectlyRoutine(destinationTransform.position, speed, maxSafetyTimeout));
             }
         }
         else
         {
-            yield return new WaitForSeconds(duration);
+            yield return new WaitForSeconds(2.0f);
         }
 
         if (currentNPCObject != null)
@@ -1042,17 +1178,17 @@ public class NPCInspectionManager : MonoBehaviour
 
     private IEnumerator NPCWalkThroughGateRoutine()
     {
-        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(passDestination, 2.2f, 4.5f));
+        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(passDestination, 2.2f, 45f));
     }
 
     private IEnumerator NPCDismissedRoutine()
     {
-        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(dismissDestination, 2.0f, 4.5f));
+        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(dismissDestination, 2.0f, 45f));
     }
 
     private IEnumerator MutantFleesRoutine()
     {
-        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(dismissDestination, 4.5f, 3.5f));
+        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(dismissDestination, 4.5f, 45f));
     }
 
     private IEnumerator MutantAttackRoutine()
@@ -1063,7 +1199,7 @@ public class NPCInspectionManager : MonoBehaviour
             TaskManager.instance.FlickerFlashlight(5, 0.08f, 0.8f);
         }
 
-        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(passDestination, 5.0f, 4.0f));
+        yield return StartCoroutine(MoveNPCOutAndDestroyRoutine(passDestination, 5.0f, 45f));
     }
 
     private void TriggerBreachAlarm()
@@ -1089,6 +1225,12 @@ public class NPCInspectionManager : MonoBehaviour
         if (InspectionDeskInteractable.instance != null)
         {
             InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
+        }
+
+        if (currentNPCObject != null)
+        {
+            NPCBaseBehavior behavior = currentNPCObject.GetComponentInChildren<NPCBaseBehavior>();
+            if (behavior != null) behavior.isInspecting = false;
         }
 
         if (TaskManager.instance != null)

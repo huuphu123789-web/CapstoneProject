@@ -2016,8 +2016,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCFloatingBehavior
   inspectionPoint: {fileID: 0}
   walkSpeed: 2.5
-  floatHeight: 0.6
-  floatSpeed: 2.5
   footstepSounds:
   - {fileID: 8300000, guid: 188ef86ea3751534ea913e73ac74680f, type: 3}
   - {fileID: 8300000, guid: 3eb45fd36cac54a438b3bdb688ceb1af, type: 3}
@@ -2027,11 +2025,19 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 88d1c1e9e1d4ba04ab990640115f30f1, type: 3}
   - {fileID: 8300000, guid: 9e7500087790d8349a38d5626e9d30d8, type: 3}
   - {fileID: 8300000, guid: d2445163e8df7734590914b265098e4b, type: 3}
-  floatHumSound: {fileID: 8300000, guid: ceb51ecc77c17554588d16ecb673e22c, type: 3}
   footstepInterval: 0.5
   isInspecting: 0
   animator: {fileID: 0}
   audioSource: {fileID: 3207238049799911504}
+  agent: {fileID: 0}
+  floatHeight: 0.6
+  floatSpeed: 2.5
+  floatHumSound: {fileID: 8300000, guid: ceb51ecc77c17554588d16ecb673e22c, type: 3}
+  circleDuration: 3
+  circleRadius: 1
+  circleTurns: 1.25
+  ascendDuration: 2.5
+  ascendHeight: 35
 --- !u!82 &3207238049799911504
 AudioSource:
   m_ObjectHideFlags: 0

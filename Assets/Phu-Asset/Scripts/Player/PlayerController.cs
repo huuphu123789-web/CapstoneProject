@@ -188,10 +188,11 @@ public class PlayerController : MonoBehaviour
 
     public void PlayerMove()
     {
-        //*Lay du lieu nhap vao tu ban phim
-        float x = Input.GetAxis("Horizontal"); //* Truc ngang AD or Trai Phai
-        float z = Input.GetAxis("Vertical"); //*Truc doc WS or Len Xuong
-       
+        //*Lay du lieu nhap vao tu ban phim theo KeybindManager (ho tro doi phim trong Setting -> Controls)
+        Vector2 moveInput = KeybindManager.GetMoveVector();
+        float x = moveInput.x;
+        float z = moveInput.y;
+
         //*Tinh toan huong di chuyen dua tren huog quay cua Player
         Vector3 move = transform.right * x + transform.forward * z;
         //*Ra lenh cho Character Controller  di chuyen nhan vat
@@ -209,7 +210,7 @@ public class PlayerController : MonoBehaviour
         int sprintMode = PlayerPrefs.GetInt("SprintMode", 0);
         if (sprintMode == 1)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift))
+            if (KeybindManager.GetKeyDown(GameAction.Sprint))
             {
                 isSprintToggled = !isSprintToggled;
             }
@@ -223,7 +224,7 @@ public class PlayerController : MonoBehaviour
             isSprintToggled = false;
         }
 
-        bool sprintInput = (sprintMode == 1) ? isSprintToggled : Input.GetKey(KeyCode.LeftShift);
+        bool sprintInput = (sprintMode == 1) ? isSprintToggled : KeybindManager.GetKeyHeld(GameAction.Sprint);
         isSprinting = isMoving && sprintInput && canSprint;
 
         // Xử lý Di chuyển & Animation chuẩn xác (chỉ gọi Move đúng 1 lần duy nhất)
@@ -278,8 +279,8 @@ public class PlayerController : MonoBehaviour
             velocity.y = -2f;
         }
 
-        //*Xu li nhay
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        //*Xu li nhay theo phim da gan trong KeybindManager
+        if (KeybindManager.GetKeyDown(GameAction.Jump) && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }

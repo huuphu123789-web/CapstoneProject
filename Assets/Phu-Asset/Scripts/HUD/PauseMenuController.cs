@@ -68,6 +68,9 @@ public class PauseMenuController : MonoBehaviour
 
     void Update()
     {
+        // Đang bấm chọn phím mới trong tab Controls -> không đóng Pause Menu khi bấm ESC
+        if (KeybindManager.IsRebinding) return;
+
         bool escapePressed = false;
 #if ENABLE_INPUT_SYSTEM
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)

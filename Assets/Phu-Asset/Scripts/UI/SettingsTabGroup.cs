@@ -88,6 +88,7 @@ public class SettingsTabGroup : MonoBehaviour
 
     private void Update()
     {
+        if (KeybindManager.IsRebinding) return;
         if (!enableKeyboardShortcuts || tabs.Count <= 1) return;
 
         // Phím Q: Sang tab bên trái

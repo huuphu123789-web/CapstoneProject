@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -38,12 +39,19 @@ public class PlayerInteract : MonoBehaviour
 
     void Start()
     {
+        EnsureHitTextUI();
+    }
+
+    private void EnsureHitTextUI()
+    {
         if (hitText == null)
         {
             TextMeshProUGUI[] tmps = FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include);
             foreach (var t in tmps)
             {
-                if (t.name.ToLower().Contains("hittext") || t.name.ToLower().Contains("interacttext"))
+                if (t == null) continue;
+                string lower = t.name.ToLowerInvariant();
+                if (lower.Contains("hittext") || lower.Contains("interacttext") || lower.Contains("interactprompt"))
                 {
                     hitText = t;
                     break;
@@ -51,16 +59,60 @@ public class PlayerInteract : MonoBehaviour
             }
         }
 
+        // Nếu trong Scene mới chưa tạo sẵn Text gợi ý tương tác -> tự tạo một Canvas gọn nhẹ
+        if (hitText == null)
+        {
+            Canvas targetCanvas = null;
+            Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsInactive.Exclude);
+            for (int i = 0; i < canvases.Length; i++)
+            {
+                if (canvases[i] != null && canvases[i].isRootCanvas &&
+                    canvases[i].renderMode == RenderMode.ScreenSpaceOverlay &&
+                    !canvases[i].name.ToLowerInvariant().Contains("pause"))
+                {
+                    targetCanvas = canvases[i];
+                    break;
+                }
+            }
+
+            if (targetCanvas == null)
+            {
+                GameObject canvasGO = new GameObject("InteractPromptCanvas");
+                targetCanvas = canvasGO.AddComponent<Canvas>();
+                targetCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                targetCanvas.sortingOrder = 50;
+
+                CanvasScaler scaler = canvasGO.AddComponent<CanvasScaler>();
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920f, 1080f);
+                scaler.matchWidthOrHeight = 0.5f;
+            }
+
+            GameObject textGO = new GameObject("InteractPromptText");
+            textGO.transform.SetParent(targetCanvas.transform, false);
+            hitText = textGO.AddComponent<TextMeshProUGUI>();
+
+            TMP_FontAsset font = Resources.Load<TMP_FontAsset>("Fonts & Materials/Roboto-Bold SDF");
+            if (font == null) font = TMP_Settings.defaultFontAsset;
+            if (font != null) hitText.font = font;
+        }
+
         if (hitText != null)
         {
             RectTransform rt = hitText.rectTransform;
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(1f, 0.5f); // Neo cạnh phải chữ tại vị trí lệch trái tâm
-            rt.anchoredPosition = new Vector2(-20f, 0f); // Nằm lệch về bên trái tâm màn hình 20 pixel
-            rt.sizeDelta = new Vector2(600f, 60f);
-            hitText.alignment = TextAlignmentOptions.MidlineRight;
+            rt.pivot = new Vector2(1f, 1f); // Neo góc trên-phải của chữ ngay sát góc dưới-trái crosshair
+            rt.anchoredPosition = new Vector2(-18f, -18f); // Nằm gọn dưới góc trái tâm ngắm (crosshair)
+            rt.sizeDelta = new Vector2(420f, 40f);
+
+            hitText.fontSize = 20f; // Cỡ chữ vừa đủ thấy, gọn gàng
+            hitText.fontStyle = FontStyles.Bold;
+            hitText.color = new Color(0.96f, 0.96f, 0.96f, 0.95f);
+            hitText.alignment = TextAlignmentOptions.TopRight;
             hitText.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+            hitText.raycastTarget = false;
+            hitText.gameObject.SetActive(false);
         }
     }
 
@@ -143,19 +195,7 @@ public class PlayerInteract : MonoBehaviour
                         }
                     }
 
-                    bool interactPressed = false;
-#if ENABLE_INPUT_SYSTEM
-                    if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
-                    {
-                        interactPressed = true;
-                    }
-#endif
-#if ENABLE_LEGACY_INPUT_MANAGER
-                    if (!interactPressed && Input.GetKeyDown(KeyCode.E))
-                    {
-                        interactPressed = true;
-                    }
-#endif
+                    bool interactPressed = KeybindManager.GetKeyDown(GameAction.Interact);
                     if (interactPressed)
                     {
                         if (armAnimator != null)
@@ -182,7 +222,8 @@ public class PlayerInteract : MonoBehaviour
                     {
                         if (showInteractHints)
                         {
-                            hitText.text = $"<color=#FFDD44>[E]</color> {interactable.promptMessage}";
+                            string keyLabel = KeybindManager.GetKeyDisplayName(GameAction.Interact);
+                            hitText.text = $"<color=#FFDD44>[{keyLabel}]</color> {interactable.promptMessage}";
                             hitText.gameObject.SetActive(true);
                         }
                         else

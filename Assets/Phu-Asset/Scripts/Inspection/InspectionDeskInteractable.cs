@@ -30,15 +30,30 @@ public class InspectionDeskInteractable : Interactable
     public Vector2 screenTextureScale = Vector2.one;
     public Vector2 screenTextureOffset = Vector2.zero;
 
+    [Tooltip("Góc xoay Z (độ) của mặt ảnh trên màn hình nếu cần xoay ngang/dọc (0, 90, 180, -90)")]
+    public float screenRotationZ = 0f;
+
     [Tooltip("Bật (tick) nếu muốn vừa hiện lên 2 ô trên Secure Control Panel vừa mở thêm bảng UI phóng to toàn màn hình")]
     public bool alsoOpenFullscreenUI = false;
 
-    private Material originalCccdMaterial;
-    private Material originalSurrenderMaterial;
+    [Header("=== CÔNG TẮC ON / OFF (TỰ ĐỘNG TÌM NẾU ĐỂ TRỐNG) ===")]
+    [Tooltip("GameObject trạng thái BẬT (On) của công tắc Inspect")]
+    public GameObject switchOnObject;
+
+    [Tooltip("GameObject trạng thái TẮT (Off) của công tắc Inspect")]
+    public GameObject switchOffObject;
+
+    [Tooltip("GameObject đèn báo trạng thái BẬT (On) cạnh công tắc Inspect")]
+    public GameObject lightOnObject;
+
+    [Tooltip("GameObject đèn báo trạng thái TẮT (Off) cạnh công tắc Inspect")]
+    public GameObject lightOffObject;
+
+    private GameObject cccdDisplayQuad;
+    private GameObject surrenderDisplayQuad;
     private Material runtimeCccdMaterial;
     private Material runtimeSurrenderMaterial;
-    private OnOff toggleSwitch;
-    private OnOff indicatorLight;
+    private bool isScreenShowing = false;
 
     public bool HasControlPanelScreens => (cccdScreenRenderer != null || surrenderScreenRenderer != null);
 
@@ -55,7 +70,6 @@ public class InspectionDeskInteractable : Interactable
         EnsureInteractCollider();
         AutoFindToggleVisuals();
         AutoFindControlPanelScreens();
-        CacheOriginalScreenMaterials();
     }
 
     private void EnsureInteractCollider()
@@ -70,30 +84,41 @@ public class InspectionDeskInteractable : Interactable
 
     private void AutoFindToggleVisuals()
     {
-        toggleSwitch = GetComponent<OnOff>();
-        if (transform.parent != null)
+        if (switchOnObject == null)
         {
-            OnOff[] siblingOnOffs = transform.parent.GetComponentsInChildren<OnOff>(true);
-            for (int i = 0; i < siblingOnOffs.Length; i++)
+            Transform onTf = transform.Find("On");
+            if (onTf != null) switchOnObject = onTf.gameObject;
+        }
+        if (switchOffObject == null)
+        {
+            Transform offTf = transform.Find("Off");
+            if (offTf != null) switchOffObject = offTf.gameObject;
+        }
+
+        if ((lightOnObject == null || lightOffObject == null) && transform.parent != null)
+        {
+            for (int i = 0; i < transform.parent.childCount; i++)
             {
-                if (siblingOnOffs[i] != null && siblingOnOffs[i] != toggleSwitch &&
-                    siblingOnOffs[i].name.ToLowerInvariant().Contains("light"))
-                {
-                    indicatorLight = siblingOnOffs[i];
-                    break;
-                }
+                Transform sibling = transform.parent.GetChild(i);
+                if (sibling == transform) continue;
+                if (!sibling.name.ToLowerInvariant().Contains("light")) continue;
+
+                Transform lOn = sibling.Find("On");
+                Transform lOff = sibling.Find("Off");
+                if (lightOnObject == null && lOn != null) lightOnObject = lOn.gameObject;
+                if (lightOffObject == null && lOff != null) lightOffObject = lOff.gameObject;
+                break;
             }
         }
     }
 
     private void SetSwitchVisualState(bool isOn)
     {
-        try
-        {
-            if (toggleSwitch != null) toggleSwitch.On = isOn;
-            if (indicatorLight != null) indicatorLight.On = isOn;
-        }
-        catch { }
+        isScreenShowing = isOn;
+        if (switchOnObject != null) switchOnObject.SetActive(isOn);
+        if (switchOffObject != null) switchOffObject.SetActive(!isOn);
+        if (lightOnObject != null) lightOnObject.SetActive(isOn);
+        if (lightOffObject != null) lightOffObject.SetActive(!isOn);
     }
 
     void Start()
@@ -143,29 +168,9 @@ public class InspectionDeskInteractable : Interactable
         }
     }
 
-    private void CacheOriginalScreenMaterials()
-    {
-        if (cccdScreenRenderer != null)
-        {
-            Material[] mats = cccdScreenRenderer.sharedMaterials;
-            if (screenMaterialIndex >= 0 && screenMaterialIndex < mats.Length)
-            {
-                originalCccdMaterial = mats[screenMaterialIndex];
-            }
-        }
-
-        if (surrenderScreenRenderer != null)
-        {
-            Material[] mats = surrenderScreenRenderer.sharedMaterials;
-            if (screenMaterialIndex >= 0 && screenMaterialIndex < mats.Length)
-            {
-                originalSurrenderMaterial = mats[screenMaterialIndex];
-            }
-        }
-    }
-
     /// <summary>
     /// Hiển thị 2 ảnh CCCD và Surrender Confirm lên 2 ô màn hình của Secure Control Panel
+    /// bằng mặt Quad phẳng nằm gọn trong lòng màn hình (UV 0..1 chuẩn, không bị méo theo mesh vỏ).
     /// </summary>
     public void DisplayDocumentsOnScreens(Texture cccdTex, Texture surrenderTex)
     {
@@ -174,47 +179,82 @@ public class InspectionDeskInteractable : Interactable
 
         if (cccdScreenRenderer != null)
         {
-            ApplyTextureToScreen(cccdScreenRenderer, cccdTex, originalCccdMaterial, ref runtimeCccdMaterial);
+            ShowTextureOnOverlayQuad(cccdScreenRenderer, "CCCD_DisplayQuad", cccdTex, ref cccdDisplayQuad, ref runtimeCccdMaterial);
         }
 
         if (surrenderScreenRenderer != null)
         {
-            ApplyTextureToScreen(surrenderScreenRenderer, surrenderTex, originalSurrenderMaterial, ref runtimeSurrenderMaterial);
+            ShowTextureOnOverlayQuad(surrenderScreenRenderer, "Surrender_DisplayQuad", surrenderTex, ref surrenderDisplayQuad, ref runtimeSurrenderMaterial);
         }
     }
 
     /// <summary>
-    /// Tắt 2 màn hình về trạng thái chờ (OffGrid) khi chưa có NPC hoặc đã duyệt xong
+    /// Tắt 2 màn hình về trạng thái chờ khi chưa có NPC hoặc đã duyệt xong
     /// </summary>
     public void ClearScreens()
     {
         SetSwitchVisualState(false);
-        RestoreOriginalMaterial(cccdScreenRenderer, originalCccdMaterial);
-        RestoreOriginalMaterial(surrenderScreenRenderer, originalSurrenderMaterial);
+        if (cccdDisplayQuad != null) cccdDisplayQuad.SetActive(false);
+        if (surrenderDisplayQuad != null) surrenderDisplayQuad.SetActive(false);
     }
 
-    private void ApplyTextureToScreen(MeshRenderer targetRenderer, Texture tex, Material originalMat, ref Material runtimeMat)
+    private void ShowTextureOnOverlayQuad(MeshRenderer parentScreen, string quadName, Texture tex, ref GameObject quadObj, ref Material runtimeMat)
     {
-        if (targetRenderer == null) return;
-        Material[] mats = targetRenderer.materials;
-        if (screenMaterialIndex < 0 || screenMaterialIndex >= mats.Length) return;
+        if (parentScreen == null) return;
 
         if (tex == null)
         {
-            if (originalMat != null)
-            {
-                mats[screenMaterialIndex] = originalMat;
-                targetRenderer.materials = mats;
-            }
+            if (quadObj != null) quadObj.SetActive(false);
+            Debug.LogWarning($"[InspectionDesk] Thiếu ảnh Texture cho màn hình '{parentScreen.name}'! Hãy kiểm tra ô Cccd Texture / Surrender Confirm Texture trong NPCInspectionManager.");
             return;
+        }
+
+        if (quadObj == null)
+        {
+            quadObj = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            quadObj.name = quadName;
+            Collider col = quadObj.GetComponent<Collider>();
+            if (col != null) Destroy(col);
+
+            quadObj.transform.SetParent(parentScreen.transform, false);
+
+            // Tự tính kích thước khớp lòng màn hình của MovingScope.mesh (hoặc Mesh bất kỳ)
+            MeshFilter mf = parentScreen.GetComponent<MeshFilter>();
+            Vector3 localPos = new Vector3(0f, 0.0028f, 0f);
+            Vector3 localScale = new Vector3(0.104f, 0.084f, 1f);
+            if (mf != null && mf.sharedMesh != null)
+            {
+                Bounds b = mf.sharedMesh.bounds;
+                // Đặt mặt ảnh nổi nhẹ ngay trên mặt phẳng màn hình bên trong viền
+                float topY = b.min.y + b.size.y * 0.35f;
+                localPos = new Vector3(b.center.x, Mathf.Max(0.0028f, topY), b.center.z);
+                localScale = new Vector3(b.size.x * 0.84f, b.size.z * 0.82f, 1f);
+            }
+
+            quadObj.transform.localPosition = localPos;
+            quadObj.transform.localRotation = Quaternion.Euler(90f, screenRotationZ, 0f);
+            quadObj.transform.localScale = localScale;
+        }
+        else
+        {
+            quadObj.transform.localRotation = Quaternion.Euler(90f, screenRotationZ, 0f);
         }
 
         if (runtimeMat == null)
         {
-            Material baseMat = originalMat != null ? originalMat : mats[screenMaterialIndex];
-            runtimeMat = new Material(baseMat);
-            runtimeMat.name = targetRenderer.name + "_DisplayMat";
+            Shader unlitShader = Shader.Find("Universal Render Pipeline/Unlit");
+            if (unlitShader == null) unlitShader = Shader.Find("Unlit/Texture");
+            if (unlitShader == null) unlitShader = Shader.Find("Standard");
+            runtimeMat = new Material(unlitShader);
+            runtimeMat.name = quadName + "_Mat";
+            if (runtimeMat.HasProperty("_Cull"))
+            {
+                runtimeMat.SetFloat("_Cull", 0f); // Double-sided để không bao giờ bị ẩn mặt sau
+            }
         }
+
+        float brightness = Mathf.Clamp(0.65f + screenEmissionIntensity * 0.35f, 0.5f, 1.5f);
+        Color tint = new Color(brightness, brightness, brightness, 1f);
 
         if (runtimeMat.HasProperty("_BaseMap"))
         {
@@ -230,34 +270,22 @@ public class InspectionDeskInteractable : Interactable
         }
         if (runtimeMat.HasProperty("_BaseColor"))
         {
-            runtimeMat.SetColor("_BaseColor", Color.white);
+            runtimeMat.SetColor("_BaseColor", tint);
         }
         if (runtimeMat.HasProperty("_Color"))
         {
-            runtimeMat.SetColor("_Color", Color.white);
+            runtimeMat.SetColor("_Color", tint);
         }
 
-        if (runtimeMat.HasProperty("_EmissionMap") && runtimeMat.HasProperty("_EmissionColor"))
+        MeshRenderer quadRenderer = quadObj.GetComponent<MeshRenderer>();
+        if (quadRenderer != null)
         {
-            runtimeMat.EnableKeyword("_EMISSION");
-            runtimeMat.SetTexture("_EmissionMap", tex);
-            runtimeMat.SetTextureScale("_EmissionMap", screenTextureScale);
-            runtimeMat.SetTextureOffset("_EmissionMap", screenTextureOffset);
-            runtimeMat.SetColor("_EmissionColor", Color.white * screenEmissionIntensity);
+            quadRenderer.sharedMaterial = runtimeMat;
+            quadRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            quadRenderer.receiveShadows = false;
         }
 
-        mats[screenMaterialIndex] = runtimeMat;
-        targetRenderer.materials = mats;
-    }
-
-    private void RestoreOriginalMaterial(MeshRenderer targetRenderer, Material originalMat)
-    {
-        if (targetRenderer == null || originalMat == null) return;
-        Material[] mats = targetRenderer.sharedMaterials;
-        if (screenMaterialIndex < 0 || screenMaterialIndex >= mats.Length) return;
-
-        mats[screenMaterialIndex] = originalMat;
-        targetRenderer.sharedMaterials = mats;
+        quadObj.SetActive(true);
     }
 
     /// <summary>
@@ -280,6 +308,12 @@ public class InspectionDeskInteractable : Interactable
     public override void Interact()
     {
         base.Interact();
+
+        if (HasControlPanelScreens && !alsoOpenFullscreenUI && isScreenShowing)
+        {
+            ClearScreens();
+            return;
+        }
 
         if (NPCInspectionManager.instance != null)
         {

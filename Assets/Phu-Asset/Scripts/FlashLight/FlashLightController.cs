@@ -227,18 +227,8 @@ public class FlashlightController : MonoBehaviour
             hasFlashlight = true;
         }
 
-        // Nhấn F để bật/tắt đèn pin (hỗ trợ cả Old Input Manager và New Input System)
-        bool fPressed = Input.GetKeyDown(KeyCode.F);
-        if (!fPressed)
-        {
-            try
-            {
-                Keyboard kb = Keyboard.current;
-                if (kb != null && kb.fKey.wasPressedThisFrame)
-                    fPressed = true;
-            }
-            catch { }
-        }
+        // Nhấn phím đèn pin (mặc định F, đồng bộ với KeybindManager)
+        bool fPressed = KeybindManager.GetKeyDown(GameAction.Flashlight);
 
         if (fPressed)
         {
