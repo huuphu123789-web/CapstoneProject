@@ -4338,21 +4338,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCExploderBehavior
   inspectionPoint: {fileID: 0}
   walkSpeed: 2.5
-  swellDuration: 2.5
-  maxSwellScale: 1.8
-  explosionParticlePrefab: {fileID: 100012, guid: 3364c97de68d3a147af572d1c71c6455, type: 3}
   footstepSounds:
   - {fileID: 8300000, guid: 81ee2453d74ce7a45afc6f998d8a2841, type: 3}
   - {fileID: 8300000, guid: 88d1c1e9e1d4ba04ab990640115f30f1, type: 3}
   - {fileID: 8300000, guid: 9e7500087790d8349a38d5626e9d30d8, type: 3}
   - {fileID: 8300000, guid: d2445163e8df7734590914b265098e4b, type: 3}
-  swellSound: {fileID: 8300000, guid: 49faafaa61f87644f9e44bc72637eb61, type: 3}
-  explosionSound: {fileID: 8300000, guid: 8524588a69a4f3e40bb597b6221138f1, type: 3}
   footstepInterval: 0.5
+  footstepMinDistance: 1.8
+  footstepMaxDistance: 12
+  footstepMaxVolume: 0.75
   isInspecting: 0
-  hasExploded: 0
   animator: {fileID: 0}
   audioSource: {fileID: 5786491909589871433}
+  agent: {fileID: 0}
+  swellDuration: 2.5
+  maxSwellScale: 1.8
+  explosionParticlePrefab: {fileID: 100012, guid: 3364c97de68d3a147af572d1c71c6455, type: 3}
+  swellSound: {fileID: 8300000, guid: fdb74307753d34888af4e91c8b68d832, type: 3}
+  explosionSound: {fileID: 8300000, guid: 8524588a69a4f3e40bb597b6221138f1, type: 3}
+  hasExploded: 0
 --- !u!82 &5786491909589871433
 AudioSource:
   m_ObjectHideFlags: 0

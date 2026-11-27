@@ -81,41 +81,49 @@ public class NPCInspectionProfile
     public AudioClip GetEffectiveArriveClip()
     {
         if (voiceArriveClip != null) return voiceArriveClip;
-        string path = isMutant 
-            ? "Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Arrive.wav"
-            : "Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Arrive.wav";
-        return LoadAudioFromPath(path);
+        return LoadVoiceWithFallback(
+            isMutant ? "Assets/Phu-Asset/Audio/NPCVoice/Trinh Hoang Long/Mutant_Arrive.wav" : "Assets/Phu-Asset/Audio/NPCVoice/Victor Jean Mercier/Human_Arrive.wav",
+            isMutant ? "Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Arrive.wav" : "Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Arrive.wav"
+        );
     }
 
     public AudioClip GetEffectiveDefenseClip(int index)
     {
         if (defenseVoiceClips != null && defenseVoiceClips.Length > 0)
         {
-            return defenseVoiceClips[index % defenseVoiceClips.Length];
+            AudioClip c = defenseVoiceClips[index % defenseVoiceClips.Length];
+            if (c != null) return c;
         }
         int clipNum = (index % 4) + 1;
-        string path = isMutant
-            ? $"Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Defense_{clipNum}.wav"
-            : $"Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Defense_{clipNum}.wav";
-        return LoadAudioFromPath(path);
+        return LoadVoiceWithFallback(
+            isMutant ? $"Assets/Phu-Asset/Audio/NPCVoice/Trinh Hoang Long/Mutant_Defense_{clipNum}.wav" : $"Assets/Phu-Asset/Audio/NPCVoice/Victor Jean Mercier/Human_Defense_{clipNum}.wav",
+            isMutant ? $"Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Defense_{clipNum}.wav" : $"Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Defense_{clipNum}.wav"
+        );
     }
 
     public AudioClip GetEffectiveApproveClip()
     {
         if (voiceApproveClip != null) return voiceApproveClip;
-        string path = isMutant
-            ? "Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Approve.wav"
-            : "Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Approve.wav";
-        return LoadAudioFromPath(path);
+        return LoadVoiceWithFallback(
+            isMutant ? "Assets/Phu-Asset/Audio/NPCVoice/Trinh Hoang Long/Mutant_Approve.wav" : "Assets/Phu-Asset/Audio/NPCVoice/Victor Jean Mercier/Human_Approve.wav",
+            isMutant ? "Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Approve.wav" : "Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Approve.wav"
+        );
     }
 
     public AudioClip GetEffectiveDenyClip()
     {
         if (voiceDenyClip != null) return voiceDenyClip;
-        string path = isMutant
-            ? "Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Deny.wav"
-            : "Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Deny.wav";
-        return LoadAudioFromPath(path);
+        return LoadVoiceWithFallback(
+            isMutant ? "Assets/Phu-Asset/Audio/NPCVoice/Trinh Hoang Long/Mutant_Deny.wav" : "Assets/Phu-Asset/Audio/NPCVoice/Victor Jean Mercier/Human_Deny.wav",
+            isMutant ? "Assets/Phu-Asset/Audio/NPCVoice/Mutant/Mutant_Deny.wav" : "Assets/Phu-Asset/Audio/NPCVoice/Human/Human_Deny.wav"
+        );
+    }
+
+    private static AudioClip LoadVoiceWithFallback(string primaryPath, string fallbackPath)
+    {
+        AudioClip clip = LoadAudioFromPath(primaryPath);
+        if (clip == null) clip = LoadAudioFromPath(fallbackPath);
+        return clip;
     }
 
     private static AudioClip LoadAudioFromPath(string path)
@@ -214,6 +222,7 @@ public class NPCInspectionManager : MonoBehaviour
         ValidateOrFormatNPCNames();
         EnsureDeskAndButtons();
         EnsureDialogueUI();
+        EnsureUniqueDialoguesAssigned();
         EnsureVoiceClipsAssigned();
         EnsureDocumentTexturesAssigned();
 
@@ -224,9 +233,41 @@ public class NPCInspectionManager : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        // Khi NPC đã đứng ở vạch kiểm tra và chưa có quyết định -> luôn xoay mặt mượt về phía Player
+        if (isCurrentNPCAtDesk && !hasDecisionBeenMade && currentNPCObject != null && currentNPCObject.activeInHierarchy)
+        {
+            NPCJumperBehavior jumper = currentNPCObject.GetComponentInChildren<NPCJumperBehavior>();
+            if (jumper != null && jumper.hasTriggeredScare) return;
+
+            Transform playerTarget = Camera.main != null ? Camera.main.transform : null;
+            if (playerTarget == null)
+            {
+                GameObject p = GameObject.FindWithTag("Player");
+                if (p != null) playerTarget = p.transform;
+            }
+
+            if (playerTarget != null)
+            {
+                Vector3 dir = playerTarget.position - currentNPCObject.transform.position;
+                dir.y = 0f;
+                if (dir.sqrMagnitude > 0.001f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir.normalized);
+                    currentNPCObject.transform.rotation = Quaternion.Slerp(
+                        currentNPCObject.transform.rotation,
+                        targetRot,
+                        Time.deltaTime * 6f
+                    );
+                }
+            }
+        }
+    }
+
     /// <summary>
-    /// Đảm bảo tất cả NPC trong hàng đợi đều hiển thị đúng định dạng [tên]-[tên đột biến],
-    /// giữ nguyên cố định tên Trịnh Hoàng Long.
+    /// Giữ nguyên tên NPC mà người dùng đã điền sẵn trong Inspector của NPCInspectionManager.
+    /// Chỉ tự điền tên sạch (bỏ đuôi -Normal/-Floating để tránh lộ vai) nếu ô npcName đang để trống.
     /// </summary>
     public void ValidateOrFormatNPCNames()
     {
@@ -243,51 +284,290 @@ public class NPCInspectionManager : MonoBehaviour
         {
             if (profile == null) continue;
 
-            // Tên Trịnh Hoàng Long giữ nguyên theo yêu cầu
-            if (!string.IsNullOrEmpty(profile.npcName) && profile.npcName.ToLower().Contains("trinh hoang long"))
+            // Nếu người dùng đã ghi sẵn tên NPC trong Inspector -> giữ nguyên 100%
+            if (!string.IsNullOrEmpty(profile.npcName) &&
+                !profile.npcName.Equals("Citizen", StringComparison.OrdinalIgnoreCase) &&
+                !profile.npcName.StartsWith("Subject", StringComparison.OrdinalIgnoreCase) &&
+                !profile.npcName.StartsWith("NPC-", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
-            // Nếu Prefab đã có tên chuẩn [Tên]-[ĐộtBiến] (như Le Van Dat-DogBark, Nguyen Van An-Jumper...)
+            // Nếu để trống -> lấy phần tên người (trước dấu '-') từ tên Prefab để không lộ đuôi đột biến
             if (profile.npcPrefab != null)
             {
                 string pName = profile.npcPrefab.name;
-                if (pName.Contains("-") && !pName.StartsWith("NPC-") && !pName.StartsWith("Npc-"))
+                int dash = pName.IndexOf('-');
+                if (dash > 0 && !pName.StartsWith("NPC-", StringComparison.OrdinalIgnoreCase))
                 {
-                    profile.npcName = pName;
+                    profile.npcName = pName.Substring(0, dash).Trim();
                     continue;
                 }
             }
 
-            // Nếu tên cũ còn chứa Subject hoặc NPC-, chuyển sang [Tên]-[Tên đột biến]
-            if (string.IsNullOrEmpty(profile.npcName) || profile.npcName.StartsWith("Subject") || profile.npcName.StartsWith("NPC-") || profile.npcName.StartsWith("Npc-"))
-            {
-                string assignedName = availableNames[nameIdx % availableNames.Length];
-                nameIdx++;
+            profile.npcName = availableNames[nameIdx % availableNames.Length];
+            nameIdx++;
+        }
+    }
 
-                string mutantType = "Mutant";
-                if (profile.npcPrefab != null)
+    private struct NPCDialoguePack
+    {
+        public string keyword;
+        public string voiceFolder;
+        public string arrive;
+        public string[] defense;
+        public string approved;
+        public string denied;
+    }
+
+    /// <summary>
+    /// Tự động gán 10 bộ lời thoại + voice khớp từng chữ hoàn toàn khác nhau, không trùng lặp cho từng NPC trong danh sách
+    /// (nếu NPC chưa được viết thoại riêng trong Inspector).
+    /// </summary>
+    public void EnsureUniqueDialoguesAssigned()
+    {
+        if (npcQueue == null || npcQueue.Count == 0) return;
+
+        NPCDialoguePack[] packs = new NPCDialoguePack[]
+        {
+            // 1. Victor Jean Mercier - Người thường kiệt sức từ trạm tiền tiêu
+            new NPCDialoguePack
+            {
+                keyword = "victor",
+                voiceFolder = "Set_01_Victor",
+                arrive = "Evening, officer. My patrol truck broke down two miles back. Here are my clearance papers.",
+                defense = new string[]
                 {
-                    string pName = profile.npcPrefab.name;
-                    int dash = pName.LastIndexOf('-');
-                    if (dash >= 0 && dash < pName.Length - 1)
+                    "My hands are shaking from the frost, not from infection. Check the seal on my ID.",
+                    "The radio tower went dead an hour ago. I walked straight along the main road.",
+                    "I have served at Sector Four for three winters. You can verify my serial number.",
+                    "Please hurry, the mist is thickening behind the treeline."
+                },
+                approved = "Appreciate it, officer. Stay sharp at the post tonight.",
+                denied = "Wait—my papers are genuine! You are locking me out here in the fog!"
+            },
+            // 2. Trinh Hoang Long - SpinningLegs (Cứng nhắc, cố giả giọng quân nhân)
+            new NPCDialoguePack
+            {
+                keyword = "trinh hoang long",
+                voiceFolder = "Set_02_SpinningLegs",
+                arrive = "Reporting for entry, sentinel. Stand still... my knees are merely stiff from the march.",
+                defense = new string[]
+                {
+                    "Do not look down at my boots. The mud makes every step feel... twisted.",
+                    "Every stamp on that folder is regulation. Why are you hesitating?",
+                    "A soldier does not flinch when his joints turn a little further than usual.",
+                    "Open the barrier now. The night air makes my legs restless."
+                },
+                approved = "Wise decision... I will walk right through.",
+                denied = "You noticed the legs, didn't you? Big mistake!"
+            },
+            // 3. Tran Quoc Hung - Crawler (Thì thào, hoảng loạn dưới bóng tối)
+            new NPCDialoguePack
+            {
+                keyword = "crawler",
+                voiceFolder = "Set_03_Crawler",
+                arrive = "Psst... officer... keep the spotlight low. Something crawled beside me in the ditch.",
+                defense = new string[]
+                {
+                    "I am fine, I just prefer staying close to the ground where they cannot see me.",
+                    "Check the pass key quickly, please... the glass between us feels so thin.",
+                    "Did you hear scratching behind your booth? No? Must be the wind...",
+                    "Let me inside before I have to climb over the fence myself."
+                },
+                approved = "Good... stay right where you are, officer.",
+                denied = "Don't turn your back on the booth... I'll find another way in!"
+            },
+            // 4. Le Van Dat - DogBark (Lo lắng vì con chó sủa)
+            new NPCDialoguePack
+            {
+                keyword = "dogbark",
+                voiceFolder = "Set_04_DogBark",
+                arrive = "Hello there! Mind telling your guard dog to settle down? I only came from the supply road.",
+                defense = new string[]
+                {
+                    "Dogs always bark at strangers in the dark. It doesn't mean anything is wrong with me!",
+                    "Look at my documents, not the hound! I smell like campfire smoke, that's all.",
+                    "Seriously, why is it staring at me like that? Just scan my card already.",
+                    "I swear I am clean—your dog is just spooked by the forest!"
+                },
+                approved = "Ha! See? Told you the mutt was overreacting. Thanks, officer!",
+                denied = "Shut that dog up!! You shouldn't have trusted a beast over me!"
+            },
+            // 5. Pham Minh Tuan - Glitch (Ngắt quãng như sóng nhiễu)
+            new NPCDialoguePack
+            {
+                keyword = "glitch",
+                voiceFolder = "Set_05_Glitch",
+                arrive = "Off-officer... requesting gate—gate clearance. Signal is... I mean, my voice is fine.",
+                defense = new string[]
+                {
+                    "Why does the booth light keep flickering? I am standing—standing completely still.",
+                    "Read the ID again. Every line is—is—is synchronized with central command.",
+                    "Don't blink, officer. People get nervous when I move between frames.",
+                    "Grant access now before the static gets louder."
+                },
+                approved = "Access... granted. Entering—entering perimeter.",
+                denied = "Error... rejection not accepted! You cannot erase me!"
+            },
+            // 6. Nguyen Van An - Jumper (Nóng nảy, thúc giục)
+            new NPCDialoguePack
+            {
+                keyword = "jumper",
+                voiceFolder = "Set_06_Jumper",
+                arrive = "Open the gate! Stop staring at the console and buzz me through right now!",
+                defense = new string[]
+                {
+                    "How long does it take to read two sheets of paper?! My heart is pounding out of my chest!",
+                    "You think I walked all this way just to stand under your floodlight?",
+                    "Keep your hand off that red switch, officer. I am warning you.",
+                    "One more second of waiting and I am coming straight through that window!"
+                },
+                approved = "Finally! Should have opened it the moment I got here!",
+                denied = "You hit deny?! You're dead, officer!!"
+            },
+            // 7. ETIENNE PIERRE GIRAR - Screamer (Lạnh lẽo, trống rỗng)
+            new NPCDialoguePack
+            {
+                keyword = "screamer",
+                voiceFolder = "Set_07_Screamer",
+                arrive = "Good night, watchman. It is terribly quiet out here... almost too quiet for your ears.",
+                defense = new string[]
+                {
+                    "My papers are in order. Though I wonder if the glass can hold back a loud sound.",
+                    "Do your speakers ever ring when someone stands this close to the booth?",
+                    "Take your time reading my name. I am very patient... until my throat opens.",
+                    "Approve my passage, and I promise not to wake the whole base."
+                },
+                approved = "How polite... enjoy the silence while it lasts.",
+                denied = "Then cover your ears, watchman!"
+            },
+            // 8. Bui Hoang Viet - Boomer (Không nói chuyện, chỉ phát tiếng bom hẹn giờ bíp bíp)
+            new NPCDialoguePack
+            {
+                keyword = "boomer",
+                voiceFolder = "",
+                arrive = "*BEEP... BEEP... BEEP...*",
+                defense = new string[]
+                {
+                    "*BEEP... BEEP... BEEP...*",
+                    "*BEEP—BEEP—BEEP...*",
+                    "*TICK... TICK... BEEP...*",
+                    "*BEEP! BEEP! BEEP!*"
+                },
+                approved = "*BEEP—BEEP—BEEP!*",
+                denied = "*BEEP—BEEP—BEEP!*"
+            },
+            // 9. Vu Quang Huy - DetachedLimbs (Cứng đờ, giấu tay)
+            new NPCDialoguePack
+            {
+                keyword = "detached",
+                voiceFolder = "Set_09_Detached",
+                arrive = "Evening, sir. I slid my papers through the slot—sorry if my grip looked awkward.",
+                defense = new string[]
+                {
+                    "My shoulders went numb an hour ago. Feels like my arms aren't even attached.",
+                    "Please keep your eyes on the ID photo. Staring at my sleeves makes me uneasy.",
+                    "Everything is still in one piece, officer. Mostly.",
+                    "Just approve the pass so I can sit somewhere warm and pull myself together."
+                },
+                approved = "Much obliged... try not to mind anything I drop.",
+                denied = "Fine! Keep the gate shut—pieces of me will still slip inside!"
+            },
+            // 10. Hoang Duc Anh / Vo Van Nam - Floating & HeadSpin (Mơ hồ, rợn người)
+            new NPCDialoguePack
+            {
+                keyword = "floating",
+                voiceFolder = "Set_10_Floating",
+                arrive = "Officer... have you ever felt like the ground below this checkpoint isn't real?",
+                defense = new string[]
+                {
+                    "I feel so light tonight, like a single gust of wind could lift me over your roof.",
+                    "Look closely at my surrender confirm. Nothing unusual—just ignore the height.",
+                    "From up here, your guard booth looks awfully small and fragile.",
+                    "Let me pass, or I might drift right past the wire anyway."
+                },
+                approved = "Lovely... I will float right in.",
+                denied = "You think a locked gate can hold me to the earth?!"
+            }
+        };
+
+        HashSet<int> usedIndices = new HashSet<int>();
+
+        for (int i = 0; i < npcQueue.Count; i++)
+        {
+            NPCInspectionProfile npc = npcQueue[i];
+            if (npc == null) continue;
+
+            // Kiểm tra xem người dùng đã tự viết lời thoại riêng chưa
+            bool hasCustomArrive = !string.IsNullOrEmpty(npc.dialogueOnArrive) &&
+                                   !npc.dialogueOnArrive.StartsWith("Hello officer! I'm a normal human");
+            bool hasCustomDefense = npc.defenseDialogues != null && npc.defenseDialogues.Length > 0 &&
+                                    !string.IsNullOrEmpty(npc.defenseDialogues[0]);
+
+            // Ưu tiên chọn bộ thoại khớp với tên/loại NPC mà chưa bị trùng
+            string fullName = ((npc.npcName ?? "") + " " + (npc.npcPrefab != null ? npc.npcPrefab.name : "")).ToLowerInvariant();
+            int chosenIdx = -1;
+
+            for (int p = 0; p < packs.Length; p++)
+            {
+                if (!usedIndices.Contains(p) && fullName.Contains(packs[p].keyword))
+                {
+                    chosenIdx = p;
+                    break;
+                }
+            }
+
+            if (chosenIdx < 0)
+            {
+                for (int p = 0; p < packs.Length; p++)
+                {
+                    int candidate = (i + p) % packs.Length;
+                    if (!usedIndices.Contains(candidate))
                     {
-                        mutantType = pName.Substring(dash + 1);
-                    }
-                    else
-                    {
-                        mutantType = pName;
+                        chosenIdx = candidate;
+                        break;
                     }
                 }
-                else if (profile.npcName.Contains("Dog")) mutantType = "DogBark";
-                else if (profile.npcName.Contains("Jumper")) mutantType = "Jumper";
-                else if (profile.npcName.Contains("Crawler")) mutantType = "Crawler";
-                else if (profile.npcName.Contains("Screamer")) mutantType = "Screamer";
+            }
 
-                profile.npcName = $"{assignedName}-{mutantType}";
+            if (chosenIdx < 0) chosenIdx = i % packs.Length;
+            usedIndices.Add(chosenIdx);
+
+            NPCDialoguePack pack = packs[chosenIdx];
+            if (!hasCustomArrive) npc.dialogueOnArrive = pack.arrive;
+            if (!hasCustomDefense) npc.defenseDialogues = pack.defense;
+            if (string.IsNullOrEmpty(npc.dialogueOnApproved) || npc.dialogueOnApproved.StartsWith("Thank you so much, officer!"))
+                npc.dialogueOnApproved = pack.approved;
+            if (string.IsNullOrEmpty(npc.dialogueOnDenied) || npc.dialogueOnDenied.StartsWith("No! Please don't leave me out here"))
+                npc.dialogueOnDenied = pack.denied;
+
+            // Gán luôn bộ voice .wav khớp từng chữ tương ứng với bộ thoại (bỏ qua nếu voiceFolder rỗng như Boomer chỉ có tiếng bíp)
+            if (!string.IsNullOrEmpty(pack.voiceFolder))
+            {
+                string voiceBase = $"Assets/Phu-Asset/Audio/NPCVoice/{pack.voiceFolder}";
+                if (npc.voiceArriveClip == null) npc.voiceArriveClip = LoadAudioFromPath($"{voiceBase}/Arrive.wav");
+                if (npc.voiceApproveClip == null) npc.voiceApproveClip = LoadAudioFromPath($"{voiceBase}/Approve.wav");
+                if (npc.voiceDenyClip == null) npc.voiceDenyClip = LoadAudioFromPath($"{voiceBase}/Deny.wav");
+                if (npc.defenseVoiceClips == null || npc.defenseVoiceClips.Length == 0)
+                {
+                    npc.defenseVoiceClips = new AudioClip[4];
+                    for (int d = 0; d < 4; d++)
+                    {
+                        npc.defenseVoiceClips[d] = LoadAudioFromPath($"{voiceBase}/Defense_{d + 1}.wav");
+                    }
+                }
             }
         }
+    }
+
+    private AudioClip LoadAudioFromPath(string path)
+    {
+#if UNITY_EDITOR
+        return UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+#else
+        return null;
+#endif
     }
 
     /// <summary>
@@ -364,6 +644,9 @@ public class NPCInspectionManager : MonoBehaviour
         if (npcQueue == null) return;
         foreach (var npc in npcQueue)
         {
+            // Boomer chỉ phát tiếng bíp bom hẹn giờ, không nạp giọng nói đè lên
+            if (IsBoomerProfile(npc)) continue;
+
             if (npc.voiceArriveClip == null) npc.voiceArriveClip = npc.GetEffectiveArriveClip();
             if (npc.voiceApproveClip == null) npc.voiceApproveClip = npc.GetEffectiveApproveClip();
             if (npc.voiceDenyClip == null) npc.voiceDenyClip = npc.GetEffectiveDenyClip();
@@ -376,6 +659,15 @@ public class NPCInspectionManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private static bool IsBoomerProfile(NPCInspectionProfile npc)
+    {
+        if (npc == null) return false;
+        if (npc.npcPrefab != null && npc.npcPrefab.GetComponentInChildren<NPCExploderBehavior>(true) != null)
+            return true;
+        string combined = ((npc.npcName ?? "") + " " + (npc.npcPrefab != null ? npc.npcPrefab.name : "")).ToLowerInvariant();
+        return combined.Contains("boomer") || combined.Contains("exploder");
     }
 
     private static string NormalizeObjectName(string raw)
@@ -840,6 +1132,7 @@ public class NPCInspectionManager : MonoBehaviour
         if (currentAgent != null && currentAgent.enabled && currentAgent.isOnNavMesh)
         {
             currentAgent.isStopped = true;
+            currentAgent.updateRotation = false;
         }
 
         Animator anim = currentNPCObject.GetComponentInChildren<Animator>();
@@ -933,7 +1226,7 @@ public class NPCInspectionManager : MonoBehaviour
         hasDecisionBeenMade = true;
 
         StopDefenseDialogueLoop();
-        AudioClip voice = currentProfile != null ? currentProfile.GetEffectiveApproveClip() : null;
+        AudioClip voice = (currentProfile != null && !IsBoomerProfile(currentProfile)) ? currentProfile.GetEffectiveApproveClip() : null;
         string approveText = (currentProfile != null && !string.IsNullOrEmpty(currentProfile.dialogueOnApproved))
             ? currentProfile.dialogueOnApproved
             : (currentProfile != null && currentProfile.isMutant
@@ -985,7 +1278,7 @@ public class NPCInspectionManager : MonoBehaviour
         hasDecisionBeenMade = true;
 
         StopDefenseDialogueLoop();
-        AudioClip voice = currentProfile != null ? currentProfile.GetEffectiveDenyClip() : null;
+        AudioClip voice = (currentProfile != null && !IsBoomerProfile(currentProfile)) ? currentProfile.GetEffectiveDenyClip() : null;
         string denyText = (currentProfile != null && !string.IsNullOrEmpty(currentProfile.dialogueOnDenied))
             ? currentProfile.dialogueOnDenied
             : (currentProfile != null && currentProfile.isMutant
@@ -1053,6 +1346,7 @@ public class NPCInspectionManager : MonoBehaviour
         {
             // ĐÚNG ĐẮN: Phát hiện và đuổi đột biến
             Debug.Log("[NPCInspectionManager] CHUẨN XÁC: Đã phát hiện và từ chối sinh vật đột biến!");
+            ShowDialogue(currentProfile != null ? currentProfile.npcName : "Mutant", denyText, dur, voice);
             if (correctDecisionChime != null && AudioManager.instance != null)
             {
                 AudioManager.instance.PlaySFX(correctDecisionChime);
@@ -1064,6 +1358,7 @@ public class NPCInspectionManager : MonoBehaviour
         {
             // Nhầm lẫn: Đuổi người thường
             Debug.LogWarning("[NPCInspectionManager] Bạn đã từ chối một người bình thường.");
+            ShowDialogue(currentProfile != null ? currentProfile.npcName : "Citizen", denyText, dur, voice);
             StartCoroutine(NPCDismissedRoutine());
         }
     }
@@ -1107,6 +1402,44 @@ public class NPCInspectionManager : MonoBehaviour
         Invoke(nameof(SpawnNextNPC), 2.5f);
     }
 
+    /// <summary>
+    /// Khi NPC Boomer (Exploder) tự nổ tung tại bốt gác:
+    /// Tự động tính là đã Từ chối (Deny), tắt toàn bộ log thoại/voice và gọi NPC tiếp theo.
+    /// </summary>
+    public void OnNPCExploded()
+    {
+        if (hasDecisionBeenMade) return;
+        hasDecisionBeenMade = true;
+        isCurrentNPCAtDesk = false;
+
+        StopDefenseDialogueLoop();
+        HideDialogue();
+
+        if (currentNPCObject != null)
+        {
+            AudioSource[] srcs = currentNPCObject.GetComponentsInChildren<AudioSource>(true);
+            for (int i = 0; i < srcs.Length; i++)
+            {
+                if (srcs[i] != null) srcs[i].Stop();
+            }
+        }
+
+        if (InspectionDeskInteractable.instance != null)
+        {
+            InspectionDeskInteractable.instance.SetDocumentsAvailable(false);
+        }
+
+        Debug.Log("💥 [NPCInspectionManager] NPC Boomer đã nổ tung -> Tự động tính là Deny, tắt thoại và chuyển sang NPC tiếp theo!");
+
+        if (currentNPCObject != null)
+        {
+            Destroy(currentNPCObject, 0.2f);
+            currentNPCObject = null;
+        }
+
+        Invoke(nameof(SpawnNextNPC), 2.0f);
+    }
+
     private IEnumerator MoveNPCOutAndDestroyRoutine(Transform destinationTransform, float speed, float maxSafetyTimeout = 45f)
     {
         if (InspectionDeskInteractable.instance != null)
@@ -1128,6 +1461,7 @@ public class NPCInspectionManager : MonoBehaviour
             if (currentAgent != null && currentAgent.enabled && currentAgent.isOnNavMesh)
             {
                 Vector3 target = GetSampledNavMeshPosition(destinationTransform.position, 8.0f);
+                currentAgent.updateRotation = true;
                 currentAgent.isStopped = false;
                 currentAgent.speed = speed;
                 currentAgent.SetDestination(target);
@@ -1286,70 +1620,65 @@ public class NPCInspectionManager : MonoBehaviour
         panelRT.anchorMin = new Vector2(0.5f, 0f);
         panelRT.anchorMax = new Vector2(0.5f, 0f);
         panelRT.pivot = new Vector2(0.5f, 0f);
-        panelRT.anchoredPosition = new Vector2(0f, 45f);
-        panelRT.sizeDelta = new Vector2(980f, 130f);
-
-        Image panelImg = panelGO.AddComponent<Image>();
-        panelImg.color = new Color(0.05f, 0.07f, 0.1f, 0.92f); // Nền tối cao cấp
-        panelImg.raycastTarget = false;
+        panelRT.anchoredPosition = new Vector2(0f, 65f);
+        panelRT.sizeDelta = new Vector2(1200f, 100f);
 
         dialogueCanvasGroup = panelGO.AddComponent<CanvasGroup>();
         dialogueCanvasGroup.alpha = 1f;
+        dialogueCanvasGroup.blocksRaycasts = false;
+        dialogueCanvasGroup.interactable = false;
 
-        // Thanh viền vàng hổ phách trên nóc khung thoại
-        GameObject accentGO = new GameObject("TopAccentBar");
-        accentGO.transform.SetParent(panelGO.transform, false);
-        RectTransform accentRT = accentGO.AddComponent<RectTransform>();
-        accentRT.anchorMin = new Vector2(0f, 1f);
-        accentRT.anchorMax = new Vector2(1f, 1f);
-        accentRT.pivot = new Vector2(0.5f, 1f);
-        accentRT.anchoredPosition = Vector2.zero;
-        accentRT.sizeDelta = new Vector2(0f, 3f);
-        Image accentImg = accentGO.AddComponent<Image>();
-        accentImg.color = new Color(1f, 0.8f, 0.2f, 0.85f);
-        accentImg.raycastTarget = false;
-
-        // Tên người nói (Speaker Name)
+        // Tên người nói (Chữ trắng căn giữa)
         GameObject nameGO = new GameObject("SpeakerNameText");
         nameGO.transform.SetParent(panelGO.transform, false);
         RectTransform nameRT = nameGO.AddComponent<RectTransform>();
         nameRT.anchorMin = new Vector2(0f, 1f);
         nameRT.anchorMax = new Vector2(1f, 1f);
-        nameRT.pivot = new Vector2(0f, 1f);
-        nameRT.anchoredPosition = new Vector2(25f, -14f);
-        nameRT.sizeDelta = new Vector2(-50f, 28f);
+        nameRT.pivot = new Vector2(0.5f, 1f);
+        nameRT.anchoredPosition = new Vector2(0f, 0f);
+        nameRT.sizeDelta = new Vector2(0f, 32f);
 
         dialogueNameText = nameGO.AddComponent<TextMeshProUGUI>();
-        dialogueNameText.fontSize = 21;
+        dialogueNameText.fontSize = 22f;
         dialogueNameText.fontStyle = FontStyles.Bold;
-        dialogueNameText.color = new Color(1f, 0.85f, 0.3f, 1f);
-        dialogueNameText.alignment = TextAlignmentOptions.TopLeft;
+        dialogueNameText.color = Color.white;
+        dialogueNameText.alignment = TextAlignmentOptions.Center;
         dialogueNameText.raycastTarget = false;
 
-        // Nội dung lời thoại (Content Text)
+        // Nội dung lời thoại (Dòng chữ trắng chạy căn giữa màn hình, không khung hộp)
         GameObject contentGO = new GameObject("DialogueContentText");
         contentGO.transform.SetParent(panelGO.transform, false);
         RectTransform contentRT = contentGO.AddComponent<RectTransform>();
         contentRT.anchorMin = new Vector2(0f, 0f);
         contentRT.anchorMax = new Vector2(1f, 1f);
-        contentRT.pivot = new Vector2(0f, 1f);
-        contentRT.anchoredPosition = new Vector2(25f, -44f);
-        contentRT.sizeDelta = new Vector2(-50f, -54f);
+        contentRT.pivot = new Vector2(0.5f, 1f);
+        contentRT.anchoredPosition = new Vector2(0f, -34f);
+        contentRT.sizeDelta = new Vector2(0f, -34f);
 
         dialogueContentText = contentGO.AddComponent<TextMeshProUGUI>();
-        dialogueContentText.fontSize = 20;
+        dialogueContentText.fontSize = 23f;
+        dialogueContentText.fontStyle = FontStyles.Normal;
         dialogueContentText.color = Color.white;
-        dialogueContentText.alignment = TextAlignmentOptions.TopLeft;
+        dialogueContentText.alignment = TextAlignmentOptions.Top;
         dialogueContentText.textWrappingMode = TMPro.TextWrappingModes.Normal;
         dialogueContentText.raycastTarget = false;
 
-        TMP_FontAsset robotoFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Roboto-Bold SDF");
-        if (robotoFont == null) robotoFont = TMP_Settings.defaultFontAsset;
-        if (robotoFont != null)
+        TMP_FontAsset subtitleFont = TMP_Settings.defaultFontAsset;
+        if (subtitleFont == null) subtitleFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/Roboto-Bold SDF");
+        if (subtitleFont != null)
         {
-            dialogueNameText.font = robotoFont;
-            dialogueContentText.font = robotoFont;
+            dialogueNameText.font = subtitleFont;
+            dialogueContentText.font = subtitleFont;
         }
+
+        // Thêm bóng nhẹ để chữ trắng nổi rõ trên mọi nền sáng/tối
+        Shadow nameShadow = nameGO.AddComponent<Shadow>();
+        nameShadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
+        nameShadow.effectDistance = new Vector2(1.5f, -1.5f);
+
+        Shadow contentShadow = contentGO.AddComponent<Shadow>();
+        contentShadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
+        contentShadow.effectDistance = new Vector2(1.5f, -1.5f);
 
         dialoguePanel = panelGO;
         dialoguePanel.SetActive(false);
@@ -1383,7 +1712,7 @@ public class NPCInspectionManager : MonoBehaviour
 
         if (dialogueNameText != null)
         {
-            dialogueNameText.text = $"[ {speakerName} ]";
+            dialogueNameText.text = speakerName;
         }
 
         dialogueContentText.text = "";
@@ -1438,12 +1767,13 @@ public class NPCInspectionManager : MonoBehaviour
             if (src == null)
             {
                 src = currentNPCObject.AddComponent<AudioSource>();
-                src.spatialBlend = 0.75f; // Âm thanh định hướng 3D trong không gian
-                src.minDistance = 2f;
-                src.maxDistance = 25f;
-                src.rolloffMode = AudioRolloffMode.Linear;
             }
 
+            src.spatialBlend = 0.65f; // Âm thanh định hướng 3D vừa phải để nghe rõ giọng nói qua cửa kính bốt gác
+            src.minDistance = 2.5f;
+            src.maxDistance = 25f;
+            src.rolloffMode = AudioRolloffMode.Linear;
+            src.pitch = 1.0f;
             src.clip = clip;
             src.volume = 1.0f;
             src.Play();
@@ -1509,7 +1839,7 @@ public class NPCInspectionManager : MonoBehaviour
                 ? "Officer... I am... normal... Please let me in..."
                 : "Hello officer! Here are my papers, please check them!");
 
-        AudioClip arriveVoice = currentProfile.GetEffectiveArriveClip();
+        AudioClip arriveVoice = IsBoomerProfile(currentProfile) ? null : currentProfile.GetEffectiveArriveClip();
         float arriveShowTime = (arriveVoice != null && arriveVoice.length > 0) ? Mathf.Max(4.5f, arriveVoice.length + 1.2f) : 5.0f;
         ShowDialogue(currentProfile.npcName, firstLine, arriveShowTime, arriveVoice);
 
@@ -1520,13 +1850,13 @@ public class NPCInspectionManager : MonoBehaviour
         int lineIdx = 0;
 
         // Vòng lặp liên tục thanh minh / biện hộ khi đang đứng chờ quyết định
-        while (isCurrentNPCAtDesk && !hasDecisionBeenMade && currentNPCObject != null)
+        while (isCurrentNPCAtDesk && !hasDecisionBeenMade && currentNPCObject != null && currentNPCObject.activeInHierarchy)
         {
             string line = (defenseLines != null && defenseLines.Length > 0)
                 ? defenseLines[lineIdx % defenseLines.Length]
                 : "";
 
-            AudioClip voice = currentProfile.GetEffectiveDefenseClip(lineIdx);
+            AudioClip voice = IsBoomerProfile(currentProfile) ? null : currentProfile.GetEffectiveDefenseClip(lineIdx);
             lineIdx++;
 
             float showTime = (voice != null && voice.length > 0) ? Mathf.Max(4.5f, voice.length + 1.2f) : 5.0f;

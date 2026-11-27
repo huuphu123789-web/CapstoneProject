@@ -18,10 +18,16 @@ public abstract class NPCBaseBehavior : MonoBehaviour
     public Transform inspectionPoint;
     public float walkSpeed = 2.5f;
 
-    [Header("=== Âm Thanh Bước Chân ===")]
+    [Header("=== Âm Thanh Bước Chân (3D Theo Khoảng Cách) ===")]
     public AudioClip[] footstepSounds;
     public float footstepInterval = 0.45f;
+    [Tooltip("Khoảng cách gần nhất nghe rõ tiếng bước chân (mét)")]
+    public float footstepMinDistance = 1.8f;
+    [Tooltip("Khoảng cách xa nhất còn nghe thấy bước chân; xa hơn sẽ im lặng hoàn toàn (mét)")]
+    public float footstepMaxDistance = 12f;
+    [Range(0f, 1f)] public float footstepMaxVolume = 0.75f;
     protected float footstepTimer;
+    private Vector3 lastStepCheckPos;
 
     [Header("=== Trạng Thái ===")]
     public bool isInspecting = false;
@@ -41,6 +47,20 @@ public abstract class NPCBaseBehavior : MonoBehaviour
 
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = GetComponentInParent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+
+        Configure3DAudioSource();
+        lastStepCheckPos = transform.position;
+    }
+
+    private void Configure3DAudioSource()
+    {
+        if (audioSource == null) return;
+        audioSource.spatialBlend = 1f;
+        audioSource.rolloffMode = AudioRolloffMode.Linear;
+        audioSource.minDistance = footstepMinDistance;
+        audioSource.maxDistance = footstepMaxDistance;
+        audioSource.dopplerLevel = 0f;
     }
 
     protected virtual void Start()
@@ -132,10 +152,18 @@ public abstract class NPCBaseBehavior : MonoBehaviour
 
     protected virtual void HandleFootsteps()
     {
-        if (!isInspecting && agent != null && agent.isOnNavMesh && agent.velocity.magnitude > 0.1f)
+        bool movingByAgent = (agent != null && agent.enabled && agent.isOnNavMesh && agent.velocity.magnitude > 0.1f);
+        float deltaMove = Vector3.Distance(
+            new Vector3(transform.position.x, 0f, transform.position.z),
+            new Vector3(lastStepCheckPos.x, 0f, lastStepCheckPos.z)
+        );
+        bool movingDirect = (Time.deltaTime > 0f && (deltaMove / Time.deltaTime) > 0.2f);
+        lastStepCheckPos = transform.position;
+
+        if (!isInspecting && (movingByAgent || movingDirect))
         {
             footstepTimer -= Time.deltaTime;
-            if (footstepTimer <= 0)
+            if (footstepTimer <= 0f)
             {
                 PlayFootstepSound();
                 footstepTimer = footstepInterval;
@@ -157,14 +185,46 @@ public abstract class NPCBaseBehavior : MonoBehaviour
     public virtual void PlayFootstepSound()
     {
         if (footstepSounds == null || footstepSounds.Length == 0) return;
+
+        // Tính khoảng cách thực tế tới Player/Camera -> ở xa ngoài footstepMaxDistance thì im lặng hoàn toàn
+        Transform listener = Camera.main != null ? Camera.main.transform : null;
+        if (listener == null)
+        {
+            GameObject p = GameObject.FindWithTag("Player");
+            if (p != null) listener = p.transform;
+        }
+
+        float distanceFactor = 1f;
+        if (listener != null)
+        {
+            float dist = Vector3.Distance(transform.position, listener.position);
+            if (dist >= footstepMaxDistance) return;
+
+            float linear = 1f - Mathf.InverseLerp(footstepMinDistance, footstepMaxDistance, dist);
+            distanceFactor = linear * linear; // Giảm mượt tự nhiên khi đi xa
+        }
+
         int randomIndex = Random.Range(0, footstepSounds.Length);
         AudioClip clip = footstepSounds[randomIndex];
+        if (clip == null) return;
 
-        if (clip != null)
+        if (audioSource == null)
         {
-            if (AudioManager.instance != null) AudioManager.instance.PlaySFX(clip);
-            else if (audioSource != null) audioSource.PlayOneShot(clip, 0.6f);
+            audioSource = gameObject.AddComponent<AudioSource>();
+            Configure3DAudioSource();
         }
+
+        float sfxVol = PlayerPrefs.GetInt("SFXMuted", 0) == 1 ? 0f : PlayerPrefs.GetFloat("SFXVolume", 1f);
+        float masterVol = PlayerPrefs.GetInt("MasterMuted", 0) == 1 ? 0f : PlayerPrefs.GetFloat("MasterVolume", 1f);
+        float finalVol = footstepMaxVolume * distanceFactor * sfxVol * masterVol;
+        if (finalVol <= 0.005f) return;
+
+        audioSource.spatialBlend = 1f;
+        audioSource.rolloffMode = AudioRolloffMode.Linear;
+        audioSource.minDistance = footstepMinDistance;
+        audioSource.maxDistance = footstepMaxDistance;
+        audioSource.pitch = Random.Range(0.93f, 1.07f);
+        audioSource.PlayOneShot(clip, finalVol);
     }
 
     public static Transform FindDeepChild(Transform parent, string name)

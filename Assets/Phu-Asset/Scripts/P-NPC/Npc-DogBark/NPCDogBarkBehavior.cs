@@ -123,7 +123,29 @@ public class NPCDogBarkBehavior : NPCBaseBehavior
     {
         base.OnInspectionStarted();
 
-        // Bắt đầu chuỗi tiếng chó sủa cảnh báo
+        // Nếu trong Scene có chú chó tuần tra (DogCompanionController) -> gọi chó chạy nhanh tới sủa!
+        DogCompanionController dog = DogCompanionController.instance ?? FindAnyObjectByType<DogCompanionController>();
+        if (dog != null)
+        {
+            isDogBarking = true;
+            Debug.Log($"🐕 [NPCDogBarkBehavior] Gọi chú chó chạy tới sủa {barkCount} tiếng! (Đột biến: {isMutant})");
+            dog.CallToBarkAt(
+                transform,
+                barkCount,
+                isMutant,
+                dogBarkClip,
+                dogAggressiveBarkClip,
+                barkInterval,
+                () =>
+                {
+                    isDogBarking = false;
+                    hasFinishedBarking = true;
+                }
+            );
+            return;
+        }
+
+        // Dự phòng nếu chưa gắn DogCompanionController trên chú chó
         StartCoroutine(DogBarkRoutine());
     }
 

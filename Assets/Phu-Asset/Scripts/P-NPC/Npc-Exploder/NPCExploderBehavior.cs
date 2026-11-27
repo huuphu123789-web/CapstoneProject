@@ -12,19 +12,56 @@ public class NPCExploderBehavior : NPCBaseBehavior
     public float maxSwellScale = 1.8f;           // Mức độ phồng to
     public GameObject explosionParticlePrefab;   // Particle Nổ
 
-    [Header("=== Âm Thanh Nổ Tung ===")]
-    public AudioClip swellSound;                 // Tiếng phồng to/rít
+    [Header("=== Âm Thanh Nổ Tung & Bom Hẹn Giờ ===")]
+    [Tooltip("Tiếng bíp bíp bom hẹn giờ phát ngay khi Boomer spawn ra (nếu để trống sẽ tự dùng Swell Sound)")]
+    public AudioClip timerBeepSound;
+    [Tooltip("Khoảng cách tối đa nghe thấy tiếng bíp bíp 3D (mét)")]
+    public float beepMaxDistance = 28f;
+    public AudioClip swellSound;                 // Tiếng phồng to/bíp bíp
     public AudioClip explosionSound;             // Tiếng NỔ TUNG
 
     [Header("=== Trạng Thái Nổ ===")]
     public bool hasExploded = false;
 
     private Vector3 originalScale;
+    private AudioSource beepAudioSource;
 
     protected override void Start()
     {
         base.Start();
         originalScale = transform.localScale;
+        StartTimerBeepLoop();
+    }
+
+    private void StartTimerBeepLoop()
+    {
+        AudioClip beepClip = timerBeepSound != null ? timerBeepSound : swellSound;
+        if (beepClip == null) return;
+
+        beepAudioSource = gameObject.AddComponent<AudioSource>();
+        beepAudioSource.clip = beepClip;
+        beepAudioSource.loop = true;
+        beepAudioSource.spatialBlend = 1.0f;
+        beepAudioSource.rolloffMode = AudioRolloffMode.Linear;
+        beepAudioSource.minDistance = 2.5f;
+        beepAudioSource.maxDistance = beepMaxDistance;
+        beepAudioSource.dopplerLevel = 0f;
+        beepAudioSource.pitch = 1.0f;
+        beepAudioSource.volume = 0.9f;
+        beepAudioSource.Play();
+    }
+
+    private void StopTimerBeepLoop()
+    {
+        if (beepAudioSource != null && beepAudioSource.isPlaying)
+        {
+            beepAudioSource.Stop();
+        }
+    }
+
+    void OnDisable()
+    {
+        StopTimerBeepLoop();
     }
 
     protected override void OnInspectionStarted()
@@ -36,13 +73,22 @@ public class NPCExploderBehavior : NPCBaseBehavior
 
     private IEnumerator ExplodeRoutine()
     {
-        PlaySound(swellSound);
+        if (beepAudioSource == null)
+        {
+            StartTimerBeepLoop();
+        }
 
         float elapsed = 0f;
         while (elapsed < swellDuration)
         {
             elapsed += Time.deltaTime;
             float progress = elapsed / swellDuration;
+
+            // Tăng dần tốc độ tiếng bíp bíp khi sắp nổ
+            if (beepAudioSource != null)
+            {
+                beepAudioSource.pitch = Mathf.Lerp(1.0f, 1.65f, progress);
+            }
 
             // Phồng to dần
             transform.localScale = Vector3.Lerp(originalScale, originalScale * maxSwellScale, progress);
@@ -52,6 +98,7 @@ public class NPCExploderBehavior : NPCBaseBehavior
 
         // --- NỔ TUNG! ---
         hasExploded = true;
+        StopTimerBeepLoop();
 
         // PHÁT TIẾNG NỔ AN TOÀN (Không bị tắt khi GameObject Ẩn)
         if (explosionSound != null)
@@ -73,6 +120,12 @@ public class NPCExploderBehavior : NPCBaseBehavior
         }
 
         Debug.Log("💥 NPC ĐÃ NỔ TUNG!");
+
+        // Báo ngay cho NPCInspectionManager để tự động tính là Deny, tắt log thoại/voice và gọi NPC tiếp theo
+        if (NPCInspectionManager.instance != null)
+        {
+            NPCInspectionManager.instance.OnNPCExploded();
+        }
 
         // Ẩn NPC
         gameObject.SetActive(false);
